@@ -1,142 +1,171 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>俄罗斯方块</title>
+  <title>Tetris</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
-      overflow: hidden;
-      background-color: #0f172a;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       color: #f8fafc;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
     }
     
     h1 {
-      color: #3b82f6;
-      margin-bottom: 1rem;
+      color: #38bdf8;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+      font-size: 3rem;
+      letter-spacing: 4px;
+      font-weight: 800;
     }
     
     .game-container {
       position: relative;
-      width: 320px;
-      height: 620px;
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 20px;
       box-sizing: border-box;
     }
     
     .game-board {
       width: 300px;
       height: 600px;
-      background-color: #1e293b;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      background-color: rgba(15, 23, 42, 0.7);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4), 
+                  inset 0 0 10px rgba(255, 255, 255, 0.05);
       position: relative;
       overflow: hidden;
-      border-radius: 0.5rem;
+      border-radius: 10px;
+      border: 1px solid rgba(100, 116, 139, 0.3);
     }
     
-    .next-piece-container {
-      position: absolute;
-      top: 0;
-      right: -120px;
-      width: 100px;
-      height: 100px;
-      background-color: #1e293b;
-      border-radius: 0.5rem;
+    .left-panel, .right-panel {
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      gap: 15px;
+      width: 180px;
     }
     
-    .next-piece-label {
-      margin-bottom: 0.5rem;
-      font-size: 0.875rem;
+    .panel-container {
+      background-color: rgba(15, 23, 42, 0.7);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3),
+                  inset 0 0 10px rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .panel-container:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4),
+                  inset 0 0 10px rgba(255, 255, 255, 0.08);
+    }
+    
+    .next-piece-container, .hold-container {
+      height: 130px;
+    }
+    
+    .next-piece-label, .hold-label {
+      margin-bottom: 15px;
+      font-size: 1rem;
       color: #94a3b8;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     
     .score-container {
+      height: auto;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .score-container::after {
+      content: '';
       position: absolute;
-      top: 120px;
-      right: -120px;
-      width: 100px;
-      padding: 1rem;
-      background-color: #1e293b;
-      border-radius: 0.5rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.5), transparent);
     }
     
-    .score-label {
-      margin-bottom: 0.5rem;
-      font-size: 0.875rem;
+    .score-label, .level-label, .difficulty-label, .high-score-label {
+      margin-bottom: 10px;
+      font-size: 1rem;
       color: #94a3b8;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     
-    .score {
-      font-size: 1.5rem;
+    .score, .level, .difficulty-display, .high-score {
+      font-size: 1.8rem;
       font-weight: bold;
       color: #f8fafc;
-    }
-    
-    .level-container {
-      position: absolute;
-      top: 220px;
-      right: -120px;
-      width: 100px;
-      padding: 1rem;
-      background-color: #1e293b;
-      border-radius: 0.5rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    }
-    
-    .level-label {
-      margin-bottom: 0.5rem;
-      font-size: 0.875rem;
-      color: #94a3b8;
-    }
-    
-    .level {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #f8fafc;
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
     }
     
     .controls {
-      position: absolute;
-      top: 320px;
-      right: -120px;
-      width: 100px;
-      background-color: #1e293b;
-      border-radius: 0.5rem;
-      padding: 1rem;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      background-color: rgba(15, 23, 42, 0.7);
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3),
+                  inset 0 0 10px rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(100, 116, 139, 0.3);
     }
     
     .controls h3 {
-      margin-top: 0;
-      font-size: 0.875rem;
+      margin: 0 0 15px 0;
+      font-size: 1rem;
       color: #94a3b8;
       text-align: center;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     
     .controls p {
-      margin: 0.5rem 0;
-      font-size: 0.75rem;
-      color: #cbd5e1;
+      margin: 10px 0;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .controls p .key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 8px;
+      background-color: #334155;
+      border-radius: 5px;
+      color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
+                  inset 0 0 2px rgba(255, 255, 255, 0.1);
+      min-width: 25px;
+      height: 25px;
+      margin-right: 8px;
+      font-weight: bold;
+      border: 1px solid rgba(100, 116, 139, 0.5);
     }
     
     .game-cell {
@@ -146,7 +175,7 @@
       box-sizing: border-box;
     }
     
-    .game-over {
+    .game-over, .paused-screen {
       position: absolute;
       top: 0;
       left: 0;
@@ -158,55 +187,74 @@
       justify-content: center;
       align-items: center;
       z-index: 10;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+    }
+    
+    .game-over {
+      display: none;
+    }
+    
+    .paused-screen {
       display: none;
     }
     
     .game-over h2 {
-      color: #ef4444;
-      margin-bottom: 1rem;
+      color: #f87171;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 15px rgba(248, 113, 113, 0.6);
+      font-size: 2.5rem;
     }
     
     .game-over p {
       color: #f8fafc;
       margin-bottom: 2rem;
+      font-size: 1.2rem;
     }
     
     button {
-      background-color: #3b82f6;
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
       color: white;
       border: none;
-      border-radius: 0.5rem;
-      padding: 0.75rem 2rem;
-      font-size: 1rem;
+      border-radius: 8px;
+      padding: 0.75rem 2.5rem;
+      font-size: 1.1rem;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: all 0.3s;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4),
+                  inset 0 0 5px rgba(255, 255, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    button::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transform: rotate(45deg);
+      transition: all 0.5s;
     }
     
     button:hover {
-      background-color: #2563eb;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(2, 132, 199, 0.5),
+                  inset 0 0 5px rgba(255, 255, 255, 0.4);
     }
     
-    .start-screen {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(15, 23, 42, 0.9);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
+    button:hover::after {
+      left: 100%;
     }
     
-    .start-screen h2 {
-      color: #3b82f6;
-      margin-bottom: 2rem;
-    }
-    
-    .tetromino {
-      position: absolute;
+    button:active {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(2, 132, 199, 0.4);
     }
     
     .tetromino-cell {
@@ -214,109 +262,251 @@
       width: 30px;
       height: 30px;
       box-sizing: border-box;
-      border: 1px solid rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2),
+                  0 0 4px rgba(255, 255, 255, 0.1);
+      background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
+      border-radius: 3px;
     }
     
     .tetromino-i {
       background-color: #06b6d4;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2),
+                  0 0 10px rgba(6, 182, 212, 0.4);
     }
     
     .tetromino-j {
       background-color: #3b82f6;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2),
+                  0 0 10px rgba(59, 130, 246, 0.4);
     }
     
     .tetromino-l {
       background-color: #f59e0b;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2),
+                  0 0 10px rgba(245, 158, 11, 0.4);
     }
     
     .tetromino-o {
       background-color: #facc15;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2),
+                  0 0 10px rgba(250, 204, 21, 0.4);
     }
     
     .tetromino-s {
       background-color: #22c55e;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2),
+                  0 0 10px rgba(34, 197, 94, 0.4);
     }
     
     .tetromino-t {
       background-color: #a855f7;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2),
+                  0 0 10px rgba(168, 85, 247, 0.4);
     }
     
     .tetromino-z {
       background-color: #ef4444;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2),
+                  0 0 10px rgba(239, 68, 68, 0.4);
     }
     
-    .next-piece {
+    .next-piece, .hold-piece {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       position: relative;
+      background-color: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
     }
     
-    @media (max-width: 600px) {
+    @keyframes comboFade {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    }
+    
+    .combo-active {
+      animation: comboFade 1.5s ease-out forwards;
+    }
+    
+    /* 添加网格线效果 */
+    .game-board::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        linear-gradient(to right, rgba(100, 116, 139, 0.1) 1px, transparent 1px) 0 0 / 30px 30px,
+        linear-gradient(to bottom, rgba(100, 116, 139, 0.1) 1px, transparent 1px) 0 0 / 30px 30px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    /* 添加霓虹灯效果 */
+    .game-board::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 12px;
+      background: linear-gradient(45deg, #38bdf8, #a855f7, #ef4444, #22c55e);
+      z-index: -1;
+      filter: blur(10px);
+      opacity: 0.3;
+      animation: borderGlow 10s linear infinite;
+    }
+    
+    @keyframes borderGlow {
+      0% { filter: blur(10px); opacity: 0.3; }
+      50% { filter: blur(15px); opacity: 0.5; }
+      100% { filter: blur(10px); opacity: 0.3; }
+    }
+    
+    @media (max-width: 1000px) {
       .game-container {
-        transform: scale(0.8);
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+      
+      .left-panel, .right-panel {
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      
+      .panel-container {
+        min-width: 150px;
+      }
+    }
+    
+    @media (max-width: 500px) {
+      .game-container {
+        transform: scale(0.9);
+      }
+      
+      h1 {
+        font-size: 2.5rem;
       }
     }
   </style>
 </head>
 <body>
-  <h1>俄罗斯方块</h1>
+  <h1>Tetris</h1>
   
   <div class="game-container">
-    <div class="game-board" id="game-board"></div>
-    
-    <div class="next-piece-container">
-      <div class="next-piece-label">下一块</div>
-      <div class="next-piece" id="next-piece"></div>
+    <div class="left-panel">
+      <div class="panel-container next-piece-container">
+        <div class="next-piece-label">Next Piece</div>
+        <div class="next-piece" id="next-piece"></div>
+      </div>
+      
+      <div class="panel-container hold-container">
+        <div class="hold-label">Hold Piece</div>
+        <div class="hold-piece" id="hold-piece"></div>
+      </div>
     </div>
     
-    <div class="score-container">
-      <div class="score-label">得分</div>
-      <div class="score" id="score">0</div>
+    <div class="game-board" id="game-board">
+      <div class="combo-display" id="combo-display"></div>
     </div>
     
-    <div class="level-container">
-      <div class="level-label">等级</div>
-      <div class="level" id="level">1</div>
-    </div>
-    
-    <div class="controls">
-      <h3>操作说明</h3>
-      <p>←→: 左右移动</p>
-      <p>↑: 旋转</p>
-      <p>↓: 软降</p>
-      <p>空格: 硬降</p>
-      <p>P: 暂停</p>
+    <div class="right-panel">
+      <div class="panel-container score-container">
+        <div class="score-label">Score</div>
+        <div class="score" id="score">0</div>
+      </div>
+      
+      <div class="panel-container score-container">
+        <div class="level-label">Level</div>
+        <div class="level" id="level">1</div>
+      </div>
+      
+      <div class="panel-container score-container">
+        <div class="difficulty-label">Difficulty</div>
+        <div class="level" id="difficulty-display">Normal</div>
+      </div>
+      
+      <div class="panel-container score-container">
+        <div class="high-score-label">High Score</div>
+        <div class="high-score" id="high-score">0</div>
+      </div>
+      
+      <div class="controls">
+        <h3>Controls</h3>
+        <p><span class="key">←</span><span class="key">→</span> Move</p>
+        <p><span class="key">↑</span> Rotate</p>
+        <p><span class="key">↓</span> Soft Drop</p>
+        <p><span class="key">Space</span> Hard Drop</p>
+        <p><span class="key">C</span> Hold Piece</p>
+        <p><span class="key">P</span> Pause</p>
+      </div>
     </div>
     
     <div class="game-over" id="game-over">
-      <h2>游戏结束!</h2>
-      <p>最终得分: <span id="final-score">0</span></p>
-      <button id="restart-button">再玩一次</button>
+      <h2>Game Over!</h2>
+      <p>Final Score: <span id="final-score">0</span></p>
+      <p id="new-record-text" style="color: #fde047; display: none;">New High Score!</p>
+      <button id="restart-button">Play Again</button>
+    </div>
+    
+    <div class="paused-screen" id="paused-screen">
+      <h2>Game Paused</h2>
+      <button id="resume-button">Resume Game</button>
     </div>
     
     <div class="start-screen" id="start-screen">
-      <h2>俄罗斯方块</h2>
-      <button id="start-button">开始游戏</button>
+      <h2>Tetris</h2>
+      
+      <div class="difficulty-selection">
+        <h3>Select Difficulty</h3>
+        <div class="difficulty-buttons">
+          <button id="easy-btn" class="difficulty-btn">Easy</button>
+          <button id="normal-btn" class="difficulty-btn active">Normal</button>
+          <button id="hard-btn" class="difficulty-btn">Hard</button>
+        </div>
+      </div>
+      
+      <button id="start-button">Start Game</button>
     </div>
   </div>
   
   <script>
     // 游戏状态
     const state = {
-      board: Array(20).fill().map(() => Array(10).fill(0)),
+      board: Array(20).fill().map(() => Array(10).fill(0)), // 恢复为20行，确保屏幕内可完全显示
       currentPiece: null,
       nextPiece: null,
+      holdPiece: null,
+      canHold: true,
       score: 0,
+      highScores: {
+        easy: 0,
+        normal: 0,
+        hard: 0
+      },
       level: 1,
       lines: 0,
+      combo: 0,
       gameOver: false,
       gameStarted: false,
       gamePaused: false,
       dropStart: 0,
-      dropInterval: 1000
+      dropInterval: 1000,
+      difficulty: 'normal',
+      gravityFactor: 1,
+      scoreFactor: 1
     };
     
     // 方块类型
@@ -333,20 +523,99 @@
     // DOM 元素
     const gameBoard = document.getElementById('game-board');
     const nextPieceContainer = document.getElementById('next-piece');
+    const holdPieceContainer = document.getElementById('hold-piece');
     const scoreElement = document.getElementById('score');
     const levelElement = document.getElementById('level');
+    const highScoreElement = document.getElementById('high-score');
+    const difficultyDisplay = document.getElementById('difficulty-display');
     const gameOverElement = document.getElementById('game-over');
     const finalScoreElement = document.getElementById('final-score');
+    const newRecordTextElement = document.getElementById('new-record-text');
     const restartButton = document.getElementById('restart-button');
     const startScreen = document.getElementById('start-screen');
     const startButton = document.getElementById('start-button');
+    const pausedScreen = document.getElementById('paused-screen');
+    const resumeButton = document.getElementById('resume-button');
+    const comboDisplay = document.getElementById('combo-display');
+    
+    // 难度设置按钮
+    const easyBtn = document.getElementById('easy-btn');
+    const normalBtn = document.getElementById('normal-btn');
+    const hardBtn = document.getElementById('hard-btn');
     
     // 初始化游戏
     function init() {
       document.addEventListener('keydown', handleKeyPress);
       startButton.addEventListener('click', startGame);
       restartButton.addEventListener('click', restartGame);
+      resumeButton.addEventListener('click', resumeGame);
+      easyBtn.addEventListener('click', () => setDifficulty('easy'));
+      normalBtn.addEventListener('click', () => setDifficulty('normal'));
+      hardBtn.addEventListener('click', () => setDifficulty('hard'));
+      
+      // 加载本地存储的最高分
+      loadHighScores();
+      
       renderBoard();
+    }
+    
+    // 加载本地存储的最高分
+    function loadHighScores() {
+      const savedHighScores = localStorage.getItem('tetrisHighScores');
+      if (savedHighScores) {
+        state.highScores = JSON.parse(savedHighScores);
+      }
+      
+      // 显示当前难度的最高分
+      highScoreElement.textContent = state.highScores[state.difficulty];
+    }
+    
+    // 保存最高分到本地存储
+    function saveHighScores() {
+      localStorage.setItem('tetrisHighScores', JSON.stringify(state.highScores));
+    }
+    
+    // 更新最高分
+    function updateHighScore() {
+      if (state.score > state.highScores[state.difficulty]) {
+        state.highScores[state.difficulty] = state.score;
+        highScoreElement.textContent = state.score;
+        saveHighScores();
+        return true;
+      }
+      return false;
+    }
+    
+    // 设置难度
+    function setDifficulty(level) {
+      state.difficulty = level;
+      
+      // 更新难度按钮样式
+      [easyBtn, normalBtn, hardBtn].forEach(btn => btn.classList.remove('active'));
+      
+      switch(level) {
+        case 'easy':
+          easyBtn.classList.add('active');
+          state.gravityFactor = 0.8; // 降低下落速度
+          state.scoreFactor = 0.8; // 降低得分倍率
+          difficultyDisplay.textContent = 'Easy';
+          break;
+        case 'normal':
+          normalBtn.classList.add('active');
+          state.gravityFactor = 1; // 默认下落速度
+          state.scoreFactor = 1; // 默认得分倍率
+          difficultyDisplay.textContent = 'Normal';
+          break;
+        case 'hard':
+          hardBtn.classList.add('active');
+          state.gravityFactor = 1.5; // 加快下落速度
+          state.scoreFactor = 1.5; // 提高得分倍率
+          difficultyDisplay.textContent = 'Hard';
+          break;
+      }
+      
+      // 更新显示当前难度的最高分
+      highScoreElement.textContent = state.highScores[state.difficulty];
     }
     
     // 开始游戏
@@ -360,18 +629,25 @@
     
     // 重置游戏
     function resetGame() {
-      state.board = Array(20).fill().map(() => Array(10).fill(0));
+      state.board = Array(20).fill().map(() => Array(10).fill(0)); // 恢复为20行
       state.score = 0;
       state.level = 1;
       state.lines = 0;
+      state.combo = 0;
       state.gameOver = false;
-      state.dropInterval = 1000;
+      state.holdPiece = null;
+      state.canHold = true;
+      
+      // 根据难度设置初始下落速度
+      state.dropInterval = 1000 / state.gravityFactor;
       
       gameOverElement.style.display = 'none';
+      pausedScreen.style.display = 'none';
       scoreElement.textContent = '0';
       levelElement.textContent = '1';
       
       renderBoard();
+      renderHoldPiece();
     }
     
     // 重新开始游戏
@@ -381,6 +657,15 @@
       gameOverElement.style.display = 'none';
       generatePiece();
       drop();
+    }
+    
+    // 暂停后继续游戏
+    function resumeGame() {
+      if (state.gamePaused) {
+        state.gamePaused = false;
+        pausedScreen.style.display = 'none';
+        drop();
+      }
     }
     
     // 生成新方块
@@ -396,12 +681,13 @@
       state.currentPiece.x = Math.floor((10 - state.currentPiece.shape[0].length) / 2);
       state.currentPiece.y = 0;
       
+      // 确保新生成的方块在游戏区域内
+      ensurePieceInBounds(state.currentPiece);
+      
       // 检查游戏结束条件
       if (collision(0, 0)) {
         // 游戏结束
-        state.gameOver = true;
-        gameOverElement.style.display = 'flex';
-        finalScoreElement.textContent = state.score;
+        endGame();
         return;
       }
       
@@ -421,13 +707,60 @@
       };
     }
     
+    // 保留当前方块
+    function holdPiece() {
+      if (!state.canHold || state.gameOver || state.gamePaused || !state.gameStarted) return;
+      
+      const currentPiece = {
+        shape: JSON.parse(JSON.stringify(state.currentPiece.shape)),
+        color: state.currentPiece.color,
+        name: state.currentPiece.name
+      };
+      
+      if (state.holdPiece === null) {
+        // 如果没有保留的方块，用下一个方块替换当前方块
+        state.holdPiece = currentPiece;
+        generatePiece();
+      } else {
+        // 交换当前方块和保留的方块
+        const temp = state.holdPiece;
+        state.holdPiece = currentPiece;
+        state.currentPiece = {
+          shape: JSON.parse(JSON.stringify(temp.shape)),
+          color: temp.color,
+          name: temp.name,
+          x: Math.floor((10 - temp.shape[0].length) / 2),
+          y: 0
+        };
+        
+        // 确保交换后的方块在游戏区域内
+        ensurePieceInBounds(state.currentPiece);
+        
+        // 检查交换后是否会发生碰撞
+        if (collision(0, 0)) {
+          // 如果碰撞，将当前方块尝试上移一格
+          state.currentPiece.y = -1;
+          // 如果仍然碰撞，游戏结束
+          if (collision(0, 0)) {
+            endGame();
+            return;
+          }
+        }
+      }
+      
+      // 这一回合不能再次保留
+      state.canHold = false;
+      renderHoldPiece();
+      renderBoard();
+    }
+    
     // 渲染游戏板
     function renderBoard() {
       // 清空游戏板
-      gameBoard.innerHTML = '';
+      gameBoard.innerHTML = '<div class="combo-display" id="combo-display"></div>';
       
       // 渲染固定的方块
-      for (let y = 0; y < 20; y++) {
+      for (let y = 0; y < state.board.length; y++) {
         for (let x = 0; x < 10; x++) {
           if (state.board[y][x]) {
             const cell = document.createElement('div');
@@ -440,17 +773,173 @@
       }
       
       // 渲染当前活动方块
-      if (state.currentPiece) {
+      if (state.currentPiece && state.currentPiece.shape) {
+        // 防止超出边界的最终保障
+        ensurePieceInBounds(state.currentPiece);
+        
         const { shape, color, x: pieceX, y: pieceY } = state.currentPiece;
         
+        // 每次渲染前都检查是否会超出边界
+        if (isPieceBeyondRightBoundary(state.currentPiece)) {
+          const { shape, x } = state.currentPiece;
+          
+          // 找出最右边的块的位置
+          let maxRightCol = -1;
+          
+          for (let row = 0; row < shape.length; row++) {
+            for (let col = 0; col < shape[row].length; col++) {
+              if (shape[row][col]) {
+                maxRightCol = Math.max(maxRightCol, col);
+              }
+            }
+          }
+          
+          // 调整位置，确保最右边的块不会超出边界
+          if (maxRightCol >= 0) {
+            state.currentPiece.x = Math.min(state.currentPiece.x, 9 - maxRightCol);
+          }
+        }
+        
+        // 使用已修正的位置渲染
         for (let y = 0; y < shape.length; y++) {
           for (let x = 0; x < shape[y].length; x++) {
             if (shape[y][x]) {
-              const cell = document.createElement('div');
-              cell.className = `tetromino-cell ${color}`;
-              cell.style.left = `${(pieceX + x) * 30}px`;
-              cell.style.top = `${(pieceY + y) * 30}px`;
-              gameBoard.appendChild(cell);
+              // 再次计算绝对位置并确保在范围内
+              const cellX = state.currentPiece.x + x;
+              const cellY = pieceY + y;
+              
+              // 最终安全检查 - 只渲染在有效范围内的块
+              if (cellX >= 0 && cellX < 10 && cellY >= 0 && cellY < state.board.length) {
+                const cell = document.createElement('div');
+                cell.className = `tetromino-cell ${color}`;
+                cell.style.left = `${cellX * 30}px`;
+                cell.style.top = `${cellY * 30}px`;
+                gameBoard.appendChild(cell);
+              }
+            }
+          }
+        }
+        
+        // 渲染阴影（预览方块将下落到的位置）
+        let dropDistance = 0;
+        while (!collision(0, dropDistance + 1)) {
+          dropDistance++;
+        }
+        
+        if (dropDistance > 0) {
+          for (let y = 0; y < shape.length; y++) {
+            for (let x = 0; x < shape[y].length; x++) {
+              if (shape[y][x]) {
+                const cellX = state.currentPiece.x + x;
+                const cellY = pieceY + y + dropDistance;
+                
+                // 只渲染在游戏区域内的阴影
+                if (cellX >= 0 && cellX < 10 && cellY >= 0 && cellY < state.board.length) {
+                  const shadowCell = document.createElement('div');
+                  shadowCell.className = `tetromino-cell ${color}`;
+                  shadowCell.style.left = `${cellX * 30}px`;
+                  shadowCell.style.top = `${cellY * 30}px`;
+                  shadowCell.style.opacity = '0.3';
+                  gameBoard.appendChild(shadowCell);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    // 完全重写碰撞检测函数以修复边界穿透问题
+    function collision(offsetX, offsetY) {
+      if (!state.currentPiece || !state.currentPiece.shape) return true;
+      
+      const { shape, x, y } = state.currentPiece;
+      
+      // 首先预先检查整个形状是否会超出边界
+      let maxRight = -1;
+      
+      for (let row = 0; row < shape.length; row++) {
+        for (let col = 0; col < shape[row].length; col++) {
+          if (shape[row][col]) {
+            const newX = x + col + offsetX;
+            maxRight = Math.max(maxRight, newX);
+          }
+        }
+      }
+      
+      // 如果最右边的块会超出右边界，直接返回碰撞
+      if (maxRight >= 10) {
+        return true;
+      }
+      
+      // 检查每个方块
+      for (let row = 0; row < shape.length; row++) {
+        for (let col = 0; col < shape[row].length; col++) {
+          // 如果不是方块的一部分，则跳过
+          if (!shape[row][col]) {
+            continue;
+          }
+          
+          // 计算新位置
+          const newX = x + col + offsetX;
+          const newY = y + row + offsetY;
+          
+          // 检查边界
+          if (newX < 0 || newX >= 10 || newY >= state.board.length) { 
+            return true;
+          }
+          
+          // 检查新位置是否已有方块 (忽略负 y，允许方块从顶部出现)
+          if (newY >= 0 && state.board[newY][newX]) {
+            return true;
+          }
+        }
+      }
+      
+      return false;
+    }
+    
+    // 新增：特定检查右边界的函数
+    function isPieceBeyondRightBoundary(piece) {
+      if (!piece || !piece.shape) return false;
+      
+      const { shape, x } = piece;
+      
+      for (let row = 0; row < shape.length; row++) {
+        for (let col = 0; col < shape[row].length; col++) {
+          if (shape[row][col]) {
+            const absX = x + col;
+            if (absX >= 10) {
+              return true;
+            }
+          }
+        }
+      }
+      
+      return false;
+    }
+    
+    // 重新实现边界检测函数
+    function ensurePieceInBounds(piece) {
+      if (!piece || !piece.shape) return;
+      
+      const { shape, x } = piece;
+      
+      // 检查左边界
+      if (x < 0) {
+        piece.x = 0;
+      }
+      
+      // 检查右边界 - 彻底重写，不依赖最大值计算
+      for (let row = 0; row < shape.length; row++) {
+        for (let col = 0; col < shape[row].length; col++) {
+          if (shape[row][col]) {
+            const absX = x + col;
+            if (absX >= 10) {
+              // 将整个形状左移到不再超出右边界
+              piece.x -= (absX - 9);
+              // 一旦调整了，不需要继续检查
+              return;
             }
           }
         }
@@ -465,8 +954,8 @@
         const { shape, color } = state.nextPiece;
         
         // 计算偏移以居中显示
-        const offsetX = (4 - shape[0].length) * 15;
-        const offsetY = (4 - shape.length) * 15;
+        const offsetX = (4 - shape[0].length) * 10;
+        const offsetY = (4 - shape.length) * 10;
         
         for (let y = 0; y < shape.length; y++) {
           for (let x = 0; x < shape[y].length; x++) {
@@ -484,9 +973,44 @@
       }
     }
     
+    // 渲染保留的方块
+    function renderHoldPiece() {
+      holdPieceContainer.innerHTML = '';
+      
+      if (state.holdPiece) {
+        const { shape, color } = state.holdPiece;
+        
+        // 计算偏移以居中显示
+        const offsetX = (4 - shape[0].length) * 10;
+        const offsetY = (4 - shape.length) * 10;
+        
+        for (let y = 0; y < shape.length; y++) {
+          for (let x = 0; x < shape[y].length; x++) {
+            if (shape[y][x]) {
+              const cell = document.createElement('div');
+              cell.className = `tetromino-cell ${color}`;
+              cell.style.left = `${offsetX + x * 20}px`;
+              cell.style.top = `${offsetY + y * 20}px`;
+              cell.style.width = '20px';
+              cell.style.height = '20px';
+              
+              if (!state.canHold) {
+                cell.style.opacity = '0.5'; // 如果这回合不能再使用hold，显示为半透明
+              }
+              
+              holdPieceContainer.appendChild(cell);
+            }
+          }
+        }
+      }
+    }
+    
     // 移动方块
     function movePiece(direction) {
       if (state.gameOver || state.gamePaused || !state.gameStarted) return;
+      
+      // 操作前先进行一次边界检查和修正
+      ensurePieceInBounds(state.currentPiece);
       
       switch (direction) {
         case 'left':
@@ -495,14 +1019,20 @@
           }
           break;
         case 'right':
+          // 预先检查移动后是否会超出右边界
           if (!collision(1, 0)) {
             state.currentPiece.x++;
+            
+            // 移动后再次检查边界以确保
+            if (isPieceBeyondRightBoundary(state.currentPiece)) {
+              state.currentPiece.x--;
+            }
           }
           break;
         case 'down':
           if (!collision(0, 1)) {
             state.currentPiece.y++;
-            state.score += 1;
+            state.score += Math.round(1 * state.scoreFactor);
             updateScore();
           } else {
             lockPiece();
@@ -519,6 +1049,7 @@
       
       const originalShape = JSON.parse(JSON.stringify(state.currentPiece.shape));
       const originalX = state.currentPiece.x;
+      const originalY = state.currentPiece.y;
       
       const rows = state.currentPiece.shape.length;
       const cols = state.currentPiece.shape[0].length;
@@ -534,51 +1065,35 @@
       
       state.currentPiece.shape = rotated;
       
-      // 检查旋转后是否会发生碰撞，如果是则尝试调整位置
-      let offset = 0;
-      while (collision(0, 0)) {
-        state.currentPiece.x += offset;
-        offset = -(offset + (offset > 0 ? 1 : -1));
+      // 旋转后立即检查边界
+      ensurePieceInBounds(state.currentPiece);
+      
+      // 如果旋转后碰撞，尝试调整位置
+      const offsets = [0, -1, 1, -2, 2];
+      let rotationSuccess = false;
+      
+      for (const offsetX of offsets) {
+        state.currentPiece.x = originalX + offsetX;
         
-        // 如果偏移太大，则还原旋转
-        if (offset > cols) {
-          state.currentPiece.shape = originalShape;
-          state.currentPiece.x = originalX;
+        // 确保在边界内
+        ensurePieceInBounds(state.currentPiece);
+        
+        if (!collision(0, 0)) {
+          rotationSuccess = true;
           break;
         }
       }
       
-      renderBoard();
-    }
-    
-    // 检测碰撞
-    function collision(offsetX, offsetY) {
-      const { shape, x, y } = state.currentPiece;
-      
-      for (let row = 0; row < shape.length; row++) {
-        for (let col = 0; col < shape[row].length; col++) {
-          // 如果不是方块的一部分，则跳过
-          if (!shape[row][col]) {
-            continue;
-          }
-          
-          // 计算新位置
-          const newX = x + col + offsetX;
-          const newY = y + row + offsetY;
-          
-          // 检查边界
-          if (newX < 0 || newX >= 10 || newY >= 20) {
-            return true;
-          }
-          
-          // 检查新位置是否已有方块 (忽略负 y，允许方块从顶部出现)
-          if (newY >= 0 && state.board[newY][newX]) {
-            return true;
-          }
-        }
+      // 如果所有偏移都失败，恢复原始状态
+      if (!rotationSuccess) {
+        state.currentPiece.shape = originalShape;
+        state.currentPiece.x = originalX;
+        state.currentPiece.y = originalY;
       }
       
-      return false;
+      // 强制边界检查，确保旋转后不会出现超出边界的情况
+      ensurePieceInBounds(state.currentPiece);
+      renderBoard();
     }
     
     // 锁定方块
@@ -592,6 +1107,10 @@
             // 确保不会超出顶部边界
             if (y + row >= 0) {
               state.board[y + row][x + col] = color;
+            } else {
+              // 如果有块超出顶部，游戏结束
+              endGame();
+              return;
             }
           }
         }
@@ -599,6 +1118,9 @@
       
       // 检查是否有可以消除的行
       clearLines();
+      
+      // 每次锁定后允许再次保留方块
+      state.canHold = true;
       
       // 生成新方块
       generatePiece();
@@ -608,7 +1130,7 @@
     function clearLines() {
       let linesCleared = 0;
       
-      for (let y = 19; y >= 0; y--) {
+      for (let y = state.board.length - 1; y >= 0; y--) {
         // 检查该行是否满
         const isRowFull = state.board[y].every(cell => cell !== 0);
         
@@ -633,26 +1155,66 @@
       
       // 计算得分 (根据消除的行数)
       if (linesCleared > 0) {
+        // 计算连击
+        if (linesCleared >= 1) {
+          state.combo++;
+        } else {
+          state.combo = 0;
+        }
+        
+        // 显示连击
+        if (state.combo > 1) {
+          showCombo(state.combo);
+        }
+        
         // 经典的俄罗斯方块计分: 1行=100, 2行=300, 3行=500, 4行=800
         const points = [0, 100, 300, 500, 800];
-        state.score += points[linesCleared] * state.level;
+        
+        // 计算基础分数
+        let baseScore = points[linesCleared] * state.level;
+        
+        // 应用连击加成
+        let comboBonus = Math.min(state.combo - 1, 10) * 50;
+        
+        // 应用难度系数并确保为整数
+        baseScore = Math.floor(baseScore * state.scoreFactor);
+        
+        state.score += baseScore + comboBonus;
         state.lines += linesCleared;
         
         // 每清除10行提升一级
-        if (Math.floor(state.lines / 10) + 1 > state.level) {
-          state.level = Math.floor(state.lines / 10) + 1;
+        const newLevel = Math.floor(state.lines / 10) + 1;
+        if (newLevel > state.level) {
+          state.level = newLevel;
           // 加快下落速度
-          state.dropInterval = Math.max(100, 1000 - (state.level - 1) * 100);
+          state.dropInterval = Math.max(100, Math.floor(1000 / state.gravityFactor - (state.level - 1) * 50));
           levelElement.textContent = state.level;
         }
         
         updateScore();
+      } else {
+        // 如果没有消除行，重置连击
+        state.combo = 0;
       }
+    }
+    
+    // 显示连击
+    function showCombo(combo) {
+      const comboDisplay = document.getElementById('combo-display');
+      comboDisplay.textContent = `${combo} Combo!`;
+      comboDisplay.classList.remove('combo-active');
+      
+      // 触发重绘
+      void comboDisplay.offsetWidth;
+      
+      comboDisplay.classList.add('combo-active');
     }
     
     // 更新分数显示
     function updateScore() {
-      scoreElement.textContent = state.score;
+      // 四舍五入分数，避免浮点数精度问题
+      state.score = Math.round(state.score * 100) / 100;
+      scoreElement.textContent = Math.floor(state.score);
     }
     
     // 硬降 (立即下落到底部)
@@ -666,7 +1228,8 @@
       
       if (distance > 0) {
         state.currentPiece.y += distance;
-        state.score += distance * 2; // 硬降给双倍分数
+        // 使用Math.floor确保分数为整数
+        state.score += Math.floor(distance * 2 * state.scoreFactor);
         updateScore();
         lockPiece();
         renderBoard();
@@ -680,37 +1243,41 @@
       state.gamePaused = !state.gamePaused;
       
       if (state.gamePaused) {
-        // 显示暂停屏幕
-        const pauseScreen = document.createElement('div');
-        pauseScreen.id = 'pause-screen';
-        pauseScreen.style.position = 'absolute';
-        pauseScreen.style.top = '0';
-        pauseScreen.style.left = '0';
-        pauseScreen.style.width = '100%';
-        pauseScreen.style.height = '100%';
-        pauseScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-        pauseScreen.style.display = 'flex';
-        pauseScreen.style.justifyContent = 'center';
-        pauseScreen.style.alignItems = 'center';
-        pauseScreen.style.color = 'white';
-        pauseScreen.style.fontSize = '24px';
-        pauseScreen.style.zIndex = '5';
-        pauseScreen.textContent = '已暂停';
-        
-        gameBoard.appendChild(pauseScreen);
+        pausedScreen.style.display = 'flex';
       } else {
-        // 移除暂停屏幕
-        const pauseScreen = document.getElementById('pause-screen');
-        if (pauseScreen) {
-          pauseScreen.remove();
-        }
-        
-        // 重新开始计时
+        pausedScreen.style.display = 'none';
         drop();
       }
     }
     
-    // 处理按键事件
+    // 一个全新的辅助函数，用来强制修正方块位置，保证安全渲染
+    function forceFixPiecePosition(piece) {
+      if (!piece) return;
+      
+      // 超出右边界的最大距离
+      let maxOverflow = 0;
+      
+      // 逐行检查
+      for (let row = 0; row < piece.shape.length; row++) {
+        for (let col = 0; col < piece.shape[row].length; col++) {
+          if (piece.shape[row][col]) {
+            const absX = piece.x + col;
+            
+            // 检查右边界溢出
+            if (absX >= 10) {
+              maxOverflow = Math.max(maxOverflow, absX - 9);
+            }
+          }
+        }
+      }
+      
+      // 如果有溢出，强制调整位置
+      if (maxOverflow > 0) {
+        piece.x -= maxOverflow;
+      }
+    }
+    
+    // 修改handleKeyPress，在所有位置移动后检查边界
     function handleKeyPress(event) {
       if (state.gameOver) return;
       
@@ -720,12 +1287,16 @@
           break;
         case 39: // 右箭头
           movePiece('right');
+          // 额外安全措施
+          forceFixPiecePosition(state.currentPiece);
           break;
         case 40: // 下箭头
           movePiece('down');
           break;
         case 38: // 上箭头 (旋转)
           rotatePiece();
+          // 额外安全措施
+          forceFixPiecePosition(state.currentPiece);
           break;
         case 32: // 空格 (硬降)
           hardDrop();
@@ -733,7 +1304,16 @@
         case 80: // P键 (暂停)
           togglePause();
           break;
+        case 67: // C键 (保留方块)
+          holdPiece();
+          // 额外安全措施
+          forceFixPiecePosition(state.currentPiece);
+          break;
       }
+      
+      // 在任何按键操作后检查边界
+      ensurePieceInBounds(state.currentPiece);
+      renderBoard();
     }
     
     // 自动下落
@@ -750,6 +1330,22 @@
         requestAnimationFrame(drop);
       }
     }
+    
+    // 游戏结束处理
+    function endGame() {
+      state.gameOver = true;
+      gameOverElement.style.display = 'flex';
+      finalScoreElement.textContent = state.score;
+      
+      // 检查是否创造新纪录
+      const isNewRecord = updateHighScore();
+      
+      // 如果是新纪录，显示祝贺信息
+      newRecordTextElement.style.display = isNewRecord ? 'block' : 'none';
+    }
+    
+    // 设置初始难度为普通
+    setDifficulty('normal');
     
     // 初始化游戏
     init();
