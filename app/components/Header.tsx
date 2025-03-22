@@ -1,9 +1,41 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MagnifyingGlassIcon, MoonIcon, SunIcon } from './Icons';
-import { useTheme } from 'next-themes';
+
+// 使用动态导入和错误处理来优雅地处理缺少的依赖
+let useTheme: () => { theme: string | undefined; setTheme: (theme: string) => void };
+
+// 定义一个备用的简单主题实现
+const useFallbackTheme = () => {
+  const [theme, setThemeState] = useState<string | undefined>('light');
+  
+  useEffect(() => {
+    // 在客户端初始化检查本地存储中的主题偏好
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setThemeState(savedTheme);
+    document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+  }, []);
+  
+  const setTheme = (newTheme: string) => {
+    setThemeState(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  };
+  
+  return { theme, setTheme };
+};
+
+// 尝试导入next-themes，如果失败则使用备用实现
+try {
+  const nextThemes = require('next-themes');
+  useTheme = nextThemes.useTheme;
+  console.log('Successfully loaded next-themes');
+} catch (error) {
+  console.warn('next-themes not available, using fallback implementation');
+  useTheme = useFallbackTheme;
+}
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
