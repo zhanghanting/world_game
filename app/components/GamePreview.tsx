@@ -218,7 +218,7 @@ export default function GamePreview({ game, onClose }: GamePreviewProps) {
                     关闭预览
                   </button>
                   <Link
-                    href={`/game/${game.id}`}
+                    href={`/game?id=${game.id}&name=${encodeURIComponent(game.title || game.name || 'Game')}`}
                     className="inline-flex justify-center rounded-md border border-transparent bg-accent-purple px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
                     onClick={onClose}
                   >

@@ -54,6 +54,9 @@ const GameCard: React.FC<GameCardProps> = ({ game, priority = false, onClick }) 
     }
   };
 
+  // 生成正确的游戏链接
+  const gameLink = `/game?id=${game.id}&name=${encodeURIComponent(game.title || game.name || 'Game')}`;
+
   return (
     <>
       <div 
@@ -88,7 +91,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, priority = false, onClick }) 
         
         {/* Game Details */}
         <div className="p-4">
-          <Link href={`/game/${game.id}`}>
+          <Link href={gameLink}>
             <h3 className="text-lg font-semibold text-white truncate hover:text-blue-400 transition-colors">
               {game.title || game.name}
             </h3>
@@ -135,7 +138,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, priority = false, onClick }) 
             </button>
             
             <Link 
-              href={`/game/${game.id}`}
+              href={gameLink}
               className="text-sm text-gray-400 hover:text-white transition-colors"
             >
               More Info
