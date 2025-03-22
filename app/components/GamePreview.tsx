@@ -38,7 +38,7 @@ export default function GamePreview({ game, onClose }: GamePreviewProps) {
       // 短暂延迟后重试
       setTimeout(() => {
         const imgElement = document.getElementById(`preview-img-${game.id}`) as HTMLImageElement;
-        if (imgElement) {
+        if (imgElement && game.coverImage) {
           imgElement.src = game.coverImage.replace('400x240', '800x450') + `&_=${Date.now()}`;
         }
       }, 500);
@@ -55,7 +55,9 @@ export default function GamePreview({ game, onClose }: GamePreviewProps) {
   };
   
   // 从游戏URL中提取域名，用于显示
-  const getGameDomain = (url: string) => {
+  const getGameDomain = (url: string | undefined) => {
+    if (!url) return '游戏网站';
+    
     try {
       const domain = new URL(url).hostname.replace('www.', '');
       return domain;
@@ -68,6 +70,7 @@ export default function GamePreview({ game, onClose }: GamePreviewProps) {
   const getColorFromUrl = () => {
     try {
       // 从原始URL尝试提取颜色代码
+      if (!game.coverImage) return '#5c6ac4';
       const colorMatch = game.coverImage.match(/\/([0-9A-Fa-f]{6})\//);
       return colorMatch ? `#${colorMatch[1]}` : '#5c6ac4';
     } catch (e) {
@@ -76,8 +79,8 @@ export default function GamePreview({ game, onClose }: GamePreviewProps) {
   };
   
   // 预览图片URL - 使用游戏封面图作为预览，但使用更高质量版本
-  const previewImageUrl = imgError
-    ? `https://placehold.co/800x450/5c6ac4/ffffff?text=${encodeURIComponent(game.title + '预览')}`
+  const previewImageUrl = imgError || !game.coverImage
+    ? `https://placehold.co/800x450/5c6ac4/ffffff?text=${encodeURIComponent((game.title || game.name || '游戏') + '预览')}`
     : game.coverImage.replace('400x240', '800x450');
   
   return (
@@ -184,7 +187,7 @@ export default function GamePreview({ game, onClose }: GamePreviewProps) {
                     <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
                       <p className="text-xs text-gray-400 mb-1">来源: {getGameDomain(game.gameUrl)}</p>
                       <div className="flex flex-wrap gap-1">
-                        {game.categories.map(category => (
+                        {game.categories && game.categories.map(category => (
                           <span 
                             key={category}
                             className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-full"
@@ -199,7 +202,7 @@ export default function GamePreview({ game, onClose }: GamePreviewProps) {
                   <div>
                     <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">游戏玩法：</h4>
                     <ul className="list-disc pl-5 text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                      {game.howToPlay.map((tip, index) => (
+                      {game.howToPlay && game.howToPlay.map((tip, index) => (
                         <li key={index} className="pb-1">{tip}</li>
                       ))}
                     </ul>

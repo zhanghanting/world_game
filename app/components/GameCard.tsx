@@ -30,9 +30,10 @@ export interface Game {
 interface GameCardProps {
   game: Game;
   priority?: boolean;
+  onClick?: () => void;
 }
 
-const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) => {
+const GameCard: React.FC<GameCardProps> = ({ game, priority = false, onClick }) => {
   const [showModal, setShowModal] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -43,6 +44,15 @@ const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) => {
   const rating = game.rating || 4.5;
   const filledStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;
+
+  // 处理卡片点击，如果提供了onClick则调用它
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      setShowModal(true);
+    }
+  };
 
   return (
     <>
@@ -66,7 +76,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) => {
           <div className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
             <div className="absolute inset-0 flex items-center justify-center">
               <button 
-                onClick={() => setShowModal(true)}
+                onClick={handleCardClick}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-full flex items-center transition-transform duration-300 transform hover:scale-105"
               >
                 <PlayIcon className="h-5 w-5 mr-2" />
@@ -117,7 +127,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, priority = false }) => {
           {/* Play and info links */}
           <div className="flex mt-4 justify-between">
             <button 
-              onClick={() => setShowModal(true)}
+              onClick={handleCardClick}
               className="text-sm text-blue-400 hover:text-blue-300 flex items-center"
             >
               <PlayIcon className="h-4 w-4 mr-1" />
