@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeftIcon, ArrowsPointingOutIcon, ArrowsPointingInIcon } from '@heroicons/react/24/outline';
 import { CSSTransition } from 'react-transition-group';
@@ -8,7 +8,8 @@ import GuessNumberGame from '../components/games/GuessNumberGame';
 import MemoryCardGame from '../components/games/MemoryCardGame';
 import BasicGame from '../components/games/BasicGame';
 
-const GamePage: React.FC = () => {
+// 分离出使用useSearchParams的组件
+function GameContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const gameId = searchParams.get('id');
@@ -149,6 +150,22 @@ const GamePage: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+}
+
+// 主游戏页面组件，使用Suspense包裹GameContent
+const GamePage: React.FC = () => {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-accent-purple border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-lg text-gray-700 dark:text-gray-300">加载游戏中...</p>
+        </div>
+      </div>
+    }>
+      <GameContent />
+    </Suspense>
   );
 };
 

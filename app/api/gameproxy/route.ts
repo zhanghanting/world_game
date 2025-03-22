@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDomainFromUrl } from '@/app/utils/gameUtils';
 
+// 显式标记此路由为动态路由，这样Next.js就不会尝试静态生成它
+export const dynamic = 'force-dynamic';
+
 /**
  * 游戏代理API
  * 用于代理游戏内容，解决跨域问题，允许游戏在iframe中加载
