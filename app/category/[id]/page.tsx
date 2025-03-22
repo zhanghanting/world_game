@@ -78,11 +78,13 @@ export default function CategoryPage({ params }: CategoryPageProps) {
       </div>
 
       {/* 游戏模态框 */}
-      <GameModal 
-        isOpen={showGameModal}
-        game={selectedGame}
-        onClose={handleCloseGame}
-      />
+      {selectedGame && (
+        <GameModal
+          isOpen={showGameModal}
+          game={selectedGame}
+          onClose={handleCloseGame}
+        />
+      )}
     </div>
   );
 } 
