@@ -5,7 +5,7 @@ import { XMarkIcon, ArrowTopRightOnSquareIcon, ArrowPathIcon } from '@heroicons/
 import { Game } from './GameCard';
 
 interface GameModalProps {
-  game: Game;
+  game: Game | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -57,7 +57,7 @@ export const GameModal: React.FC<GameModalProps> = ({ game, isOpen, onClose }) =
     return () => window.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
-  if (!isOpen) return null;
+  if (!game) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
