@@ -1,0 +1,14 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#FF80AB" />
+  <ellipse cx="200" cy="120" rx="60" ry="70" fill="#FFF" stroke="#333" stroke-width="2" />
+  <circle cx="180" cy="110" r="5" fill="#333" />
+  <circle cx="220" cy="110" r="5" fill="#333" />
+  <path d="M180 140 Q200 160 220 140" stroke="#FF0066" stroke-width="3" fill="none" />
+  <path d="M150 90 Q200 60 250 90" stroke="#333" stroke-width="3" fill="none" />
+  <rect x="160" y="190" width="80" height="20" rx="5" fill="#673AB7" />
+  <rect x="130" y="210" width="140" height="30" rx="5" fill="#9C27B0" />
+  <circle cx="140" cy="190" r="15" fill="#FF4081" />
+  <circle cx="260" cy="190" r="15" fill="#FF4081" />
+  <text x="200" y="60" font-family="Arial" font-size="30" fill="white" text-anchor="middle">美容沙龙</text>
+  <text x="200" y="270" font-family="Arial" font-size="18" fill="white" text-anchor="middle">Beauty Salon Makeover</text>
+</svg> 

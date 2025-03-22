@@ -1,0 +1,37 @@
+<svg width="640" height="360" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="100%" height="100%" fill="#4F46E5" />
+  
+  <!-- 装饰元素 -->
+  <circle cx="80" cy="60" r="40" fill="#4338CA" />
+  <circle cx="560" cy="300" r="60" fill="#4338CA" />
+  <circle cx="500" cy="80" r="25" fill="#6366F1" />
+  <circle cx="140" cy="300" r="30" fill="#6366F1" />
+  
+  <!-- 字母方块 -->
+  <rect x="220" y="120" width="40" height="40" rx="5" fill="#C7D2FE" stroke="#A5B4FC" stroke-width="2" />
+  <rect x="270" y="120" width="40" height="40" rx="5" fill="#C7D2FE" stroke="#A5B4FC" stroke-width="2" />
+  <rect x="320" y="120" width="40" height="40" rx="5" fill="#C7D2FE" stroke="#A5B4FC" stroke-width="2" />
+  <rect x="370" y="120" width="40" height="40" rx="5" fill="#C7D2FE" stroke="#A5B4FC" stroke-width="2" />
+  
+  <!-- 字母 -->
+  <text x="240" y="147" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#1E40AF">S</text>
+  <text x="290" y="147" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#1E40AF">C</text>
+  <text x="340" y="147" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#1E40AF">R</text>
+  <text x="390" y="147" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#1E40AF">M</text>
+  
+  <!-- 提示 -->
+  <rect x="195" y="180" width="250" height="40" rx="5" fill="#6366F1" stroke="#4F46E5" stroke-width="2" />
+  <text x="320" y="207" font-family="Arial, sans-serif" font-size="18" font-weight="medium" text-anchor="middle" fill="white">Hint: A popular coding language</text>
+  
+  <!-- 计时器 -->
+  <rect x="270" y="80" width="100" height="30" rx="15" fill="#818CF8" />
+  <text x="320" y="100" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Time: 1:45</text>
+  
+  <!-- 标题 -->
+  <text x="320" y="270" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="white">Word Scramble</text>
+  
+  <!-- 按钮 -->
+  <rect x="240" y="290" width="160" height="50" rx="25" fill="#EC4899" />
+  <text x="320" y="325" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="white">Play Now</text>
+</svg> 

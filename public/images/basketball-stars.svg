@@ -1,0 +1,17 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#FF9800" />
+  
+  <!-- Basketball -->
+  <circle cx="200" cy="150" r="70" fill="#E65100" stroke="#000" stroke-width="2" />
+  <path d="M130 150 L270 150" stroke="#000" stroke-width="3" fill="none" />
+  <path d="M200 80 L200 220" stroke="#000" stroke-width="3" fill="none" />
+  <path d="M150 100 Q200 130 250 100" stroke="#000" stroke-width="3" fill="none" />
+  <path d="M150 200 Q200 170 250 200" stroke="#000" stroke-width="3" fill="none" />
+  
+  <!-- Stars -->
+  <polygon points="100,50 110,70 130,75 115,90 120,110 100,100 80,110 85,90 70,75 90,70" fill="#FFC107" />
+  <polygon points="300,50 310,70 330,75 315,90 320,110 300,100 280,110 285,90 270,75 290,70" fill="#FFC107" />
+  
+  <text x="200" y="50" font-family="Arial" font-size="30" fill="white" text-anchor="middle">篮球明星</text>
+  <text x="200" y="260" font-family="Arial" font-size="20" fill="white" text-anchor="middle">Basketball Stars</text>
+</svg> 

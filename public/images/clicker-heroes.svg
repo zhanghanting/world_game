@@ -1,0 +1,12 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#673AB7" />
+  <circle cx="200" cy="150" r="80" fill="#FFC107" stroke="#FF9800" stroke-width="5" />
+  <circle cx="170" cy="130" r="15" fill="#333" />
+  <circle cx="230" cy="130" r="15" fill="#333" />
+  <path d="M160 180 Q200 210 240 180" stroke="#333" stroke-width="8" fill="none" />
+  <path d="M140 110 L160 90 L180 110" stroke="#333" stroke-width="5" fill="none" />
+  <path d="M220 110 L240 90 L260 110" stroke="#333" stroke-width="5" fill="none" />
+  <text x="200" y="60" font-family="Arial" font-size="30" fill="white" text-anchor="middle">点击英雄</text>
+  <text x="200" y="270" font-family="Arial" font-size="20" fill="white" text-anchor="middle">Clicker Heroes</text>
+  <text x="200" y="100" font-family="Arial" font-size="15" fill="#333" text-anchor="middle" font-weight="bold">点击我!</text>
+</svg> 

@@ -1,0 +1,55 @@
+<svg width="640" height="360" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="100%" height="100%" fill="#6D28D9" />
+  
+  <!-- 装饰元素 -->
+  <circle cx="80" cy="60" r="40" fill="#5B21B6" />
+  <circle cx="560" cy="300" r="60" fill="#5B21B6" />
+  <circle cx="500" cy="80" r="25" fill="#7C3AED" />
+  <circle cx="140" cy="300" r="30" fill="#7C3AED" />
+  
+  <!-- 泡泡群 -->
+  <!-- 第一行 -->
+  <circle cx="220" cy="80" r="15" fill="#EF4444" />
+  <circle cx="250" cy="80" r="15" fill="#3B82F6" />
+  <circle cx="280" cy="80" r="15" fill="#10B981" />
+  <circle cx="310" cy="80" r="15" fill="#F59E0B" />
+  <circle cx="340" cy="80" r="15" fill="#EC4899" />
+  <circle cx="370" cy="80" r="15" fill="#3B82F6" />
+  <circle cx="400" cy="80" r="15" fill="#10B981" />
+  
+  <!-- 第二行 -->
+  <circle cx="235" cy="105" r="15" fill="#10B981" />
+  <circle cx="265" cy="105" r="15" fill="#F59E0B" />
+  <circle cx="295" cy="105" r="15" fill="#3B82F6" />
+  <circle cx="325" cy="105" r="15" fill="#EF4444" />
+  <circle cx="355" cy="105" r="15" fill="#10B981" />
+  <circle cx="385" cy="105" r="15" fill="#F59E0B" />
+  
+  <!-- 第三行 -->
+  <circle cx="220" cy="130" r="15" fill="#3B82F6" />
+  <circle cx="250" cy="130" r="15" fill="#EC4899" />
+  <circle cx="280" cy="130" r="15" fill="#F59E0B" />
+  <circle cx="310" cy="130" r="15" fill="#10B981" />
+  <circle cx="340" cy="130" r="15" fill="#3B82F6" />
+  <circle cx="370" cy="130" r="15" fill="#EF4444" />
+  <circle cx="400" cy="130" r="15" fill="#EC4899" />
+  
+  <!-- 发射器 -->
+  <rect x="295" y="200" width="50" height="60" rx="10" fill="#A78BFA" />
+  <circle cx="320" cy="190" r="15" fill="#EF4444" />
+  
+  <!-- 瞄准线 -->
+  <line x1="320" y1="190" x2="320" y2="150" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="5,5" />
+  
+  <!-- 得分显示 -->
+  <rect x="460" y="80" width="100" height="30" rx="15" fill="#8B5CF6" />
+  <text x="510" y="100" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Score: 2450</text>
+  
+  <!-- 标题 -->
+  <text x="320" y="270" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="white">Bubble Shooter</text>
+  
+  <!-- 按钮 -->
+  <rect x="240" y="290" width="160" height="50" rx="25" fill="#10B981" />
+  <text x="320" y="325" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle" fill="white">Play Now</text>
+</svg> 
