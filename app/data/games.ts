@@ -29,6 +29,9 @@ export interface Game {
   source?: string; // 游戏来源
   tips?: string[];  // 添加tips属性
   isImplemented?: boolean; // 标记游戏是否已实现，设为可选
+  instructions?: string;
+  component?: string;
+  author?: string;
 }
 
 // 游戏分类
@@ -73,18 +76,37 @@ export const games: Game[] = [
   },
   {
     id: '2',
-    name: 'Memory Cards',
-    description: 'Test your memory by flipping cards and finding matching pairs. Complete the game with as few moves as possible!',
-    image: '/images/memory-card.svg',
-    categories: ['puzzle', 'casual', 'card'],
-    difficulty: 'medium',
-    isTrending: true,
-    popularity: 90,
-    isImplemented: true
+    name: 'Card Match',
+    description: '翻开卡片，找到匹配的对子，锻炼你的记忆力和专注力！',
+    image: '/images/games/memory.png',
+    categories: ['brain', 'casual'],
+    difficulty: 'easy',
+    instructions: '点击卡片翻开它们，记住卡片位置，找到所有匹配的对子。',
+    component: 'BasicGame',
+    embedUrl: '/games/card-match/index.html',
+    author: 'World Games Team',
+    isNew: false
   },
-  // HTML5可嵌入游戏
   {
     id: '3',
+    name: 'Word Scramble',
+    description: '打乱的单词拼图游戏，考验你的词汇能力。在有限时间内重新组合字母，完成单词。',
+    image: '/images/word-scramble.svg',
+    categories: ['puzzle', 'word', 'educational'],
+    difficulty: 'medium',
+    isFeatured: false,
+    isNew: false,
+    isTrending: true,
+    popularity: 88,
+    component: 'BasicGame',
+    embedUrl: '/games/word-scramble/index.html',
+    instructions: '重新排列打乱的字母组成有效单词，在时间限制内完成尽可能多的单词。',
+    author: 'World Games Team',
+    howToPlay: ['重新排列打乱的字母组成有效单词', '在时间限制内完成尽可能多的单词', '越难的单词得分越高'],
+    tips: ['先找出可能的元音字母位置', '寻找常见的字母组合', '从最短的单词开始尝试']
+  },
+  {
+    id: '4',
     name: '2048',
     title: '2048',
     description: '将数字方块合并成2048！一款经典的数字益智游戏，简单而富有挑战性。',
@@ -105,49 +127,43 @@ export const games: Game[] = [
     isImplemented: true
   },
   {
-    id: '4',
+    id: '5',
     name: 'Tetris',
-    title: '俄罗斯方块',
     description: '经典的俄罗斯方块游戏，旋转下落的方块形成完整的行以消除它们，看看你能坚持多久！',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Emilia_Clarke_by_Gage_Skidmore_2.jpg/220px-Emilia_Clarke_by_Gage_Skidmore_2.jpg',
-    coverImage: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Emilia_Clarke_by_Gage_Skidmore_2.jpg/220px-Emilia_Clarke_by_Gage_Skidmore_2.jpg',
+    image: '/images/tetris.svg',
     categories: ['puzzle', 'action', 'casual'],
     difficulty: 'medium',
     isFeatured: true,
     isNew: false,
     isTrending: true,
     popularity: 96,
-    gameUrl: 'https://tetris.com/play-tetris',
-    embedUrl: 'https://tetris.com/play-tetris',
-    canEmbed: true,
-    source: 'HTML5 games',
+    component: 'BasicGame',
+    embedUrl: '/games/tetris/index.html',
+    instructions: '使用方向键旋转和移动方块，完成一行来消除方块，尽可能长时间地保持游戏继续。',
+    author: 'World Games Team',
     howToPlay: ['使用方向键旋转和移动方块', '完成一行来消除方块', '尽可能长时间地保持游戏继续'],
-    tips: ['提前计划方块的落点', '保持屏幕尽可能清空', '使用"硬降"功能快速放置方块'],
-    isImplemented: true
+    tips: ['提前计划方块的落点', '保持屏幕尽可能清空', '使用"硬降"功能快速放置方块']
   },
   {
-    id: '5',
+    id: '6',
     name: 'Snake Game',
-    title: '贪吃蛇',
     description: '控制一条蛇去吃食物并不断成长，但要避免撞到墙壁或自己的身体！',
-    image: 'https://www.google.com/logos/fnbx/snake_arcade/v3/snake_arcade.png',
-    coverImage: 'https://www.google.com/logos/fnbx/snake_arcade/v3/snake_arcade.png',
+    image: '/images/snakegame.svg',
     categories: ['action', 'casual', 'puzzle'],
     difficulty: 'easy',
     isFeatured: false,
     isNew: false,
     isTrending: true,
     popularity: 94,
-    gameUrl: 'https://www.google.com/fbx?fbx=snake_arcade',
-    embedUrl: 'https://www.google.com/fbx?fbx=snake_arcade',
-    canEmbed: true,
-    source: 'Google',
+    component: 'BasicGame',
+    embedUrl: '/games/snake/index.html',
+    instructions: '使用方向键控制蛇的移动，吃食物让蛇变长，避免撞墙或撞到自己。',
+    author: 'World Games Team',
     howToPlay: ['使用方向键控制蛇的移动', '吃食物让蛇变长', '避免撞墙或撞到自己'],
-    tips: ['计划你的路线以避免自我阻挡', '保持耐心，不要操之过急', '利用边界来最大化得分'],
-    isImplemented: true
+    tips: ['计划你的路线以避免自我阻挡', '保持耐心，不要操之过急']
   },
   {
-    id: '6',
+    id: '7',
     name: 'Pacman',
     title: '吃豆人',
     description: '在迷宫中控制吃豆人，吃掉所有的豆子，同时避开鬼怪！一款永恒的街机经典游戏。',
@@ -168,7 +184,7 @@ export const games: Game[] = [
     isImplemented: true
   },
   {
-    id: '7',
+    id: '8',
     name: 'Flappy Bird',
     title: 'Flappy Bird',
     description: '控制一只小鸟穿过柱子之间的缝隙，看你能飞多远！简单但极富挑战性的游戏。',
@@ -189,7 +205,7 @@ export const games: Game[] = [
     isImplemented: true
   },
   {
-    id: '8',
+    id: '9',
     name: 'Chess',
     title: '国际象棋',
     description: '经典的战略棋盘游戏，移动你的棋子来捕获对手的国王。测试你的战略思维和预见能力！',
@@ -210,7 +226,7 @@ export const games: Game[] = [
     isImplemented: true
   },
   {
-    id: '9',
+    id: '10',
     name: 'Basketball Stars',
     title: '篮球明星',
     description: '与AI或朋友对战篮球！控制你的球员投篮、盖帽和得分。',
@@ -231,28 +247,25 @@ export const games: Game[] = [
     isImplemented: true
   },
   {
-    id: '10',
+    id: '11',
     name: 'Sudoku',
-    title: '数独',
     description: '填写9x9网格，使每行、每列和每个3x3子网格都包含数字1到9。一款挑战你逻辑思维的益智游戏。',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Sudoku_Puzzle_by_L2G-20050714_standardized_layout.svg/220px-Sudoku_Puzzle_by_L2G-20050714_standardized_layout.svg.png',
-    coverImage: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Sudoku_Puzzle_by_L2G-20050714_standardized_layout.svg/220px-Sudoku_Puzzle_by_L2G-20050714_standardized_layout.svg.png',
+    image: '/images/sudoku.svg',
     categories: ['puzzle', 'strategy', 'educational'],
     difficulty: 'medium',
     isFeatured: false,
     isNew: false,
     isTrending: false,
     popularity: 85,
-    gameUrl: 'https://sudoku.com/',
-    embedUrl: 'https://sudoku.com/',
-    canEmbed: true,
-    source: 'Sudoku.com',
+    component: 'BasicGame',
+    embedUrl: '/games/sudoku/index.html',
+    instructions: '填写空格使每行、每列和每个3x3方块都包含数字1-9，使用逻辑推理确定每个单元格的数字。',
+    author: 'World Games Team',
     howToPlay: ['填写空格使每行、每列和每个3x3方块都包含数字1-9', '使用逻辑推理确定每个单元格的数字', '不能在同一行、列或3x3方块中重复数字'],
-    tips: ['从有最多提示的行或列开始', '使用排除法确定可能的数字', '尝试扫描法和候选法'],
-    isImplemented: true
+    tips: ['从有最多提示的行或列开始', '使用排除法确定可能的数字', '尝试扫描法和候选法']
   },
   {
-    id: '11',
+    id: '12',
     name: 'Wordle',
     title: 'Wordle',
     description: '猜一个五字母的单词，你有六次尝试的机会。每次猜测后，颜色会提示哪些字母正确。',
@@ -273,7 +286,7 @@ export const games: Game[] = [
     isImplemented: true
   },
   {
-    id: '12',
+    id: '13',
     name: 'Minesweeper',
     title: '扫雷',
     description: '经典的扫雷游戏，点击方格揭示下面是否有地雷。数字表示周围的地雷数量，用逻辑推理找出所有地雷的位置！',
@@ -294,7 +307,7 @@ export const games: Game[] = [
     isImplemented: true
   },
   {
-    id: '13',
+    id: '14',
     name: 'Bike Dash',
     title: '自行车冲刺',
     description: '在各种挑战地形上骑自行车，执行特技动作获得积分，体验速度与激情！',
@@ -315,7 +328,7 @@ export const games: Game[] = [
     isImplemented: true
   },
   {
-    id: '14',
+    id: '15',
     name: 'Clicker Heroes',
     title: '点击英雄',
     description: '点击怪物，赚取金币，升级你的英雄，解锁新的能力和区域。一款令人上瘾的放置类游戏！',
@@ -336,7 +349,7 @@ export const games: Game[] = [
     isImplemented: true
   },
   {
-    id: '15',
+    id: '16',
     name: 'Car Racing',
     title: '赛车游戏',
     description: '驾驶各种赛车在不同的赛道上竞速，体验速度与激情，成为最快的赛车手！',
@@ -357,7 +370,7 @@ export const games: Game[] = [
     isImplemented: true
   },
   {
-    id: '16',
+    id: '17',
     name: 'Beauty Salon Makeover',
     title: '美容沙龙改造',
     description: '经营你自己的美容沙龙，帮助客户看起来最好！选择发型、妆容和服装，打造完美造型。',
@@ -375,27 +388,6 @@ export const games: Game[] = [
     source: 'Poki Games',
     howToPlay: ['选择化妆和发型选项', '定制服装和配饰', '为客户创造美丽的造型'],
     tips: ['注意客户的喜好', '尝试不同的组合', '根据场合选择合适的造型'],
-    isImplemented: true
-  },
-  {
-    id: '17',
-    name: 'Card Match',
-    title: '卡片配对',
-    description: '经典的记忆配对游戏，翻开卡片找到匹配的对子。锻炼你的记忆力和专注力！',
-    image: '/images/card-match.svg',
-    coverImage: '/images/card-match.svg',
-    categories: ['card', 'puzzle', 'casual'],
-    difficulty: 'easy',
-    isFeatured: false,
-    isNew: false,
-    isTrending: false,
-    popularity: 82,
-    gameUrl: 'https://poki.com/en/g/memory-match',
-    embedUrl: 'https://poki.com/en/g/memory-match',
-    canEmbed: true,
-    source: 'Poki Games',
-    howToPlay: ['点击卡片翻开它们', '找到匹配的对子', '尽可能少的步数清空游戏板'],
-    tips: ['尝试记住已经看过的卡片位置', '采用系统的方法逐行或逐列检查', '先集中精力找出特定的对子'],
     isImplemented: true
   },
   {

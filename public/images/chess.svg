@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- 棋盘背景 -->
+  <rect x="96" y="96" width="320" height="320" rx="8" fill="#EADDCA" />
+  
+  <!-- 棋盘格子 -->
+  <rect x="96" y="96" width="80" height="80" fill="#8B4513" />
+  <rect x="256" y="96" width="80" height="80" fill="#8B4513" />
+  <rect x="96" y="256" width="80" height="80" fill="#8B4513" />
+  <rect x="256" y="256" width="80" height="80" fill="#8B4513" />
+  <rect x="176" y="176" width="80" height="80" fill="#8B4513" />
+  <rect x="336" y="176" width="80" height="80" fill="#8B4513" />
+  <rect x="176" y="336" width="80" height="80" fill="#8B4513" />
+  <rect x="336" y="336" width="80" height="80" fill="#8B4513" />
+  
+  <!-- 棋子 - 黑色国王 -->
+  <path d="M176 136 L176 116 L196 116 L196 136 Z" fill="#222" />
+  <circle cx="186" cy="126" r="18" fill="#333" />
+  
+  <!-- 棋子 - 白色皇后 -->
+  <path d="M336 376 L336 356 L356 356 L356 376 Z" fill="#fff" stroke="#000" stroke-width="1" />
+  <circle cx="346" cy="366" r="18" fill="#fff" stroke="#000" stroke-width="1" />
+  
+  <!-- 棋子 - 黑色车 -->
+  <rect x="116" y="116" width="40" height="40" rx="2" fill="#333" />
+  <rect x="123" y="123" width="26" height="26" rx="2" fill="#555" />
+  
+  <!-- 棋子 - 白色车 -->
+  <rect x="356" y="356" width="40" height="40" rx="2" fill="#fff" stroke="#000" stroke-width="1" />
+  <rect x="363" y="363" width="26" height="26" rx="2" fill="#eee" stroke="#000" stroke-width="0.5" />
+  
+  <!-- 棋子 - 黑色象 -->
+  <circle cx="306" cy="126" r="20" fill="#333" />
+  <path d="M296 126 L316 126 M306 116 L306 136" stroke="#555" stroke-width="2" />
+  
+  <!-- 棋子 - 白色象 -->
+  <circle cx="186" cy="366" r="20" fill="#fff" stroke="#000" stroke-width="1" />
+  <path d="M176 366 L196 366 M186 356 L186 376" stroke="#000" stroke-width="1" />
+
+  <!-- 棋盘边框 -->
+  <rect x="96" y="96" width="320" height="320" rx="8" fill="none" stroke="#8B4513" stroke-width="4" />
+</svg> 

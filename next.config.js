@@ -2,67 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    domains: ['via.placeholder.com', 'www.crazygames.com', 'play-lh.googleusercontent.com', 'img.gamedistribution.com'],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'via.placeholder.com',
-        pathname: '/**',
+        hostname: '**',
       },
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.crazygames.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'img.crazygames.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'videos.crazygames.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.y8.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'img.y8.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'img.itch.zone',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.itch.io',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'example.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'html5.gamedistribution.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'img.gamedistribution.com',
-        pathname: '/**',
-      }
     ],
     // 禁用远程图片优化以减少错误
     unoptimized: true,
@@ -135,6 +80,40 @@ const nextConfig = {
         ],
       },
     ];
+  },
+  // 更改环境变量配置
+  env: {
+    SITE_URL: process.env.SITE_URL || 'http://localhost:3000',
+  },
+  // 配置边缘运行时
+  experimental: {
+    instrumentationHook: false,
+    serverComponentsExternalPackages: [],
+    // 优化配置以减少内存使用
+    optimizePackageImports: ['framer-motion', '@heroicons/react'],
+    serverActions: {
+      bodySizeLimit: '1mb',
+    },
+  },
+  // 自定义webpack配置
+  webpack: (config, { isServer, dev }) => {
+    // 修改buffer分配限制
+    // 解决"Array buffer allocation failed"错误
+    config.performance = {
+      ...config.performance,
+      maxAssetSize: 1024 * 1024 * 30, // 30MB
+      maxEntrypointSize: 1024 * 1024 * 50, // 50MB
+    };
+
+    // 增加Node选项，提高内存限制
+    if (isServer) {
+      if (config.optimization) {
+        // 根据当前环境设置正确的nodeEnv值，避免冲突
+        config.optimization.nodeEnv = dev ? 'development' : 'production';
+      }
+    }
+
+    return config;
   },
 };
 

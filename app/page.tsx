@@ -53,9 +53,8 @@ const featuredGames = [
     coverImage: '/images/tetris.svg',
     rating: 4.9,
     category: 'Arcade',
-    embedUrl: 'https://tetris.com/play-tetris',
-    gameUrl: 'https://tetris.com/play-tetris',
-    isEmbeddable: false
+    embedUrl: '/games/tetris/index.html',
+    isEmbeddable: true
   }
 ];
 

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- 游戏手柄背景 -->
+  <rect x="56" y="128" width="400" height="256" rx="80" fill="#6C5CE7" />
+  
+  <!-- 游戏手柄细节 -->
+  <circle cx="128" cy="256" r="40" fill="#4834D4" />
+  <rect x="256" y="216" width="160" height="80" rx="40" fill="#4834D4" />
+  
+  <!-- 控制按钮 -->
+  <circle cx="376" cy="236" r="12" fill="#FECA57" />
+  <circle cx="376" cy="276" r="12" fill="#FF6B6B" />
+  <circle cx="356" cy="256" r="12" fill="#1DD1A1" />
+  <circle cx="396" cy="256" r="12" fill="#5F27CD" />
+  
+  <!-- 左侧按钮 -->
+  <rect x="96" y="226" width="15" height="60" rx="3" fill="#8395A7" />
+  <rect x="146" y="226" width="15" height="60" rx="3" fill="#8395A7" />
+  
+  <!-- 文字 - "relax games" -->
+  <text x="256" y="350" font-family="Arial, sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#FFFFFF">relax games</text>
+</svg> 

@@ -7,6 +7,7 @@ import { CSSTransition } from 'react-transition-group';
 import GuessNumberGame from '../components/games/GuessNumberGame';
 import MemoryCardGame from '../components/games/MemoryCardGame';
 import BasicGame from '../components/games/BasicGame';
+import { getGameById } from '../utils/gameUtils'; // 导入getGameById函数
 
 // 分离出使用useSearchParams的组件
 function GameContent() {
@@ -18,17 +19,33 @@ function GameContent() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [gameError, setGameError] = useState<string | null>(null);
+  const [gameData, setGameData] = useState<any>(null);
 
   useEffect(() => {
-    // 模拟游戏加载
-    const timer = setTimeout(() => {
-      setIsLoading(false);
+    // 验证游戏ID并加载游戏数据
+    const loadGameData = async () => {
+      setIsLoading(true);
+      
       if (!gameId) {
         setGameError('游戏ID不存在，请返回首页选择游戏');
+        setIsLoading(false);
+        return;
       }
-    }, 1500);
-
-    return () => clearTimeout(timer);
+      
+      // 尝试获取游戏数据
+      const game = getGameById(gameId);
+      
+      if (!game) {
+        setGameError(`找不到ID为 ${gameId} 的游戏，可能已被移除或链接无效`);
+        setIsLoading(false);
+        return;
+      }
+      
+      setGameData(game);
+      setIsLoading(false);
+    };
+    
+    loadGameData();
   }, [gameId]);
 
   const toggleFullscreen = () => {
@@ -65,6 +82,8 @@ function GameContent() {
 
   // 根据游戏ID加载对应游戏组件
   const renderGameComponent = () => {
+    if (!gameId || !gameData) return null;
+    
     // 这里可以根据gameId动态加载不同的游戏组件
     switch(gameId) {
       case '1':
@@ -74,7 +93,7 @@ function GameContent() {
       default:
         // 对于其他游戏ID，使用BasicGame组件，它会显示游戏的基本信息
         // 并提示玩家游戏正在开发中
-        return <BasicGame gameId={gameId || undefined} onExit={handleBack} />;
+        return <BasicGame gameId={gameId} onExit={handleBack} />;
     }
   };
 
@@ -92,7 +111,7 @@ function GameContent() {
             <span>返回</span>
           </button>
           
-          <h1 className="text-xl font-bold">{gameName}</h1>
+          <h1 className="text-xl font-bold">{gameData?.name || gameName}</h1>
           
           <button 
             onClick={toggleFullscreen}

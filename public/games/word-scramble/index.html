@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>单词拼图游戏</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #f8fafc;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    h1 {
+      color: #3b82f6;
+      margin-bottom: 1rem;
+    }
+    
+    iframe {
+      border: none;
+      width: 100%;
+      max-width: 900px;
+      height: 80vh;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+    
+    .loading {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
+      width: 100%;
+    }
+    
+    .spinner {
+      border: 6px solid rgba(59, 130, 246, 0.2);
+      border-top: 6px solid #3b82f6;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1>单词拼图游戏</h1>
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>游戏加载中...</p>
+  </div>
+  <iframe id="gameFrame" src="https://www.arkadium.com/games/scramble-words-game/" style="display:none;" onload="hideLoading()"></iframe>
+  
+  <script>
+    function hideLoading() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('gameFrame').style.display = 'block';
+    }
+  </script>
+</body>
+</html> 

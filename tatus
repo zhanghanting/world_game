@@ -1,0 +1,5 @@
+[33mcommit 5eae8cee6586202b54472d51ec9f0dec5a68a5c4[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: zhanghanting <zhanghanting2020@outlook.com>
+Date:   Sat Mar 22 18:48:35 2025 +0800
+
+    添加next-themes依赖并配置ThemeProvider
