@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Navbar from './components/Navbar';
 import SideNav from './components/SideNav';
+import Providers from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,13 +18,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} bg-gray-900 text-white`}>
-        <Navbar />
-        <SideNav />
-        <div className="md:ml-64 min-h-screen">
-          {children}
-        </div>
+        <Providers>
+          <Navbar />
+          <SideNav />
+          <div className="md:ml-64 min-h-screen">
+            {children}
+          </div>
+        </Providers>
       </body>
     </html>
   );
