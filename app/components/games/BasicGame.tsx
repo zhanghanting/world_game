@@ -313,28 +313,29 @@ const BasicGame: React.FC<BasicGameProps> = ({ gameId = '3', onExit }) => {
       
       {/* iframe错误状态 */}
       {iframeError && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 bg-opacity-80 z-5">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 bg-opacity-80 z-5 p-4">
           <XCircleIcon className="w-16 h-16 text-red-500 mb-4" />
-          <h3 className="text-xl font-bold text-white mb-2">加载失败</h3>
-          <p className="text-gray-300 mb-4 text-center max-w-md">{iframeError}</p>
+          <h3 className="text-xl font-bold text-white mb-2">游戏加载失败</h3>
+          <p className="text-gray-300 text-center mb-4">{iframeError}</p>
           <div className="flex space-x-4">
             <button
               onClick={handleReload}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors flex items-center"
             >
+              <ArrowPathIcon className="w-5 h-5 mr-2" />
               重试
             </button>
             <button
-              onClick={() => setShowPlaceholder(true)}
+              onClick={onExit}
               className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition-colors"
             >
-              返回游戏信息
+              返回
             </button>
           </div>
         </div>
       )}
       
-      {/* 游戏iframe */}
+      {/* 根据游戏源头选择不同的嵌入方式 */}
       {gameData.source === 'CrazyGames' ? (
         <iframe
           ref={iframeRef}
@@ -352,8 +353,8 @@ const BasicGame: React.FC<BasicGameProps> = ({ gameId = '3', onExit }) => {
             touchAction: 'auto'
           }}
         ></iframe>
-      ) : (
-        // 使用GameDistribution格式的嵌入方式，这个平台专门设计用于嵌入
+      ) : gameData.source === 'GameDistribution' ? (
+        // 使用GameDistribution格式的嵌入方式
         <iframe
           ref={iframeRef}
           src={`https://html5.gamedistribution.com/${gameData.embedUrl.split('/').pop() || 'rvvASMiM'}`}
@@ -362,6 +363,25 @@ const BasicGame: React.FC<BasicGameProps> = ({ gameId = '3', onExit }) => {
           frameBorder="0"
           allow="fullscreen"
           allowFullScreen
+          onLoad={handleIframeLoad}
+          onError={handleIframeError}
+          style={{
+            border: 'none',
+            display: iframeLoading ? 'none' : 'block'
+          }}
+        ></iframe>
+      ) : (
+        // 使用本地游戏或其他来源的嵌入方式
+        <iframe
+          ref={iframeRef}
+          src={gameData.embedUrl}
+          className="w-full h-full border-0"
+          scrolling="none"
+          frameBorder="0"
+          allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-pointer-lock"
+          loading="eager"
           onLoad={handleIframeLoad}
           onError={handleIframeError}
           style={{

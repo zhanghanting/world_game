@@ -59,7 +59,7 @@ const nextConfig = {
     return [
       {
         source: '/images/game-covers/:path*',
-        destination: '/images/game-covers/fallback.jpg',
+        destination: '/images/default.svg',
         permanent: false,
         missing: [
           {
@@ -70,7 +70,7 @@ const nextConfig = {
       },
       {
         source: '/images/game-previews/:path*',
-        destination: '/images/game-covers/fallback.jpg',
+        destination: '/images/default.svg',
         permanent: false,
         missing: [
           {

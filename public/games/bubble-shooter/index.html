@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bubble Shooter</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 800px;
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      font-size: 36px;
+      letter-spacing: 2px;
+      margin: 0;
+      text-align: center;
+      flex: 1;
+    }
+    
+    .game-container {
+      position: relative;
+      width: 500px;
+      height: 600px;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .game-board {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .cannon {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 50px;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="white" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>');
+      background-size: contain;
+      background-repeat: no-repeat;
+      transform-origin: bottom center;
+      z-index: 10;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+    }
+    
+    .bubble {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), transparent);
+      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.3), 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+    
+    .bubble-red { background-color: #ff5252; }
+    .bubble-blue { background-color: #536dfe; }
+    .bubble-green { background-color: #4caf50; }
+    .bubble-yellow { background-color: #ffeb3b; }
+    .bubble-purple { background-color: #9c27b0; }
+    
+    .projectile {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), transparent);
+      z-index: 5;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    
+    .game-stats {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 12px 15px;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      width: 150px;
+      margin-right: 20px;
+    }
+    
+    .game-stats div {
+      margin: 5px 0;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+    
+    .game-stats span {
+      font-weight: bold;
+      color: #ffeb3b;
+    }
+    
+    .next-bubble {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      z-index: 15;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .next-label {
+      position: absolute;
+      bottom: 70px;
+      right: 20px;
+      color: white;
+      font-size: 14px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 3px 8px;
+      border-radius: 10px;
+    }
+    
+    .game-over-screen, .start-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      backdrop-filter: blur(5px);
+    }
+    
+    .game-over-screen h2, .start-screen h2 {
+      color: white;
+      font-size: 36px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    
+    .game-over-screen p {
+      color: #f8f8f8;
+      font-size: 20px;
+      margin-bottom: 30px;
+    }
+    
+    button {
+      background: linear-gradient(to bottom, #2196f3, #1976d2);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      font-weight: bold;
+      letter-spacing: 1px;
+      min-width: 150px;
+      text-transform: uppercase;
+      outline: none;
+    }
+    
+    button:hover {
+      background: linear-gradient(to bottom, #42a5f5, #1e88e5);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .instructions {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      color: white;
+      font-size: 14px;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 10px 15px;
+      border-radius: 10px;
+      max-width: 70%;
+      line-height: 1.4;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .rules-button {
+      background: linear-gradient(to bottom, #ff9800, #f57c00);
+      padding: 8px 15px;
+      font-size: 14px;
+      min-width: auto;
+      margin-left: 20px;
+    }
+    
+    .rules-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 100;
+      backdrop-filter: blur(5px);
+    }
+    
+    .rules-content {
+      background: linear-gradient(135deg, #2c3e50, #34495e);
+      margin: 5% auto;
+      padding: 25px;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      color: white;
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+    
+    .close-btn:hover {
+      color: white;
+      background-color: #e74c3c;
+    }
+    
+    .rules-content h2 {
+      color: #ffeb3b;
+      text-align: center;
+      margin-top: 0;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    
+    .rules-content h3 {
+      color: #2196f3;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 5px;
+      margin-top: 20px;
+    }
+    
+    .rules-content p, .rules-content li {
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    
+    .rules-content ul, .rules-content ol {
+      padding-left: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .rules-section {
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .color-example {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      vertical-align: middle;
+      margin: 0 5px;
+    }
+    
+    .rules-section:nth-child(4) {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-left: 3px solid #ff9800;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-container">
+    <div class="game-stats">
+      <div>Score: <span id="score">0</span></div>
+      <div>Level: <span id="level">1</span></div>
+    </div>
+    
+    <h1>Bubble Shooter</h1>
+    
+    <button class="rules-button" id="rules-button">Rules</button>
+  </div>
+  
+  <div class="game-container">
+    <div class="game-board" id="game-board"></div>
+    <div class="cannon" id="cannon"></div>
+    <div class="next-bubble" id="next-bubble"></div>
+    <div class="next-label">Next</div>
+    <div class="instructions">
+      Move your mouse to aim and click to shoot bubbles. Match 3 or more bubbles of the same color to make them pop!
+    </div>
+    
+    <div class="game-over-screen" id="game-over-screen" style="display: none;">
+      <h2>Game Over</h2>
+      <p>Your final score: <span id="final-score">0</span></p>
+      <button id="restart-button">Play Again</button>
+    </div>
+    
+    <div class="start-screen" id="start-screen">
+      <h2>Bubble Shooter</h2>
+      <p style="color: white; margin-bottom: 30px; text-align: center;">Pop the bubbles before they reach the bottom!</p>
+      <button id="start-button">Start Game</button>
+    </div>
+  </div>
+  
+  <div class="rules-modal" id="rules-modal">
+    <div class="rules-content">
+      <span class="close-btn" id="close-rules">&times;</span>
+      <h2>How to Play Bubble Shooter</h2>
+      
+      <div class="rules-section">
+        <h3>Goal</h3>
+        <p>Clear all the bubbles from the game board by matching three or more bubbles of the same color before they reach the bottom of the screen.</p>
+      </div>
+      
+      <div class="rules-section">
+        <h3>Controls</h3>
+        <ul>
+          <li><strong>Mouse Movement:</strong> Move the mouse to aim the cannon</li>
+          <li><strong>Left Click:</strong> Shoot a bubble</li>
+        </ul>
+      </div>
+      
+      <div class="rules-section">
+        <h3>Game Rules</h3>
+        <ol>
+          <li>Aim the cannon and shoot bubbles at the colored bubbles at the top of the game board.</li>
+          <li>When a bubble hits another bubble or the top of the screen, it will stick to that position.</li>
+          <li>Match 3 or more bubbles of the same color to make them pop and earn points.</li>
+          <li>Bubbles that are not connected to the top of the screen after a match will fall down, giving you extra points!</li>
+          <li>The game level increases as you earn more points.</li>
+          <li>When you reach higher levels, new rows of bubbles will be added, making the game more challenging.</li>
+          <li>If any bubble reaches the bottom of the screen, the game is over.</li>
+        </ol>
+      </div>
+      
+      <div class="rules-section">
+        <h3>Dropping Bubbles</h3>
+        <p>Bubbles will drop when they are no longer connected to the top of the screen. This happens when:</p>
+        <ul>
+          <li>You pop a group of bubbles that were supporting them</li>
+          <li>There is no path connecting them to any bubble in the top row</li>
+        </ul>
+        <p>Dropping bubbles give you <strong>20 points × number of bubbles × current level</strong>. Try to create chain reactions to drop more bubbles!</p>
+      </div>
+      
+      <div class="rules-section">
+        <h3>Scoring</h3>
+        <ul>
+          <li><strong>Matching bubbles:</strong> 10 points × number of bubbles × current level</li>
+          <li><strong>Dropping bubbles:</strong> 20 points × number of bubbles × current level</li>
+        </ul>
+      </div>
+      
+      <div class="rules-section">
+        <h3>Bubble Colors</h3>
+        <p>There are five different colored bubbles:</p>
+        <ul>
+          <li><div class="color-example bubble-red"></div> Red</li>
+          <li><div class="color-example bubble-blue"></div> Blue</li>
+          <li><div class="color-example bubble-green"></div> Green</li>
+          <li><div class="color-example bubble-yellow"></div> Yellow</li>
+          <li><div class="color-example bubble-purple"></div> Purple</li>
+        </ul>
+      </div>
+      
+      <div class="rules-section">
+        <h3>Tips</h3>
+        <ul>
+          <li>Try to match bubbles near the bottom of clusters to make more bubbles fall.</li>
+          <li>Look for groups of two bubbles - they only need one more to match!</li>
+          <li>Plan your shots carefully to create chain reactions.</li>
+          <li>Pay attention to the "Next" bubble so you can plan ahead.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // 游戏常量
+    const BUBBLE_COLORS = ['bubble-red', 'bubble-blue', 'bubble-green', 'bubble-yellow', 'bubble-purple'];
+    const BUBBLE_SIZE = 40;
+    const ROWS = 12;
+    const COLS = 12;
+    const BOARD_WIDTH = 500;
+    const BOARD_HEIGHT = 600;
+    
+    // 游戏状态
+    const state = {
+      bubbles: [],
+      projectile: null,
+      nextBubbleColor: getRandomBubbleColor(),
+      score: 0,
+      level: 1,
+      gameOver: false,
+      gameStarted: false,
+      angleRad: Math.PI / 2  // 默认向上(90度)
+    };
+    
+    // DOM 元素
+    const gameBoard = document.getElementById('game-board');
+    const cannon = document.getElementById('cannon');
+    const nextBubble = document.getElementById('next-bubble');
+    const scoreElement = document.getElementById('score');
+    const levelElement = document.getElementById('level');
+    const gameOverScreen = document.getElementById('game-over-screen');
+    const finalScoreElement = document.getElementById('final-score');
+    const restartButton = document.getElementById('restart-button');
+    const startScreen = document.getElementById('start-screen');
+    const startButton = document.getElementById('start-button');
+    const rulesButton = document.getElementById('rules-button');
+    const rulesModal = document.getElementById('rules-modal');
+    const closeRules = document.getElementById('close-rules');
+    
+    // 初始化游戏
+    function initGame() {
+      // 事件监听器
+      gameBoard.addEventListener('mousemove', handleMouseMove);
+      gameBoard.addEventListener('click', handleClick);
+      restartButton.addEventListener('click', restartGame);
+      startButton.addEventListener('click', startGame);
+      
+      // 规则按钮事件监听器
+      rulesButton.addEventListener('click', () => {
+        rulesModal.style.display = 'block';
+      });
+      
+      closeRules.addEventListener('click', () => {
+        rulesModal.style.display = 'none';
+      });
+      
+      window.addEventListener('click', (event) => {
+        if (event.target == rulesModal) {
+          rulesModal.style.display = 'none';
+        }
+      });
+      
+      // 设置下一个泡泡的颜色
+      updateNextBubble();
+    }
+    
+    // 开始游戏
+    function startGame() {
+      state.gameStarted = true;
+      startScreen.style.display = 'none';
+      resetGame();
+      initializeBubbles();
+    }
+    
+    // 重置游戏
+    function resetGame() {
+      state.bubbles = [];
+      state.projectile = null;
+      state.score = 0;
+      state.level = 1;
+      state.gameOver = false;
+      state.nextBubbleColor = getRandomBubbleColor();
+      
+      updateScore();
+      updateLevel();
+      gameOverScreen.style.display = 'none';
+      
+      gameBoard.innerHTML = '';
+    }
+    
+    // 重新开始游戏
+    function restartGame() {
+      resetGame();
+      initializeBubbles();
+      gameOverScreen.style.display = 'none';
+    }
+    
+    // 初始化泡泡
+    function initializeBubbles() {
+      // 清空现有泡泡
+      state.bubbles = [];
+      gameBoard.innerHTML = '';
+      
+      // 创建初始行的泡泡
+      const initialRows = Math.min(5, ROWS);
+      for (let row = 0; row < initialRows; row++) {
+        const isOddRow = row % 2 === 1;
+        const cols = isOddRow ? COLS - 1 : COLS;
+        const offsetX = isOddRow ? BUBBLE_SIZE / 2 : 0;
+        
+        for (let col = 0; col < cols; col++) {
+          // 30%的概率不生成泡泡以创造空间
+          if (Math.random() < 0.3) continue;
+          
+          const bubble = {
+            x: offsetX + col * BUBBLE_SIZE,
+            y: row * BUBBLE_SIZE * 0.85,
+            color: getRandomBubbleColor(),
+            row: row,
+            col: col
+          };
+          
+          state.bubbles.push(bubble);
+          renderBubble(bubble);
+        }
+      }
+      
+      updateNextBubble();
+    }
+    
+    // 随机获取泡泡颜色
+    function getRandomBubbleColor() {
+      const randomIndex = Math.floor(Math.random() * BUBBLE_COLORS.length);
+      return BUBBLE_COLORS[randomIndex];
+    }
+    
+    // 渲染泡泡
+    function renderBubble(bubble) {
+      const bubbleElement = document.createElement('div');
+      bubbleElement.className = `bubble ${bubble.color}`;
+      bubbleElement.style.left = `${bubble.x}px`;
+      bubbleElement.style.top = `${bubble.y}px`;
+      bubbleElement.id = `bubble-${bubble.row}-${bubble.col}`;
+      gameBoard.appendChild(bubbleElement);
+    }
+    
+    // 更新下一个泡泡预览
+    function updateNextBubble() {
+      state.nextBubbleColor = getRandomBubbleColor();
+      nextBubble.className = 'next-bubble';
+      nextBubble.classList.add(state.nextBubbleColor);
+    }
+    
+    // 处理鼠标移动 - 旋转大炮
+    function handleMouseMove(event) {
+      if (state.gameOver || !state.gameStarted) return;
+      
+      const rect = gameBoard.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height;
+      
+      // 计算鼠标位置相对于大炮的角度
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+      
+      // 计算角度
+      const dx = mouseX - centerX;
+      const dy = centerY - mouseY; // 反转Y轴，因为坐标系
+      const angle = Math.atan2(dy, dx);
+      
+      // 限制角度范围 (只允许向上180度范围, 即0到180度)
+      let limitedAngle = angle;
+      if (angle < 0) {
+        limitedAngle = 0;
+      } else if (angle > Math.PI) {
+        limitedAngle = Math.PI;
+      }
+      
+      state.angleRad = limitedAngle;
+      
+      // 设置大炮旋转
+      cannon.style.transform = `translateX(-50%) rotate(${limitedAngle}rad)`;
+    }
+    
+    // 处理点击 - 发射泡泡
+    function handleClick() {
+      if (state.gameOver || !state.gameStarted || state.projectile) return;
+      
+      // 创建发射物
+      const projectile = {
+        x: BOARD_WIDTH / 2 - BUBBLE_SIZE / 2,
+        y: BOARD_HEIGHT - BUBBLE_SIZE - 20,
+        color: state.nextBubbleColor,
+        dx: Math.cos(state.angleRad) * 10,
+        dy: -Math.sin(state.angleRad) * 10
+      };
+      
+      state.projectile = projectile;
+      
+      // 创建发射物DOM元素
+      const projectileElement = document.createElement('div');
+      projectileElement.className = 'projectile';
+      projectileElement.classList.add(projectile.color);
+      
+      projectileElement.style.left = `${projectile.x}px`;
+      projectileElement.style.top = `${projectile.y}px`;
+      projectileElement.id = 'current-projectile';
+      gameBoard.appendChild(projectileElement);
+      
+      // 准备下一个泡泡
+      updateNextBubble();
+      
+      // 开始动画
+      requestAnimationFrame(moveProjectile);
+    }
+    
+    // 移动发射物
+    function moveProjectile() {
+      if (!state.projectile) return;
+      
+      const projectile = state.projectile;
+      
+      // 更新位置
+      projectile.x += projectile.dx;
+      projectile.y += projectile.dy;
+      
+      // 检查墙壁碰撞
+      if (projectile.x <= 0 || projectile.x >= BOARD_WIDTH - BUBBLE_SIZE) {
+        projectile.dx = -projectile.dx; // 反弹
+        
+        // 确保不会卡在墙上
+        if (projectile.x < 0) projectile.x = 0;
+        if (projectile.x > BOARD_WIDTH - BUBBLE_SIZE) projectile.x = BOARD_WIDTH - BUBBLE_SIZE;
+      }
+      
+      // 更新DOM
+      const projectileElement = document.getElementById('current-projectile');
+      if (projectileElement) {
+        projectileElement.style.left = `${projectile.x}px`;
+        projectileElement.style.top = `${projectile.y}px`;
+      }
+      
+      // 检查与顶部的碰撞
+      if (projectile.y <= 0) {
+        attachBubble(projectile, -1, -1);
+        return;
+      }
+      
+      // 检查与其他泡泡的碰撞
+      for (const bubble of state.bubbles) {
+        const distance = Math.sqrt(
+          Math.pow(projectile.x + BUBBLE_SIZE/2 - (bubble.x + BUBBLE_SIZE/2), 2) +
+          Math.pow(projectile.y + BUBBLE_SIZE/2 - (bubble.y + BUBBLE_SIZE/2), 2)
+        );
+        
+        // 如果距离小于泡泡直径，则发生碰撞
+        if (distance < BUBBLE_SIZE * 0.9) {
+          attachBubble(projectile, bubble.row, bubble.col);
+          return;
+        }
+      }
+      
+      // 继续移动
+      requestAnimationFrame(moveProjectile);
+    }
+    
+    // 将发射物附加到网格
+    function attachBubble(projectile, row, col) {
+      // 找到最近的网格位置
+      let newRow, newCol;
+      
+      if (row === -1 || col === -1) {
+        // 如果碰到顶部，计算最近的列
+        newRow = 0;
+        newCol = Math.floor(projectile.x / BUBBLE_SIZE);
+      } else {
+        // 基于碰撞位置找到最近的空位
+        const gridPositions = [
+          {row: row-1, col: col},   // 上
+          {row: row+1, col: col},   // 下
+          {row: row, col: col-1},   // 左
+          {row: row, col: col+1},   // 右
+          {row: row-1, col: col-1}, // 左上
+          {row: row-1, col: col+1}, // 右上
+          {row: row+1, col: col-1}, // 左下
+          {row: row+1, col: col+1}  // 右下
+        ];
+        
+        // 找到距离发射物最近的空位
+        let minDistance = Infinity;
+        
+        for (const pos of gridPositions) {
+          // 检查此位置是否已被占用
+          if (getBubbleAt(pos.row, pos.col)) continue;
+          
+          // 计算此位置的x,y坐标
+          const isOddRow = pos.row % 2 === 1;
+          const offsetX = isOddRow ? BUBBLE_SIZE / 2 : 0;
+          const x = offsetX + pos.col * BUBBLE_SIZE;
+          const y = pos.row * BUBBLE_SIZE * 0.85;
+          
+          // 计算距离
+          const distance = Math.sqrt(
+            Math.pow(projectile.x - x, 2) +
+            Math.pow(projectile.y - y, 2)
+          );
+          
+          if (distance < minDistance) {
+            minDistance = distance;
+            newRow = pos.row;
+            newCol = pos.col;
+          }
+        }
+      }
+      
+      // 创建新泡泡
+      const isOddRow = newRow % 2 === 1;
+      const offsetX = isOddRow ? BUBBLE_SIZE / 2 : 0;
+      
+      const newBubble = {
+        x: offsetX + newCol * BUBBLE_SIZE,
+        y: newRow * BUBBLE_SIZE * 0.85,
+        color: projectile.color,
+        row: newRow,
+        col: newCol
+      };
+      
+      // 添加到泡泡数组
+      state.bubbles.push(newBubble);
+      
+      // 渲染新泡泡
+      renderBubble(newBubble);
+      
+      // 移除发射物
+      const projectileElement = document.getElementById('current-projectile');
+      if (projectileElement) {
+        projectileElement.remove();
+      }
+      state.projectile = null;
+      
+      // 检查匹配
+      const matches = findMatches(newBubble);
+      if (matches.length >= 3) {
+        // 移除匹配的泡泡
+        removeMatches(matches);
+        
+        // 增加分数
+        state.score += matches.length * 10 * state.level;
+        updateScore();
+        
+        // 检查是否需要提升级别
+        if (state.score >= state.level * 500) {
+          state.level++;
+          updateLevel();
+          
+          // 如果级别提升，添加新的泡泡行
+          if (state.level % 2 === 0) {
+            addNewRow();
+          }
+        }
+      } else {
+        // 如果没有匹配，则检查游戏是否结束（泡泡到达底部）
+        checkGameOver();
+      }
+      
+      // 检查悬挂的泡泡
+      removeDanglingBubbles();
+    }
+    
+    // 获取特定位置的泡泡
+    function getBubbleAt(row, col) {
+      return state.bubbles.find(b => b.row === row && b.col === col);
+    }
+    
+    // 找到所有相同颜色的相邻泡泡
+    function findMatches(bubble) {
+      const matches = [bubble];
+      const visited = new Set(`${bubble.row}-${bubble.col}`);
+      
+      function explore(bubble) {
+        // 获取所有相邻位置
+        const neighbors = getNeighbors(bubble);
+        
+        for (const neighbor of neighbors) {
+          const key = `${neighbor.row}-${neighbor.col}`;
+          
+          if (!visited.has(key)) {
+            visited.add(key);
+            
+            const neighborBubble = getBubbleAt(neighbor.row, neighbor.col);
+            if (neighborBubble && neighborBubble.color === bubble.color) {
+              matches.push(neighborBubble);
+              explore(neighborBubble);
+            }
+          }
+        }
+      }
+      
+      explore(bubble);
+      return matches;
+    }
+    
+    // 获取泡泡的相邻位置
+    function getNeighbors(bubble) {
+      const { row, col } = bubble;
+      const isOddRow = row % 2 === 1;
+      
+      if (isOddRow) {
+        return [
+          { row: row-1, col: col },
+          { row: row-1, col: col+1 },
+          { row: row, col: col-1 },
+          { row: row, col: col+1 },
+          { row: row+1, col: col },
+          { row: row+1, col: col+1 }
+        ];
+      } else {
+        return [
+          { row: row-1, col: col-1 },
+          { row: row-1, col: col },
+          { row: row, col: col-1 },
+          { row: row, col: col+1 },
+          { row: row+1, col: col-1 },
+          { row: row+1, col: col }
+        ];
+      }
+    }
+    
+    // 移除匹配的泡泡
+    function removeMatches(matches) {
+      for (const bubble of matches) {
+        // 从数组中移除
+        const index = state.bubbles.findIndex(b => b.row === bubble.row && b.col === bubble.col);
+        if (index !== -1) {
+          state.bubbles.splice(index, 1);
+        }
+        
+        // 从DOM中移除
+        const element = document.getElementById(`bubble-${bubble.row}-${bubble.col}`);
+        if (element) {
+          // 添加一个小动画效果
+          element.style.transform = 'scale(1.2)';
+          element.style.opacity = '0';
+          element.style.transition = 'all 0.2s ease-out';
+          
+          setTimeout(() => {
+            element.remove();
+          }, 200);
+        }
+      }
+    }
+    
+    // 移除不再连接到顶部的泡泡
+    function removeDanglingBubbles() {
+      // 查找连接到顶部的泡泡
+      const connectedBubbles = findConnectedBubbles();
+      
+      // 找出所有不连接的泡泡
+      const danglingBubbles = state.bubbles.filter(bubble => 
+        !connectedBubbles.some(b => b.row === bubble.row && b.col === bubble.col)
+      );
+      
+      // 如果有悬挂的泡泡
+      if (danglingBubbles.length > 0) {
+        // 增加分数
+        state.score += danglingBubbles.length * 20 * state.level;
+        updateScore();
+        
+        // 移除这些泡泡
+        for (const bubble of danglingBubbles) {
+          // 从数组中移除
+          const index = state.bubbles.findIndex(b => b.row === bubble.row && b.col === bubble.col);
+          if (index !== -1) {
+            state.bubbles.splice(index, 1);
+          }
+          
+          // 从DOM中移除并添加下落动画
+          const element = document.getElementById(`bubble-${bubble.row}-${bubble.col}`);
+          if (element) {
+            element.style.transition = 'transform 0.5s ease-in, opacity 0.5s ease-in';
+            element.style.transform = 'translateY(300px) scale(0.5)';
+            element.style.opacity = '0';
+            
+            setTimeout(() => {
+              element.remove();
+            }, 500);
+          }
+        }
+      }
+    }
+    
+    // 查找连接到顶部的泡泡
+    function findConnectedBubbles() {
+      const connected = [];
+      const visited = new Set();
+      
+      // 开始于顶行的所有泡泡
+      const topRowBubbles = state.bubbles.filter(b => b.row === 0);
+      
+      function explore(bubble) {
+        const key = `${bubble.row}-${bubble.col}`;
+        
+        if (visited.has(key)) return;
+        visited.add(key);
+        connected.push(bubble);
+        
+        // 检查所有相邻泡泡
+        const neighbors = getNeighbors(bubble);
+        for (const neighbor of neighbors) {
+          const neighborBubble = getBubbleAt(neighbor.row, neighbor.col);
+          if (neighborBubble) {
+            explore(neighborBubble);
+          }
+        }
+      }
+      
+      // 从每个顶行泡泡开始探索
+      for (const bubble of topRowBubbles) {
+        explore(bubble);
+      }
+      
+      return connected;
+    }
+    
+    // 添加新的一行泡泡
+    function addNewRow() {
+      // 将所有现有泡泡下移一行
+      for (const bubble of state.bubbles) {
+        // 从DOM中移除旧泡泡
+        const element = document.getElementById(`bubble-${bubble.row}-${bubble.col}`);
+        if (element) {
+          element.remove();
+        }
+        
+        // 更新位置
+        bubble.row += 1;
+        bubble.y = bubble.row * BUBBLE_SIZE * 0.85;
+        
+        // 渲染在新位置
+        renderBubble(bubble);
+      }
+      
+      // 在顶部添加新行
+      const isOddRow = 0 % 2 === 1;
+      const cols = isOddRow ? COLS - 1 : COLS;
+      const offsetX = isOddRow ? BUBBLE_SIZE / 2 : 0;
+      
+      for (let col = 0; col < cols; col++) {
+        // 有80%的概率生成泡泡
+        if (Math.random() < 0.8) {
+          const bubble = {
+            x: offsetX + col * BUBBLE_SIZE,
+            y: 0,
+            color: getRandomBubbleColor(),
+            row: 0,
+            col: col
+          };
+          
+          state.bubbles.push(bubble);
+          renderBubble(bubble);
+        }
+      }
+      
+      // 检查游戏是否结束
+      checkGameOver();
+    }
+    
+    // 检查游戏是否结束
+    function checkGameOver() {
+      // 如果任何泡泡到达最后一行，游戏结束
+      const lastRow = ROWS - 1;
+      const gameOver = state.bubbles.some(bubble => bubble.row >= lastRow);
+      
+      if (gameOver) {
+        state.gameOver = true;
+        finalScoreElement.textContent = state.score;
+        gameOverScreen.style.display = 'flex';
+      }
+    }
+    
+    // 更新分数显示
+    function updateScore() {
+      scoreElement.textContent = state.score;
+    }
+    
+    // 更新级别显示
+    function updateLevel() {
+      levelElement.textContent = state.level;
+    }
+    
+    // 启动游戏
+    window.onload = initGame;
+  </script>
+</body>
+</html>

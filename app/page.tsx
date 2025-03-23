@@ -68,9 +68,8 @@ const popularGames = [
     coverImage: '/images/bubble-shooter.svg',
     rating: 4.6,
     category: 'Arcade',
-    embedUrl: 'https://www.bubbleshooter.net/',
-    gameUrl: 'https://www.bubbleshooter.net/',
-    isEmbeddable: false
+    embedUrl: '/games/bubble-shooter/index.html',
+    isEmbeddable: true
   },
   {
     id: '6',
@@ -81,9 +80,8 @@ const popularGames = [
     coverImage: '/images/chess.svg',
     rating: 4.8,
     category: 'Board',
-    embedUrl: 'https://www.chess.com/play/online',
-    gameUrl: 'https://www.chess.com/play/online',
-    isEmbeddable: false
+    embedUrl: '/games/chess/index.html',
+    isEmbeddable: true
   }
 ];
 
@@ -246,20 +244,6 @@ export default function Home() {
             {popularGames.map((game, index) => (
               <GameCard key={game.id} game={game} />
             ))}
-            
-            {/* Additional game placeholders to fill the row */}
-            <div className="bg-gray-800/50 rounded-lg shadow-lg p-4 border border-gray-700">
-              <div className="h-40 bg-gray-700 rounded-lg animate-pulse mb-4"></div>
-              <div className="h-5 bg-gray-700 rounded-full w-3/4 animate-pulse mb-2"></div>
-              <div className="h-4 bg-gray-700 rounded-full w-1/2 animate-pulse mb-4"></div>
-              <div className="h-10 bg-gray-700 rounded-lg animate-pulse"></div>
-            </div>
-            <div className="bg-gray-800/50 rounded-lg shadow-lg p-4 border border-gray-700">
-              <div className="h-40 bg-gray-700 rounded-lg animate-pulse mb-4"></div>
-              <div className="h-5 bg-gray-700 rounded-full w-3/4 animate-pulse mb-2"></div>
-              <div className="h-4 bg-gray-700 rounded-full w-1/2 animate-pulse mb-4"></div>
-              <div className="h-10 bg-gray-700 rounded-lg animate-pulse"></div>
-            </div>
           </div>
         </div>
       </section>
@@ -281,20 +265,6 @@ export default function Home() {
             {recentGames.map((game, index) => (
               <GameCard key={game.id} game={game} />
             ))}
-            
-            {/* Additional game placeholders to fill the row */}
-            <div className="bg-gray-800/50 rounded-lg shadow-lg p-4 border border-gray-700">
-              <div className="h-40 bg-gray-700 rounded-lg animate-pulse mb-4"></div>
-              <div className="h-5 bg-gray-700 rounded-full w-3/4 animate-pulse mb-2"></div>
-              <div className="h-4 bg-gray-700 rounded-full w-1/2 animate-pulse mb-4"></div>
-              <div className="h-10 bg-gray-700 rounded-lg animate-pulse"></div>
-            </div>
-            <div className="bg-gray-800/50 rounded-lg shadow-lg p-4 border border-gray-700">
-              <div className="h-40 bg-gray-700 rounded-lg animate-pulse mb-4"></div>
-              <div className="h-5 bg-gray-700 rounded-full w-3/4 animate-pulse mb-2"></div>
-              <div className="h-4 bg-gray-700 rounded-full w-1/2 animate-pulse mb-4"></div>
-              <div className="h-10 bg-gray-700 rounded-lg animate-pulse"></div>
-            </div>
           </div>
         </div>
       </section>

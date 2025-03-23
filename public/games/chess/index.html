@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #614385, #516395);
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    h1 {
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      margin-bottom: 20px;
+    }
+    
+    .game-container {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .board {
+      width: 480px;
+      height: 480px;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      border: 5px solid #4a4a4a;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .square {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .square-light {
+      background-color: #f0d9b5;
+    }
+    
+    .square-dark {
+      background-color: #b58863;
+    }
+    
+    .square.selected {
+      background-color: rgba(106, 190, 106, 0.8);
+    }
+    
+    .square.valid-move {
+      background-color: rgba(106, 190, 106, 0.5);
+    }
+    
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    
+    button {
+      background-color: #4a4a4a;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    button:hover {
+      background-color: #333333;
+    }
+    
+    .game-info {
+      margin-top: 15px;
+      color: white;
+      text-align: center;
+    }
+    
+    .piece {
+      transition: transform 0.2s;
+    }
+    
+    .piece:hover {
+      transform: scale(1.1);
+    }
+    
+    .captured-pieces {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    .captured-white, .captured-black {
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 5px 10px;
+      border-radius: 5px;
+      min-height: 30px;
+      display: flex;
+      align-items: center;
+      color: white;
+    }
+    
+    .turn-indicator {
+      padding: 5px 15px;
+      border-radius: 5px;
+      background-color: rgba(0, 0, 0, 0.3);
+      color: white;
+      margin-top: 10px;
+    }
+
+    .rules-container {
+      margin-top: 10px;
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      border-radius: 5px;
+      max-width: 480px;
+      color: white;
+    }
+
+    .rules-container h3 {
+      margin-top: 0;
+      color: #ffd700;
+    }
+
+    .rules-container ul {
+      padding-left: 20px;
+      margin: 5px 0;
+    }
+
+    .rules-container li {
+      margin-bottom: 3px;
+      font-size: 14px;
+    }
+
+    /* 详细规则弹窗样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      overflow-y: auto;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #2c3e50, #34495e);
+      margin: 2% auto;
+      padding: 25px;
+      width: 80%;
+      max-width: 800px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      color: white;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .close-btn {
+      position: sticky;
+      top: 0;
+      float: right;
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 101;
+      background-color: #2c3e50;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .close-btn:hover {
+      color: white;
+      background-color: #e74c3c;
+    }
+
+    .piece-example {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 5px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+    }
+
+    .piece-example .piece-icon {
+      font-size: 2.5em;
+      margin-right: 15px;
+      width: 50px;
+      text-align: center;
+    }
+
+    .piece-example .piece-info {
+      flex: 1;
+    }
+
+    .piece-image {
+      background-color: #f0d9b5;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    .piece-move {
+      max-width: 200px;
+      margin: 10px auto;
+    }
+
+    .section-title {
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin-top: 20px;
+      color: #ffd700;
+    }
+
+    .rule-example {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      border-left: 3px solid #3498db;
+    }
+    
+    /* 游戏模式选择样式 */
+    .game-options {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+    
+    .option-group {
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      border-radius: 5px;
+      flex: 1;
+    }
+    
+    .option-group h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #ffd700;
+      font-size: 16px;
+      text-align: center;
+    }
+    
+    .option-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .option-button {
+      padding: 8px 12px;
+      font-size: 14px;
+      background-color: #516395;
+      opacity: 0.7;
+      min-width: 0;
+      flex: 1;
+    }
+    
+    .option-button.active {
+      background-color: #ffd700;
+      color: #333;
+      opacity: 1;
+      font-weight: bold;
+    }
+    
+    .ai-thinking {
+      color: #ffd700;
+      font-style: italic;
+      margin-top: 5px;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+    
+    /* 开始游戏屏幕 */
+    .start-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    
+    .start-screen h2 {
+      color: white;
+      font-size: 36px;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    
+    .start-options {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 80%;
+      max-width: 400px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Chess</h1>
+  
+  <div class="game-container">
+    <div class="game-options">
+      <div class="option-group">
+        <h3>Game Mode</h3>
+        <div class="option-buttons">
+          <button class="option-button active" id="mode-vs-ai">vs AI</button>
+          <button class="option-button" id="mode-vs-player">vs Player</button>
+        </div>
+      </div>
+      
+      <div class="option-group" id="ai-difficulty-group">
+        <h3>AI Difficulty</h3>
+        <div class="option-buttons">
+          <button class="option-button" id="difficulty-easy">Easy</button>
+          <button class="option-button active" id="difficulty-medium">Medium</button>
+          <button class="option-button" id="difficulty-hard">Hard</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="turn-indicator" id="turn-indicator">White's Turn</div>
+    
+    <div class="captured-pieces">
+      <div class="captured-white" id="captured-white">Captured White Pieces: </div>
+    </div>
+    
+    <div class="board" id="board"></div>
+    
+    <div class="captured-pieces">
+      <div class="captured-black" id="captured-black">Captured Black Pieces: </div>
+    </div>
+    
+    <div class="controls">
+      <button id="restart-btn">Restart</button>
+      <button id="undo-btn">Undo</button>
+      <button id="rules-btn">Detailed Rules</button>
+    </div>
+    
+    <div class="game-info" id="game-info">
+      Game started! White moves first.
+    </div>
+
+    <div class="rules-container">
+      <h3>Chess Rules:</h3>
+      <ul>
+        <li>White moves first, then players take turns.</li>
+        <li>Click on a piece to see where it can move.</li>
+        <li>Each piece moves differently:</li>
+        <li>♙ Pawn: Moves forward 1 space (2 on first move), captures diagonally</li>
+        <li>♖ Rook: Moves any number of spaces horizontally or vertically</li>
+        <li>♘ Knight: Moves in an L-shape (2 spaces one way, 1 space another)</li>
+        <li>♗ Bishop: Moves any number of spaces diagonally</li>
+        <li>♕ Queen: Moves like both a rook and bishop</li>
+        <li>♔ King: Moves 1 space in any direction</li>
+        <li>The goal is to trap the other player's king (checkmate)!</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 游戏开始屏幕 -->
+  <div class="start-screen" id="start-screen" style="display: none;">
+    <h2>Chess</h2>
+    <div class="start-options">
+      <div class="option-group">
+        <h3>Choose Game Mode</h3>
+        <div class="option-buttons">
+          <button class="option-button active" id="start-mode-vs-ai">vs AI</button>
+          <button class="option-button" id="start-mode-vs-player">vs Player</button>
+        </div>
+      </div>
+      
+      <div class="option-group" id="start-ai-difficulty-group">
+        <h3>Select AI Difficulty</h3>
+        <div class="option-buttons">
+          <button class="option-button" id="start-difficulty-easy">Easy</button>
+          <button class="option-button active" id="start-difficulty-medium">Medium</button>
+          <button class="option-button" id="start-difficulty-hard">Hard</button>
+        </div>
+      </div>
+      
+      <button id="start-game-btn" style="margin-top: 20px;">Start Game</button>
+    </div>
+  </div>
+
+  <!-- 详细规则弹窗 -->
+  <div id="rules-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-rules">&times;</span>
+      <h2 style="text-align: center; color: #ffd700;">Chess Rules for Beginners</h2>
+      
+      <div class="section-title">How to Win</div>
+      <p>The goal of chess is to <strong>checkmate</strong> your opponent's king. This happens when:</p>
+      <ul>
+        <li>The king is in check (under attack)</li>
+        <li>AND the king cannot escape check</li>
+      </ul>
+      <div class="rule-example">
+        <p><strong>Example:</strong> If your opponent's king is in check and has no legal moves, you win! The king cannot be captured - the game ends before that happens.</p>
+      </div>
+
+      <div class="section-title">How the Pieces Move</div>
+      
+      <div class="piece-example">
+        <div class="piece-icon">♙♟</div>
+        <div class="piece-info">
+          <h3>Pawn</h3>
+          <p>Pawns can only move forward:</p>
+          <ul>
+            <li>Move forward 1 square</li>
+            <li>On their first move, they can move forward 2 squares</li>
+            <li>Can only capture diagonally (1 square)</li>
+            <li>If a pawn reaches the other end of the board, it can become any other piece (usually a Queen)</li>
+          </ul>
+          <div class="rule-example">
+            <p><strong>Example:</strong> If your pawn is at its starting position, it can move 1 or 2 squares forward. If an enemy piece is diagonally in front of your pawn, you can capture it!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-example">
+        <div class="piece-icon">♖♜</div>
+        <div class="piece-info">
+          <h3>Rook</h3>
+          <p>Rooks are powerful pieces that move in straight lines:</p>
+          <ul>
+            <li>Move any number of squares horizontally (left or right)</li>
+            <li>Move any number of squares vertically (up or down)</li>
+            <li>Cannot jump over other pieces</li>
+          </ul>
+          <div class="rule-example">
+            <p><strong>Example:</strong> Your rook can move from one side of the board to the other in one move, as long as no pieces are in the way!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-example">
+        <div class="piece-icon">♘♞</div>
+        <div class="piece-info">
+          <h3>Knight</h3>
+          <p>Knights move in a special L-shape:</p>
+          <ul>
+            <li>Move 2 squares in one direction, then 1 square perpendicular</li>
+            <li>The only piece that can jump over other pieces</li>
+          </ul>
+          <div class="rule-example">
+            <p><strong>Example:</strong> Your knight can move 2 squares up and 1 square right, or 2 squares left and 1 square down. It makes an "L" shape!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-example">
+        <div class="piece-icon">♗♝</div>
+        <div class="piece-info">
+          <h3>Bishop</h3>
+          <p>Bishops move diagonally:</p>
+          <ul>
+            <li>Move any number of squares diagonally</li>
+            <li>Each bishop stays on the same color squares the entire game</li>
+            <li>Cannot jump over other pieces</li>
+          </ul>
+          <div class="rule-example">
+            <p><strong>Example:</strong> Your bishop can move diagonally across the board, but only on squares of the same color it started on.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-example">
+        <div class="piece-icon">♕♛</div>
+        <div class="piece-info">
+          <h3>Queen</h3>
+          <p>The Queen is the most powerful piece:</p>
+          <ul>
+            <li>Combines the moves of the Rook and Bishop</li>
+            <li>Move any number of squares horizontally, vertically, or diagonally</li>
+            <li>Cannot jump over other pieces</li>
+          </ul>
+          <div class="rule-example">
+            <p><strong>Example:</strong> Your queen can move like a rook or a bishop in any direction, making it very powerful for attacking!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-example">
+        <div class="piece-icon">♔♚</div>
+        <div class="piece-info">
+          <h3>King</h3>
+          <p>The King is the most important piece:</p>
+          <ul>
+            <li>Move 1 square in any direction (horizontally, vertically, or diagonally)</li>
+            <li>Cannot move into check (where it could be captured)</li>
+            <li>Special move: Castling (see Special Rules)</li>
+          </ul>
+          <div class="rule-example">
+            <p><strong>Example:</strong> Your king can move only one square at a time in any direction. You must keep your king safe at all times!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">Special Rules</div>
+      
+      <h3>Castling</h3>
+      <p>A special move that lets you move your king and rook at the same time:</p>
+      <ul>
+        <li>The king moves 2 squares toward a rook</li>
+        <li>The rook jumps over the king to the square next to it</li>
+        <li>Can only castle if:
+          <ul>
+            <li>Neither the king nor the rook has moved yet</li>
+            <li>No pieces are between the king and rook</li>
+            <li>The king is not in check</li>
+            <li>The king does not pass through or end up in check</li>
+          </ul>
+        </li>
+      </ul>
+      <div class="rule-example">
+        <p><strong>Example:</strong> If your king and rook haven't moved yet, and there are no pieces between them, you can castle by moving your king 2 squares toward the rook, and the rook jumps over to the other side of the king.</p>
+      </div>
+
+      <h3>Pawn Promotion</h3>
+      <p>When a pawn reaches the opposite end of the board:</p>
+      <ul>
+        <li>It must be replaced by a queen, rook, bishop, or knight of the same color</li>
+        <li>Most players choose a queen (the most powerful piece)</li>
+      </ul>
+      <div class="rule-example">
+        <p><strong>Example:</strong> If your pawn reaches the last row of the board, you can turn it into a queen, giving you a powerful new piece!</p>
+      </div>
+
+      <h3>En Passant (Advanced Rule)</h3>
+      <p>A special pawn capture that can happen when:</p>
+      <ul>
+        <li>An enemy pawn moves 2 squares forward from its starting position</li>
+        <li>Your pawn is next to where it lands</li>
+        <li>You can capture it as if it had only moved 1 square</li>
+        <li>This must be done immediately after the enemy pawn moves</li>
+      </ul>
+      <div class="rule-example">
+        <p><strong>Example:</strong> If your opponent's pawn moves 2 squares forward and lands next to your pawn, you can capture it diagonally as if it had only moved 1 square!</p>
+      </div>
+
+      <div class="section-title">Chess Terms to Know</div>
+      <ul>
+        <li><strong>Check:</strong> When a king is under attack</li>
+        <li><strong>Checkmate:</strong> When a king is in check and cannot escape</li>
+        <li><strong>Stalemate:</strong> When a player has no legal moves but is not in check (results in a draw)</li>
+        <li><strong>Draw:</strong> When the game ends with no winner</li>
+        <li><strong>Capture:</strong> Taking an opponent's piece by moving your piece to its square</li>
+      </ul>
+
+      <div class="section-title">Tips for Beginners</div>
+      <ol>
+        <li>Control the center of the board</li>
+        <li>Develop your pieces (get them off the starting row)</li>
+        <li>Keep your king safe (castle early)</li>
+        <li>Look for checks, captures, and threats</li>
+        <li>Think about what your opponent might do next</li>
+        <li>Have fun and learn from each game!</li>
+      </ol>
+    </div>
+  </div>
+  
+  <script>
+    // 棋子 Unicode 字符
+    const PIECES = {
+      'white': {
+        'king': '♔',
+        'queen': '♕',
+        'rook': '♖',
+        'bishop': '♗',
+        'knight': '♘',
+        'pawn': '♙'
+      },
+      'black': {
+        'king': '♚',
+        'queen': '♛',
+        'rook': '♜',
+        'bishop': '♝',
+        'knight': '♞',
+        'pawn': '♟'
+      }
+    };
+    
+    // 初始棋盘状态
+    const INITIAL_BOARD = [
+      ['br', 'bn', 'bb', 'bq', 'bk', 'bb', 'bn', 'br'],
+      ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp'],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'],
+      ['wr', 'wn', 'wb', 'wq', 'wk', 'wb', 'wn', 'wr']
+    ];
+    
+    // 游戏模式和难度设置
+    const gameSettings = {
+      mode: 'ai', // 'ai' 或 'player'
+      difficulty: 'medium', // 'easy', 'medium', 或 'hard'
+      aiThinkingTime: {
+        easy: 500,
+        medium: 1000,
+        hard: 2000
+      },
+      aiSearchDepth: {
+        easy: 1,
+        medium: 2,
+        hard: 3
+      }
+    };
+    
+    // 游戏状态
+    let gameState = {
+      board: JSON.parse(JSON.stringify(INITIAL_BOARD)),
+      currentPlayer: 'white',
+      selectedPiece: null,
+      validMoves: [],
+      moveHistory: [],
+      capturedPieces: {
+        white: [],
+        black: []
+      },
+      check: {
+        white: false,
+        black: false
+      },
+      aiThinking: false
+    };
+    
+    // DOM 元素
+    const boardElement = document.getElementById('board');
+    const turnIndicator = document.getElementById('turn-indicator');
+    const gameInfo = document.getElementById('game-info');
+    const capturedWhite = document.getElementById('captured-white');
+    const capturedBlack = document.getElementById('captured-black');
+    const restartButton = document.getElementById('restart-btn');
+    const undoButton = document.getElementById('undo-btn');
+    const startScreen = document.getElementById('start-screen');
+    
+    // 添加规则弹窗元素
+    const rulesButton = document.getElementById('rules-btn');
+    const rulesModal = document.getElementById('rules-modal');
+    const closeRules = document.getElementById('close-rules');
+    
+    // 游戏模式和难度选择按钮
+    const modeVsAiBtn = document.getElementById('mode-vs-ai');
+    const modeVsPlayerBtn = document.getElementById('mode-vs-player');
+    const difficultyEasyBtn = document.getElementById('difficulty-easy');
+    const difficultyMediumBtn = document.getElementById('difficulty-medium');
+    const difficultyHardBtn = document.getElementById('difficulty-hard');
+    const aiDifficultyGroup = document.getElementById('ai-difficulty-group');
+    
+    // 开始屏幕的按钮
+    const startGameBtn = document.getElementById('start-game-btn');
+    const startModeVsAiBtn = document.getElementById('start-mode-vs-ai');
+    const startModeVsPlayerBtn = document.getElementById('start-mode-vs-player');
+    const startDifficultyEasyBtn = document.getElementById('start-difficulty-easy');
+    const startDifficultyMediumBtn = document.getElementById('start-difficulty-medium');
+    const startDifficultyHardBtn = document.getElementById('start-difficulty-hard');
+    const startAiDifficultyGroup = document.getElementById('start-ai-difficulty-group');
+    
+    // 初始化游戏
+    function initGame() {
+      createBoard();
+      updateBoard();
+      
+      // 显示开始屏幕
+      startScreen.style.display = 'flex';
+      
+      // 添加按钮事件监听器
+      restartButton.addEventListener('click', restartGame);
+      undoButton.addEventListener('click', undoMove);
+      
+      // 添加游戏模式和难度按钮事件监听器
+      setupGameModeUI();
+      
+      // 添加规则弹窗事件监听器
+      rulesButton.addEventListener('click', () => {
+        rulesModal.style.display = 'block';
+      });
+      
+      closeRules.addEventListener('click', () => {
+        rulesModal.style.display = 'none';
+      });
+      
+      // 点击弹窗外部关闭弹窗
+      window.addEventListener('click', (event) => {
+        if (event.target == rulesModal) {
+          rulesModal.style.display = 'none';
+        }
+      });
+      
+      // 开始游戏按钮事件监听器
+      startGameBtn.addEventListener('click', () => {
+        startScreen.style.display = 'none';
+        restartGame();
+      });
+    }
+    
+    // 设置游戏模式UI和事件监听器
+    function setupGameModeUI() {
+      // 主屏幕上的按钮
+      modeVsAiBtn.addEventListener('click', () => setGameMode('ai'));
+      modeVsPlayerBtn.addEventListener('click', () => setGameMode('player'));
+      difficultyEasyBtn.addEventListener('click', () => setDifficulty('easy'));
+      difficultyMediumBtn.addEventListener('click', () => setDifficulty('medium'));
+      difficultyHardBtn.addEventListener('click', () => setDifficulty('hard'));
+      
+      // 开始屏幕上的按钮
+      startModeVsAiBtn.addEventListener('click', () => {
+        setGameMode('ai');
+        startModeVsAiBtn.classList.add('active');
+        startModeVsPlayerBtn.classList.remove('active');
+        startAiDifficultyGroup.style.display = 'block';
+      });
+      
+      startModeVsPlayerBtn.addEventListener('click', () => {
+        setGameMode('player');
+        startModeVsPlayerBtn.classList.add('active');
+        startModeVsAiBtn.classList.remove('active');
+        startAiDifficultyGroup.style.display = 'none';
+      });
+      
+      startDifficultyEasyBtn.addEventListener('click', () => {
+        setDifficulty('easy');
+        startDifficultyEasyBtn.classList.add('active');
+        startDifficultyMediumBtn.classList.remove('active');
+        startDifficultyHardBtn.classList.remove('active');
+      });
+      
+      startDifficultyMediumBtn.addEventListener('click', () => {
+        setDifficulty('medium');
+        startDifficultyMediumBtn.classList.add('active');
+        startDifficultyEasyBtn.classList.remove('active');
+        startDifficultyHardBtn.classList.remove('active');
+      });
+      
+      startDifficultyHardBtn.addEventListener('click', () => {
+        setDifficulty('hard');
+        startDifficultyHardBtn.classList.add('active');
+        startDifficultyEasyBtn.classList.remove('active');
+        startDifficultyMediumBtn.classList.remove('active');
+      });
+    }
+    
+    // 设置游戏模式
+    function setGameMode(mode) {
+      gameSettings.mode = mode;
+      
+      // 更新UI
+      if (mode === 'ai') {
+        modeVsAiBtn.classList.add('active');
+        modeVsPlayerBtn.classList.remove('active');
+        aiDifficultyGroup.style.display = 'block';
+      } else {
+        modeVsPlayerBtn.classList.add('active');
+        modeVsAiBtn.classList.remove('active');
+        aiDifficultyGroup.style.display = 'none';
+      }
+    }
+    
+    // 设置AI难度
+    function setDifficulty(difficulty) {
+      gameSettings.difficulty = difficulty;
+      
+      // 更新UI
+      const btns = [difficultyEasyBtn, difficultyMediumBtn, difficultyHardBtn];
+      btns.forEach(btn => btn.classList.remove('active'));
+      
+      if (difficulty === 'easy') {
+        difficultyEasyBtn.classList.add('active');
+      } else if (difficulty === 'medium') {
+        difficultyMediumBtn.classList.add('active');
+      } else if (difficulty === 'hard') {
+        difficultyHardBtn.classList.add('active');
+      }
+    }
+    
+    // 创建棋盘
+    function createBoard() {
+      boardElement.innerHTML = '';
+      
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const square = document.createElement('div');
+          square.className = `square ${(row + col) % 2 === 0 ? 'square-light' : 'square-dark'}`;
+          square.dataset.row = row;
+          square.dataset.col = col;
+          
+          square.addEventListener('click', () => handleSquareClick(row, col));
+          
+          boardElement.appendChild(square);
+        }
+      }
+    }
+    
+    // 更新棋盘
+    function updateBoard() {
+      // 更新所有棋子位置
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const square = document.querySelector(`.square[data-row="${row}"][data-col="${col}"]`);
+          square.innerHTML = '';
+          square.classList.remove('selected', 'valid-move');
+          
+          const piece = gameState.board[row][col];
+          if (piece) {
+            const pieceColor = piece[0] === 'w' ? 'white' : 'black';
+            const pieceType = getPieceType(piece);
+            
+            const pieceElement = document.createElement('div');
+            pieceElement.className = `piece ${pieceColor}-piece`;
+            pieceElement.textContent = PIECES[pieceColor][pieceType];
+            
+            square.appendChild(pieceElement);
+          }
+        }
+      }
+      
+      // 高亮选中的棋子
+      if (gameState.selectedPiece) {
+        const {row, col} = gameState.selectedPiece;
+        const square = document.querySelector(`.square[data-row="${row}"][data-col="${col}"]`);
+        square.classList.add('selected');
+      }
+      
+      // 高亮有效移动
+      gameState.validMoves.forEach(move => {
+        const square = document.querySelector(`.square[data-row="${move.row}"][data-col="${move.col}"]`);
+        square.classList.add('valid-move');
+      });
+      
+      // 更新回合指示器
+      turnIndicator.textContent = gameState.currentPlayer === 'white' ? 'White\'s Turn' : 'Black\'s Turn';
+      
+      // 添加AI思考指示（如果适用）
+      if (gameState.aiThinking && gameSettings.mode === 'ai' && gameState.currentPlayer === 'black') {
+        const thinkingIndicator = document.createElement('div');
+        thinkingIndicator.className = 'ai-thinking';
+        thinkingIndicator.textContent = 'AI is thinking...';
+        turnIndicator.appendChild(thinkingIndicator);
+      }
+      
+      // 更新被吃的棋子
+      updateCapturedPieces();
+      
+      // 更新将军状态
+      if (gameState.check.white) {
+        gameInfo.textContent = 'White is in check!';
+      } else if (gameState.check.black) {
+        gameInfo.textContent = 'Black is in check!';
+      } else {
+        gameInfo.textContent = `${gameState.currentPlayer === 'white' ? 'White' : 'Black'}'s move`;
+      }
+    }
+    
+    // 获取棋子类型
+    function getPieceType(piece) {
+      const typeCode = piece[1];
+      
+      switch (typeCode) {
+        case 'k': return 'king';
+        case 'q': return 'queen';
+        case 'r': return 'rook';
+        case 'b': return 'bishop';
+        case 'n': return 'knight';
+        case 'p': return 'pawn';
+        default: return '';
+      }
+    }
+    
+    // 处理棋盘点击
+    function handleSquareClick(row, col) {
+      // 如果AI正在思考，忽略点击
+      if (gameState.aiThinking) return;
+      
+      // 如果是AI模式且当前轮到AI(黑方)，忽略点击
+      if (gameSettings.mode === 'ai' && gameState.currentPlayer === 'black') return;
+      
+      const piece = gameState.board[row][col];
+      
+      // 如果已经选择了一个棋子
+      if (gameState.selectedPiece) {
+        const selectedRow = gameState.selectedPiece.row;
+        const selectedCol = gameState.selectedPiece.col;
+        
+        // 检查是否点击了有效移动位置
+        const isValidMove = gameState.validMoves.some(move => 
+          move.row === row && move.col === col
+        );
+        
+        if (isValidMove) {
+          // 执行移动
+          makeMove(selectedRow, selectedCol, row, col);
+          
+          // 如果是AI模式且移动后轮到AI，让AI走棋
+          if (gameSettings.mode === 'ai' && gameState.currentPlayer === 'black') {
+            makeAIMove();
+          }
+        } else if (piece && piece[0] === (gameState.currentPlayer === 'white' ? 'w' : 'b')) {
+          // 如果点击了自己的另一个棋子，选择它
+          selectPiece(row, col);
+        } else {
+          // 点击了空位置或对方棋子，取消选择
+          gameState.selectedPiece = null;
+          gameState.validMoves = [];
+          updateBoard();
+        }
+      } 
+      // 如果还没有选择棋子，并且点击了自己的棋子
+      else if (piece && piece[0] === (gameState.currentPlayer === 'white' ? 'w' : 'b')) {
+        selectPiece(row, col);
+      }
+    }
+    
+    // 执行移动
+    function makeMove(fromRow, fromCol, toRow, toCol) {
+      const capturedPiece = gameState.board[toRow][toCol];
+      
+      // 记录移动历史
+      gameState.moveHistory.push({
+        from: {row: fromRow, col: fromCol},
+        to: {row: toRow, col: toCol},
+        piece: gameState.board[fromRow][fromCol],
+        captured: capturedPiece
+      });
+      
+      // 如果吃掉了棋子，记录它
+      if (capturedPiece) {
+        const capturedColor = capturedPiece[0] === 'w' ? 'white' : 'black';
+        gameState.capturedPieces[capturedColor].push(capturedPiece);
+      }
+      
+      // 移动棋子
+      gameState.board[toRow][toCol] = gameState.board[fromRow][fromCol];
+      gameState.board[fromRow][fromCol] = null;
+      
+      // 切换玩家
+      gameState.currentPlayer = gameState.currentPlayer === 'white' ? 'black' : 'white';
+      
+      // 重置选择状态
+      gameState.selectedPiece = null;
+      gameState.validMoves = [];
+      
+      // 检查将军状态
+      checkForCheck();
+      
+      // 更新棋盘
+      updateBoard();
+    }
+    
+    // 让AI走棋
+    function makeAIMove() {
+      // 设置AI思考状态
+      gameState.aiThinking = true;
+      updateBoard();
+      
+      // 模拟AI思考时间
+      setTimeout(() => {
+        const aiMove = calculateAIMove();
+        if (aiMove) {
+          makeMove(aiMove.from.row, aiMove.from.col, aiMove.to.row, aiMove.to.col);
+        }
+        
+        gameState.aiThinking = false;
+        updateBoard();
+      }, gameSettings.aiThinkingTime[gameSettings.difficulty]);
+    }
+    
+    // 计算AI的移动
+    function calculateAIMove() {
+      // 收集所有可能的移动
+      const possibleMoves = [];
+      
+      // 遍历棋盘上的所有黑方棋子
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = gameState.board[row][col];
+          
+          if (piece && piece[0] === 'b') {
+            const validMoves = calculateValidMoves(row, col);
+            
+            validMoves.forEach(move => {
+              possibleMoves.push({
+                from: { row, col },
+                to: move
+              });
+            });
+          }
+        }
+      }
+      
+      // 如果没有可能的移动，返回null
+      if (possibleMoves.length === 0) return null;
+      
+      // 根据难度评估移动
+      let bestMove;
+      
+      if (gameSettings.difficulty === 'easy') {
+        // 简单难度：随机选择一个合法移动
+        const randomIndex = Math.floor(Math.random() * possibleMoves.length);
+        bestMove = possibleMoves[randomIndex];
+      } else if (gameSettings.difficulty === 'medium') {
+        // 中等难度：偏好吃子的移动，但有时会随机移动
+        const capturingMoves = possibleMoves.filter(move => 
+          gameState.board[move.to.row][move.to.col] !== null
+        );
+        
+        if (capturingMoves.length > 0 && Math.random() < 0.7) {
+          const randomIndex = Math.floor(Math.random() * capturingMoves.length);
+          bestMove = capturingMoves[randomIndex];
+        } else {
+          const randomIndex = Math.floor(Math.random() * possibleMoves.length);
+          bestMove = possibleMoves[randomIndex];
+        }
+      } else if (gameSettings.difficulty === 'hard') {
+        // 困难难度：评估每个移动的价值，并选择最佳移动
+        const scoredMoves = possibleMoves.map(move => {
+          const score = evaluateMove(move);
+          return { ...move, score };
+        });
+        
+        // 按分数排序
+        scoredMoves.sort((a, b) => b.score - a.score);
+        
+        // 选择最佳移动
+        bestMove = scoredMoves[0];
+      }
+      
+      return bestMove;
+    }
+    
+    // 评估移动的价值 (用于困难难度AI)
+    function evaluateMove(move) {
+      let score = 0;
+      
+      // 复制棋盘状态进行模拟
+      const boardCopy = JSON.parse(JSON.stringify(gameState.board));
+      
+      // 获取当前棋子和目标位置的棋子
+      const piece = boardCopy[move.from.row][move.from.col];
+      const targetPiece = boardCopy[move.to.row][move.to.col];
+      
+      // 如果可以吃子，增加分数
+      if (targetPiece) {
+        const pieceValues = {
+          'p': 1,
+          'n': 3,
+          'b': 3,
+          'r': 5,
+          'q': 9,
+          'k': 100
+        };
+        
+        score += pieceValues[targetPiece[1]];
+      }
+      
+      // 如果移动到中心位置，增加分数
+      const centerValue = (row, col) => {
+        // 距离中心的距离
+        const rowDistance = Math.min(row, 7 - row);
+        const colDistance = Math.min(col, 7 - col);
+        return rowDistance + colDistance;
+      };
+      
+      // 中心位置有更高的价值
+      score += (7 - centerValue(move.to.row, move.to.col)) * 0.1;
+      
+      // 如果移动的是兵，并且接近对方底线，增加分数
+      if (piece[1] === 'p') {
+        score += (7 - move.to.row) * 0.2; // 黑色兵向下移动
+      }
+      
+      // 随机因素，让AI看起来不那么机械化
+      score += Math.random() * 0.3;
+      
+      return score;
+    }
+    
+    // 选择棋子
+    function selectPiece(row, col) {
+      gameState.selectedPiece = {row, col};
+      gameState.validMoves = calculateValidMoves(row, col);
+      updateBoard();
+    }
+    
+    // 计算有效移动
+    function calculateValidMoves(row, col) {
+      const piece = gameState.board[row][col];
+      const pieceColor = piece[0] === 'w' ? 'white' : 'black';
+      const pieceType = getPieceType(piece);
+      const validMoves = [];
+      
+      switch (pieceType) {
+        case 'pawn':
+          calculatePawnMoves(row, col, pieceColor, validMoves);
+          break;
+        case 'rook':
+          calculateRookMoves(row, col, pieceColor, validMoves);
+          break;
+        case 'knight':
+          calculateKnightMoves(row, col, pieceColor, validMoves);
+          break;
+        case 'bishop':
+          calculateBishopMoves(row, col, pieceColor, validMoves);
+          break;
+        case 'queen':
+          calculateQueenMoves(row, col, pieceColor, validMoves);
+          break;
+        case 'king':
+          calculateKingMoves(row, col, pieceColor, validMoves);
+          break;
+      }
+      
+      return validMoves;
+    }
+    
+    // 计算兵的移动
+    function calculatePawnMoves(row, col, color, validMoves) {
+      const direction = color === 'white' ? -1 : 1;
+      const startRow = color === 'white' ? 6 : 1;
+      const piece = gameState.board[row][col][0];
+      
+      // 向前移动一格
+      if (isInBounds(row + direction, col) && !gameState.board[row + direction][col]) {
+        validMoves.push({row: row + direction, col});
+        
+        // 初始位置可以移动两格
+        if (row === startRow && !gameState.board[row + 2 * direction][col]) {
+          validMoves.push({row: row + 2 * direction, col});
+        }
+      }
+      
+      // 吃子移动（左斜）
+      if (isInBounds(row + direction, col - 1)) {
+        const targetPiece = gameState.board[row + direction][col - 1];
+        if (targetPiece && targetPiece[0] !== piece) {
+          validMoves.push({row: row + direction, col: col - 1});
+        }
+      }
+      
+      // 吃子移动（右斜）
+      if (isInBounds(row + direction, col + 1)) {
+        const targetPiece = gameState.board[row + direction][col + 1];
+        if (targetPiece && targetPiece[0] !== piece) {
+          validMoves.push({row: row + direction, col: col + 1});
+        }
+      }
+    }
+    
+    // 计算车的移动
+    function calculateRookMoves(row, col, color, validMoves) {
+      // 检查四个方向：上、下、左、右
+      const directions = [
+        {dr: -1, dc: 0}, // 上
+        {dr: 1, dc: 0},  // 下
+        {dr: 0, dc: -1}, // 左
+        {dr: 0, dc: 1}   // 右
+      ];
+      
+      for (const {dr, dc} of directions) {
+        let r = row + dr;
+        let c = col + dc;
+        
+        while (isInBounds(r, c)) {
+          const targetPiece = gameState.board[r][c];
+          
+          if (!targetPiece) {
+            // 空格子，可以移动
+            validMoves.push({row: r, col: c});
+          } else if (targetPiece[0] !== (color === 'white' ? 'w' : 'b')) {
+            // 对方棋子，可以吃
+            validMoves.push({row: r, col: c});
+            break;
+          } else {
+            // 自己的棋子，不能移动
+            break;
+          }
+          
+          r += dr;
+          c += dc;
+        }
+      }
+    }
+    
+    // 计算马的移动
+    function calculateKnightMoves(row, col, color, validMoves) {
+      const moves = [
+        {dr: -2, dc: -1}, {dr: -2, dc: 1},
+        {dr: -1, dc: -2}, {dr: -1, dc: 2},
+        {dr: 1, dc: -2}, {dr: 1, dc: 2},
+        {dr: 2, dc: -1}, {dr: 2, dc: 1}
+      ];
+      
+      for (const {dr, dc} of moves) {
+        const r = row + dr;
+        const c = col + dc;
+        
+        if (isInBounds(r, c)) {
+          const targetPiece = gameState.board[r][c];
+          
+          if (!targetPiece || targetPiece[0] !== (color === 'white' ? 'w' : 'b')) {
+            validMoves.push({row: r, col: c});
+          }
+        }
+      }
+    }
+    
+    // 计算象的移动
+    function calculateBishopMoves(row, col, color, validMoves) {
+      // 检查四个对角线方向
+      const directions = [
+        {dr: -1, dc: -1}, // 左上
+        {dr: -1, dc: 1},  // 右上
+        {dr: 1, dc: -1},  // 左下
+        {dr: 1, dc: 1}    // 右下
+      ];
+      
+      for (const {dr, dc} of directions) {
+        let r = row + dr;
+        let c = col + dc;
+        
+        while (isInBounds(r, c)) {
+          const targetPiece = gameState.board[r][c];
+          
+          if (!targetPiece) {
+            // 空格子，可以移动
+            validMoves.push({row: r, col: c});
+          } else if (targetPiece[0] !== (color === 'white' ? 'w' : 'b')) {
+            // 对方棋子，可以吃
+            validMoves.push({row: r, col: c});
+            break;
+          } else {
+            // 自己的棋子，不能移动
+            break;
+          }
+          
+          r += dr;
+          c += dc;
+        }
+      }
+    }
+    
+    // 计算后的移动 (车+象的组合)
+    function calculateQueenMoves(row, col, color, validMoves) {
+      calculateRookMoves(row, col, color, validMoves);
+      calculateBishopMoves(row, col, color, validMoves);
+    }
+    
+    // 计算王的移动
+    function calculateKingMoves(row, col, color, validMoves) {
+      // 检查周围8个格子
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue; // 跳过自己的位置
+          
+          const r = row + dr;
+          const c = col + dc;
+          
+          if (isInBounds(r, c)) {
+            const targetPiece = gameState.board[r][c];
+            
+            if (!targetPiece || targetPiece[0] !== (color === 'white' ? 'w' : 'b')) {
+              validMoves.push({row: r, col: c});
+            }
+          }
+        }
+      }
+    }
+    
+    // 检查坐标是否在棋盘范围内
+    function isInBounds(row, col) {
+      return row >= 0 && row < 8 && col >= 0 && col < 8;
+    }
+    
+    // 检查将军状态
+    function checkForCheck() {
+      // 查找两方的王的位置
+      let whiteKingPos = null;
+      let blackKingPos = null;
+      
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = gameState.board[row][col];
+          if (piece === 'wk') {
+            whiteKingPos = { row, col };
+          } else if (piece === 'bk') {
+            blackKingPos = { row, col };
+          }
+          
+          if (whiteKingPos && blackKingPos) break;
+        }
+        if (whiteKingPos && blackKingPos) break;
+      }
+      
+      // 检查白方王是否被将军
+      gameState.check.white = isSquareUnderAttack(whiteKingPos.row, whiteKingPos.col, 'black');
+      
+      // 检查黑方王是否被将军
+      gameState.check.black = isSquareUnderAttack(blackKingPos.row, blackKingPos.col, 'white');
+    }
+    
+    // 判断一个格子是否被攻击
+    function isSquareUnderAttack(row, col, attackerColor) {
+      // 简化版本，只检查骑士和兵的攻击
+      // 完整版本会检查所有类型棋子的攻击路径
+      
+      // 骑士攻击
+      const knightMoves = [
+        {dr: -2, dc: -1}, {dr: -2, dc: 1},
+        {dr: -1, dc: -2}, {dr: -1, dc: 2},
+        {dr: 1, dc: -2}, {dr: 1, dc: 2},
+        {dr: 2, dc: -1}, {dr: 2, dc: 1}
+      ];
+      
+      for (const {dr, dc} of knightMoves) {
+        const r = row + dr;
+        const c = col + dc;
+        
+        if (isInBounds(r, c)) {
+          const piece = gameState.board[r][c];
+          if (piece && piece[0] === (attackerColor === 'white' ? 'w' : 'b') && piece[1] === 'n') {
+            return true;
+          }
+        }
+      }
+      
+      // 兵攻击
+      const pawnDir = attackerColor === 'white' ? -1 : 1;
+      const pawnAttacks = [
+        {r: row + pawnDir, c: col - 1},
+        {r: row + pawnDir, c: col + 1}
+      ];
+      
+      for (const {r, c} of pawnAttacks) {
+        if (isInBounds(r, c)) {
+          const piece = gameState.board[r][c];
+          if (piece && piece[0] === (attackerColor === 'white' ? 'w' : 'b') && piece[1] === 'p') {
+            return true;
+          }
+        }
+      }
+      
+      return false;
+    }
+    
+    // 更新被吃的棋子
+    function updateCapturedPieces() {
+      capturedWhite.innerHTML = 'Captured White Pieces: ';
+      capturedBlack.innerHTML = 'Captured Black Pieces: ';
+      
+      gameState.capturedPieces.white.forEach(piece => {
+        const pieceType = getPieceType(piece);
+        capturedWhite.innerHTML += PIECES.white[pieceType] + ' ';
+      });
+      
+      gameState.capturedPieces.black.forEach(piece => {
+        const pieceType = getPieceType(piece);
+        capturedBlack.innerHTML += PIECES.black[pieceType] + ' ';
+      });
+    }
+    
+    // 撤销上一步移动
+    function undoMove() {
+      if (gameState.moveHistory.length === 0) return;
+      
+      // 在AI模式下，需要撤销两步（玩家的和AI的）
+      if (gameSettings.mode === 'ai') {
+        // 如果当前是玩家回合，需要撤销两步
+        if (gameState.currentPlayer === 'white') {
+          if (gameState.moveHistory.length >= 2) {
+            undoLastMove();
+            undoLastMove();
+          }
+        } else {
+          // 如果当前是AI回合，只撤销一步
+          undoLastMove();
+        }
+      } else {
+        // 在玩家对战模式下，只撤销一步
+        undoLastMove();
+      }
+    }
+    
+    // 撤销最后一步移动
+    function undoLastMove() {
+      const lastMove = gameState.moveHistory.pop();
+      if (!lastMove) return;
+      
+      const {from, to, piece, captured} = lastMove;
+      
+      // 恢复棋子位置
+      gameState.board[from.row][from.col] = piece;
+      gameState.board[to.row][to.col] = captured;
+      
+      // 如果有被吃的棋子，从记录中移除
+      if (captured) {
+        const capturedColor = captured[0] === 'w' ? 'white' : 'black';
+        gameState.capturedPieces[capturedColor].pop();
+      }
+      
+      // 切换玩家
+      gameState.currentPlayer = gameState.currentPlayer === 'white' ? 'black' : 'white';
+      
+      // 重置选择状态
+      gameState.selectedPiece = null;
+      gameState.validMoves = [];
+      
+      // 重置将军状态
+      checkForCheck();
+      
+      // 更新棋盘
+      updateBoard();
+    }
+    
+    // 重新开始游戏
+    function restartGame() {
+      gameState = {
+        board: JSON.parse(JSON.stringify(INITIAL_BOARD)),
+        currentPlayer: 'white',
+        selectedPiece: null,
+        validMoves: [],
+        moveHistory: [],
+        capturedPieces: {
+          white: [],
+          black: []
+        },
+        check: {
+          white: false,
+          black: false
+        },
+        aiThinking: false
+      };
+      
+      updateBoard();
+      gameInfo.textContent = 'Game started! White moves first.';
+    }
+    
+    // 初始化游戏
+    window.onload = initGame;
+  </script>
+</body>
+</html> 

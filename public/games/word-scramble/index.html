@@ -5,73 +5,957 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>单词拼图游戏</title>
   <style>
-    body, html {
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #0f172a;
+      font-family: 'Arial', sans-serif;
+    }
+    
+    body {
+      background-color: #f5f5f5;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: #f8fafc;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .game-container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+      padding: 20px;
+      text-align: center;
     }
     
     h1 {
-      color: #3b82f6;
-      margin-bottom: 1rem;
+      color: #2c3e50;
+      margin-bottom: 20px;
     }
     
-    iframe {
-      border: none;
-      width: 100%;
-      max-width: 900px;
-      height: 80vh;
-      border-radius: 0.5rem;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    h2 {
+      color: #3498db;
+      margin-bottom: 15px;
     }
     
-    .loading {
+    .game-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    
+    .info-item {
       display: flex;
       flex-direction: column;
+    }
+    
+    .word-display {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 20px 0;
+      color: #2c3e50;
+      min-height: 40px;
+    }
+    
+    #letters-container {
+      display: flex;
+      flex-wrap: wrap;
       justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .letter-btn {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+    
+    .letter-btn:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+    
+    .letter-btn.selected {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .control-btn {
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .control-btn:hover {
+      background-color: #27ae60;
+    }
+    
+    .control-btn:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+    
+    #check-btn {
+      background-color: #f39c12;
+    }
+    
+    #check-btn:hover {
+      background-color: #e67e22;
+    }
+    
+    #hint-btn {
+      background-color: #9b59b6;
+    }
+    
+    #hint-btn:hover {
+      background-color: #8e44ad;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    #hint-container {
+      margin: 15px 0;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      border-left: 4px solid #9b59b6;
+      text-align: left;
+    }
+    
+    #hint-text {
+      color: #2c3e50;
+      font-style: italic;
+    }
+    
+    #hint-details {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dotted #bdc3c7;
+    }
+    
+    /* 难度选择样式 */
+    .difficulty-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .difficulty-btn {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      opacity: 0.7;
+    }
+    
+    .difficulty-btn:hover {
+      opacity: 0.9;
+    }
+    
+    .difficulty-btn.active {
+      opacity: 1;
+      box-shadow: 0 0 0 2px white, 0 0 0 4px #3498db;
+    }
+    
+    #easy-btn {
+      background-color: #27ae60;
+    }
+    
+    #medium-btn {
+      background-color: #f39c12;
+    }
+    
+    #hard-btn {
+      background-color: #e74c3c;
+    }
+    
+    #start-game-btn {
+      background-color: #2ecc71;
+      padding: 12px 30px;
+      font-size: 18px;
+      margin-top: 10px;
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 480px) {
+      .game-container {
+        padding: 15px;
+      }
+      
+      h1 {
+        font-size: 24px;
+        margin-bottom: 15px;
+      }
+      
+      .word-display {
+        font-size: 24px;
+      }
+      
+      .letter-btn {
+        padding: 8px 12px;
+        font-size: 16px;
+      }
+      
+      .control-btn {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+    }
+    
+    .audio-btn {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      margin: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .audio-btn:hover {
+      background-color: #2980b9;
+    }
+    
+    .pronunciation-container {
+      display: flex;
       align-items: center;
-      height: 80vh;
-      width: 100%;
-    }
-    
-    .spinner {
-      border: 6px solid rgba(59, 130, 246, 0.2);
-      border-top: 6px solid #3b82f6;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-      margin-bottom: 1rem;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      justify-content: space-between;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>单词拼图游戏</h1>
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-    <p>游戏加载中...</p>
+  <div class="game-container">
+    <h1>Word Scramble</h1>
+    
+    <!-- 难度选择界面 -->
+    <div id="difficulty-selection" class="game-section">
+      <h2>Select Difficulty</h2>
+      <div class="difficulty-buttons">
+        <button id="easy-btn" class="difficulty-btn active">Easy</button>
+        <button id="medium-btn" class="difficulty-btn">Medium</button>
+        <button id="hard-btn" class="difficulty-btn">Hard</button>
+      </div>
+      <button id="start-game-btn" class="control-btn">Start Game</button>
+    </div>
+    
+    <div id="game-play" class="hidden">
+      <div class="game-info">
+        <div class="info-item">
+          <span>Time:</span>
+          <span id="timer">60</span>
+        </div>
+        <div class="info-item">
+          <span>Level:</span>
+          <span id="level">Easy</span>
+        </div>
+        <div class="info-item">
+          <span>Score:</span>
+          <span id="score">0</span>
+        </div>
+      </div>
+      
+      <div id="word-container">
+        <div id="scrambled-word" class="word-display"></div>
+      </div>
+      
+      <div id="letters-container"></div>
+      
+      <div id="hint-container" class="hidden">
+        <p id="hint-text"></p>
+        <div id="hint-details" class="hidden">
+          <div class="pronunciation-container">
+            <p><strong>Pronunciation:</strong> <span id="pronunciation"></span></p>
+            <div class="audio-buttons">
+              <button id="us-pronunciation" class="audio-btn">🔊 US</button>
+              <button id="uk-pronunciation" class="audio-btn">🔊 UK</button>
+            </div>
+          </div>
+          <p><strong>Meaning:</strong> <span id="meaning"></span></p>
+        </div>
+      </div>
+      
+      <div class="controls">
+        <button id="check-btn" class="control-btn">Check</button>
+        <button id="hint-btn" class="control-btn">Hint</button>
+        <button id="shuffle-btn" class="control-btn">Shuffle</button>
+        <button id="next-btn" class="control-btn" disabled>Next</button>
+      </div>
+    </div>
+    
+    <div id="game-over" class="hidden">
+      <h2>Game Over!</h2>
+      <p>Your final score: <span id="final-score">0</span></p>
+      <button id="play-again-btn" class="control-btn">Play Again</button>
+    </div>
   </div>
-  <iframe id="gameFrame" src="https://www.arkadium.com/games/scramble-words-game/" style="display:none;" onload="hideLoading()"></iframe>
   
   <script>
-    function hideLoading() {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('gameFrame').style.display = 'block';
+    // 游戏词库 - 按难度分类
+    const wordLists = {
+      easy: [
+        { 
+          word: "CAT", 
+          hint: "A common pet animal", 
+          pronunciation: "/kæt/", 
+          meaning: "A small domesticated carnivorous mammal with soft fur, a short snout, and retractable claws.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/cat--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/cat--_gb_1.mp3"
+        },
+        { 
+          word: "DOG", 
+          hint: "Man's best friend", 
+          pronunciation: "/dɒɡ/", 
+          meaning: "A domesticated carnivorous mammal that typically has a long snout, an acute sense of smell, and a barking, howling, or whining voice.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/dog--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/dog--_gb_1.mp3"
+        },
+        { 
+          word: "SUN", 
+          hint: "The star at the center of our solar system", 
+          pronunciation: "/sʌn/", 
+          meaning: "The star around which the earth orbits and which provides heat and light to the earth.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/sun--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/sun--_gb_1.mp3"
+        },
+        { 
+          word: "HAT", 
+          hint: "A covering for the head", 
+          pronunciation: "/hæt/", 
+          meaning: "A shaped covering for the head worn for warmth, as a fashion item, or as part of a uniform.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/hat--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/hat--_gb_1.mp3"
+        },
+        { 
+          word: "BOOK", 
+          hint: "A written or printed work", 
+          pronunciation: "/bʊk/", 
+          meaning: "A written or printed work consisting of pages glued or sewn together along one side and bound in covers.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/book--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/book--_gb_1.mp3"
+        },
+        { 
+          word: "JUMP", 
+          hint: "To push oneself off a surface", 
+          pronunciation: "/dʒʌmp/", 
+          meaning: "To push oneself off a surface and into the air by using the muscles in one's legs and feet.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/jump--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/jump--_gb_1.mp3"
+        },
+        { 
+          word: "FISH", 
+          hint: "An aquatic animal", 
+          pronunciation: "/fɪʃ/", 
+          meaning: "A limbless cold-blooded vertebrate animal with gills and fins and living wholly in water.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/fish--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/fish--_gb_1.mp3"
+        },
+        { 
+          word: "BALL", 
+          hint: "A round object used in games", 
+          pronunciation: "/bɔːl/", 
+          meaning: "A solid or hollow spherical or egg-shaped object that is kicked, thrown, or hit in a game.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/ball--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/ball--_gb_1.mp3"
+        },
+        { 
+          word: "DOOR", 
+          hint: "An entry to a building or room", 
+          pronunciation: "/dɔːr/", 
+          meaning: "A hinged, sliding, or revolving barrier at the entrance to a building, room, or vehicle, or in the framework of a cupboard.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/door--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/door--_gb_1.mp3"
+        },
+        { 
+          word: "TREE", 
+          hint: "A woody perennial plant", 
+          pronunciation: "/triː/", 
+          meaning: "A woody perennial plant, typically having a single stem or trunk growing to a considerable height and bearing lateral branches.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/tree--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/tree--_gb_1.mp3"
+        }
+      ],
+      medium: [
+        { 
+          word: "APPLE", 
+          hint: "A common fruit", 
+          pronunciation: "/ˈæp.əl/", 
+          meaning: "The round fruit of a tree of the rose family, which typically has thin red or green skin and crisp flesh.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/apple--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/apple--_gb_1.mp3"
+        },
+        { 
+          word: "HOUSE", 
+          hint: "A place where people live", 
+          pronunciation: "/haʊs/", 
+          meaning: "A building for human habitation, especially one that is lived in by a family or small group of people.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/house--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/house--_gb_1.mp3"
+        },
+        { 
+          word: "WATER", 
+          hint: "A clear liquid", 
+          pronunciation: "/ˈwɔː.tər/", 
+          meaning: "A colorless, transparent, odorless liquid that forms the seas, lakes, rivers, and rain and is the basis of the fluids of living organisms.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/water--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/water--_gb_1.mp3"
+        },
+        { 
+          word: "MUSIC", 
+          hint: "An art form using sound", 
+          pronunciation: "/ˈmjuː.zɪk/", 
+          meaning: "Vocal or instrumental sounds (or both) combined in such a way as to produce beauty of form, harmony, and expression of emotion.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/music--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/music--_gb_1.mp3"
+        },
+        { 
+          word: "TABLE", 
+          hint: "A piece of furniture", 
+          pronunciation: "/ˈteɪ.bəl/", 
+          meaning: "A piece of furniture with a flat top and one or more legs, providing a level surface on which objects may be placed.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/table--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/table--_gb_1.mp3"
+        },
+        { 
+          word: "SMILE", 
+          hint: "A pleased facial expression", 
+          pronunciation: "/smaɪl/", 
+          meaning: "A pleased, kind, or amused facial expression, typically with the corners of the mouth turned up and the front teeth exposed.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/smile--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/smile--_gb_1.mp3"
+        },
+        { 
+          word: "BREAD", 
+          hint: "A baked food", 
+          pronunciation: "/bred/", 
+          meaning: "Food made of flour, water, and yeast or another leavening agent, mixed together and baked.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/bread--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/bread--_gb_1.mp3"
+        },
+        { 
+          word: "RIVER", 
+          hint: "A large natural stream of water", 
+          pronunciation: "/ˈrɪv.ər/", 
+          meaning: "A large natural stream of water flowing in a channel to the sea, a lake, or another such stream.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/river--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/river--_gb_1.mp3"
+        },
+        { 
+          word: "DANCE", 
+          hint: "Moving rhythmically to music", 
+          pronunciation: "/dɑːns/", 
+          meaning: "Move rhythmically to music, typically following a set sequence of steps.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/dance--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/dance--_gb_1.mp3"
+        },
+        { 
+          word: "PLANT", 
+          hint: "A living organism", 
+          pronunciation: "/plɑːnt/", 
+          meaning: "A living organism of the kind exemplified by trees, shrubs, herbs, grasses, ferns, and mosses, typically growing in a permanent site.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/plant--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/plant--_gb_1.mp3"
+        }
+      ],
+      hard: [
+        { 
+          word: "COMPUTER", 
+          hint: "An electronic device", 
+          pronunciation: "/kəmˈpjuː.tər/", 
+          meaning: "An electronic device for storing and processing data, typically in binary form, according to instructions given to it in a variable program.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/computer--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/computer--_gb_1.mp3"
+        },
+        { 
+          word: "ELEPHANT", 
+          hint: "A large mammal with a trunk", 
+          pronunciation: "/ˈel.ɪ.fənt/", 
+          meaning: "A heavy plant-eating mammal with a prehensile trunk, long curved ivory tusks, and large ears, native to Africa and southern Asia.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/elephant--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/elephant--_gb_1.mp3"
+        },
+        { 
+          word: "MOUNTAIN", 
+          hint: "A large natural elevation", 
+          pronunciation: "/ˈmaʊn.tɪn/", 
+          meaning: "A large natural elevation of the earth's surface rising abruptly from the surrounding level; a large steep hill.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/mountain--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/mountain--_gb_1.mp3"
+        },
+        { 
+          word: "BIRTHDAY", 
+          hint: "The anniversary of birth", 
+          pronunciation: "/ˈbɜːθ.deɪ/", 
+          meaning: "The anniversary of the day on which a person was born, typically treated as an occasion for celebration and the giving of gifts.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/birthday--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/birthday--_gb_1.mp3"
+        },
+        { 
+          word: "SURPRISE", 
+          hint: "An unexpected event", 
+          pronunciation: "/səˈpraɪz/", 
+          meaning: "An unexpected or astonishing event, fact, or thing; a feeling of mild astonishment or shock caused by something unexpected.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/surprise--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/surprise--_gb_1.mp3"
+        },
+        { 
+          word: "LANGUAGE", 
+          hint: "A system of communication", 
+          pronunciation: "/ˈlæŋ.ɡwɪdʒ/", 
+          meaning: "The method of human communication, either spoken or written, consisting of the use of words in a structured and conventional way.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/language--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/language--_gb_1.mp3"
+        },
+        { 
+          word: "CALENDAR", 
+          hint: "A system for organizing days", 
+          pronunciation: "/ˈkæl.ən.dər/", 
+          meaning: "A chart or series of pages showing the days, weeks, and months of a particular year, or giving particular seasonal information.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/calendar--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/calendar--_gb_1.mp3"
+        },
+        { 
+          word: "PAINTING", 
+          hint: "A visual art form", 
+          pronunciation: "/ˈpeɪn.tɪŋ/", 
+          meaning: "The action or skill of using paint, either in a picture or as decoration; a painted picture.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/painting--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/painting--_gb_1.mp3"
+        },
+        { 
+          word: "CHOCOLATE", 
+          hint: "A sweet food made from cocoa", 
+          pronunciation: "/ˈtʃɒk.lət/", 
+          meaning: "A food preparation in the form of a paste or solid block made from roasted and ground cacao seeds, typically sweetened.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/chocolate--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/chocolate--_gb_1.mp3"
+        },
+        { 
+          word: "ADVENTURE", 
+          hint: "An exciting experience", 
+          pronunciation: "/ədˈven.tʃər/", 
+          meaning: "An unusual and exciting, typically hazardous, experience or activity; excitement associated with danger or the taking of risks.",
+          usAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/adventure--_us_1.mp3",
+          ukAudio: "https://ssl.gstatic.com/dictionary/static/sounds/20200429/adventure--_gb_1.mp3"
+        }
+      ]
+    };
+    
+    // 游戏状态
+    const gameState = {
+      currentWord: "",
+      currentHint: "",
+      currentPronunciation: "",
+      currentMeaning: "",
+      currentUsAudio: "",
+      currentUkAudio: "",
+      scrambledWord: "",
+      guessedWord: "",
+      selectedLetters: [],
+      difficulty: "easy",
+      score: 0,
+      timeLeft: 60,
+      timer: null,
+      hintsUsed: 0,
+      hintLevel: 0, // 0: 无提示, 1: 简单提示, 2: 详细提示(包括发音和含义)
+      isGameStarted: false
+    };
+    
+    // DOM元素
+    const scrambledWordEl = document.getElementById('scrambled-word');
+    const lettersContainerEl = document.getElementById('letters-container');
+    const checkBtn = document.getElementById('check-btn');
+    const hintBtn = document.getElementById('hint-btn');
+    const shuffleBtn = document.getElementById('shuffle-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const timerEl = document.getElementById('timer');
+    const scoreEl = document.getElementById('score');
+    const levelEl = document.getElementById('level');
+    const hintContainerEl = document.getElementById('hint-container');
+    const hintTextEl = document.getElementById('hint-text');
+    const hintDetailsEl = document.getElementById('hint-details');
+    const pronunciationEl = document.getElementById('pronunciation');
+    const meaningEl = document.getElementById('meaning');
+    const finalScoreEl = document.getElementById('final-score');
+    const gamePlayEl = document.getElementById('game-play');
+    const gameOverEl = document.getElementById('game-over');
+    const playAgainBtn = document.getElementById('play-again-btn');
+    const difficultySelectionEl = document.getElementById('difficulty-selection');
+    const startGameBtn = document.getElementById('start-game-btn');
+    const easyBtn = document.getElementById('easy-btn');
+    const mediumBtn = document.getElementById('medium-btn');
+    const hardBtn = document.getElementById('hard-btn');
+    
+    // 初始化游戏
+    function initGame() {
+      // 重置游戏状态
+      gameState.score = 0;
+      gameState.timeLeft = 60;
+      gameState.hintsUsed = 0;
+      gameState.isGameStarted = true;
+      
+      // 更新UI
+      scoreEl.textContent = gameState.score;
+      timerEl.textContent = gameState.timeLeft;
+      
+      // 根据难度级别更新UI
+      switch(gameState.difficulty) {
+        case "easy":
+          levelEl.textContent = "Easy";
+          break;
+        case "medium":
+          levelEl.textContent = "Medium";
+          break;
+        case "hard":
+          levelEl.textContent = "Hard";
+          break;
+      }
+      
+      // 初始化第一个单词
+      getNewWord();
+      
+      // 开始计时器
+      startTimer();
+      
+      // 显示游戏界面
+      difficultySelectionEl.classList.add('hidden');
+      gamePlayEl.classList.remove('hidden');
+      gameOverEl.classList.add('hidden');
     }
+    
+    // 打乱字母顺序
+    function scrambleWord(word) {
+      const wordArr = word.split('');
+      for (let i = wordArr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [wordArr[i], wordArr[j]] = [wordArr[j], wordArr[i]];
+      }
+      return wordArr.join('');
+    }
+    
+    // 获取新单词
+    function getNewWord() {
+      // 重置提示状态
+      gameState.hintLevel = 0;
+      hintContainerEl.classList.add('hidden');
+      hintDetailsEl.classList.add('hidden');
+      
+      // 从当前难度词库中随机选取一个单词
+      const wordListForDifficulty = wordLists[gameState.difficulty];
+      const randomIndex = Math.floor(Math.random() * wordListForDifficulty.length);
+      const wordObj = wordListForDifficulty[randomIndex];
+      
+      gameState.currentWord = wordObj.word;
+      gameState.currentHint = wordObj.hint;
+      gameState.currentPronunciation = wordObj.pronunciation;
+      gameState.currentMeaning = wordObj.meaning;
+      gameState.currentUsAudio = wordObj.usAudio;
+      gameState.currentUkAudio = wordObj.ukAudio;
+      gameState.guessedWord = "";
+      gameState.selectedLetters = [];
+      
+      // 确保打乱后的单词与原单词不同
+      do {
+        gameState.scrambledWord = scrambleWord(gameState.currentWord);
+      } while (gameState.scrambledWord === gameState.currentWord);
+      
+      // 更新UI
+      scrambledWordEl.textContent = gameState.scrambledWord;
+      
+      // 创建字母按钮
+      renderLetterButtons();
+      
+      // 禁用下一个按钮
+      nextBtn.disabled = true;
+    }
+    
+    // 渲染字母按钮
+    function renderLetterButtons() {
+      lettersContainerEl.innerHTML = '';
+      
+      // 为每个字母创建一个按钮
+      for (let i = 0; i < gameState.scrambledWord.length; i++) {
+        const letter = gameState.scrambledWord[i];
+        const letterBtn = document.createElement('button');
+        letterBtn.textContent = letter;
+        letterBtn.classList.add('letter-btn');
+        letterBtn.dataset.index = i;
+        
+        letterBtn.addEventListener('click', function() {
+          // 仅当字母未被选中时才能点击
+          if (!gameState.selectedLetters.includes(i)) {
+            gameState.selectedLetters.push(i);
+            gameState.guessedWord += letter;
+            scrambledWordEl.textContent = gameState.guessedWord;
+            letterBtn.classList.add('selected');
+            
+            // 检查是否所有字母都已被选中
+            if (gameState.selectedLetters.length === gameState.scrambledWord.length) {
+              checkAnswer();
+            }
+          }
+        });
+        
+        lettersContainerEl.appendChild(letterBtn);
+      }
+    }
+    
+    // 开始计时器
+    function startTimer() {
+      // 清除现有的计时器
+      if (gameState.timer) {
+        clearInterval(gameState.timer);
+      }
+      
+      // 设置新的计时器
+      gameState.timer = setInterval(function() {
+        gameState.timeLeft--;
+        timerEl.textContent = gameState.timeLeft;
+        
+        // 时间到，结束游戏
+        if (gameState.timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+    
+    // 检查答案
+    function checkAnswer() {
+      if (gameState.guessedWord.toUpperCase() === gameState.currentWord.toUpperCase()) {
+        // 正确答案
+        let points = 0;
+        
+        // 根据难度和是否使用提示计算得分
+        switch(gameState.difficulty) {
+          case "easy":
+            points = 10;
+            break;
+          case "medium":
+            points = 20;
+            break;
+          case "hard":
+            points = 30;
+            break;
+        }
+        
+        // 如果使用了提示，减少得分
+        points -= (gameState.hintLevel * 3);
+        
+        // 确保最低得分为1
+        points = Math.max(1, points);
+        
+        // 更新分数
+        gameState.score += points;
+        scoreEl.textContent = gameState.score;
+        
+        // 重新启用下一个按钮
+        nextBtn.disabled = false;
+        
+        // 使检查和提示按钮不可用
+        checkBtn.disabled = true;
+        hintBtn.disabled = true;
+        
+        // 给予视觉反馈
+        scrambledWordEl.style.color = '#27ae60';
+        
+        // 添加额外时间作为奖励
+        gameState.timeLeft += 5;
+        timerEl.textContent = gameState.timeLeft;
+      } else {
+        // 错误答案
+        // 给予视觉反馈
+        scrambledWordEl.style.color = '#e74c3c';
+        
+        // 2秒后重置
+        setTimeout(function() {
+          resetGuess();
+          scrambledWordEl.style.color = '#2c3e50';
+        }, 1000);
+      }
+    }
+    
+    // 重置猜测
+    function resetGuess() {
+      gameState.guessedWord = "";
+      gameState.selectedLetters = [];
+      scrambledWordEl.textContent = "";
+      
+      // 重置字母按钮
+      const letterButtons = document.querySelectorAll('.letter-btn');
+      letterButtons.forEach(btn => btn.classList.remove('selected'));
+    }
+    
+    // 使用提示
+    function useHint() {
+      gameState.hintLevel++; // 增加提示级别
+      
+      if (gameState.hintLevel === 1) {
+        // 第一次点击：显示简单提示
+        hintContainerEl.classList.remove('hidden');
+        hintTextEl.textContent = gameState.currentHint;
+        hintDetailsEl.classList.add('hidden');
+      } else if (gameState.hintLevel === 2) {
+        // 第二次点击：显示详细信息（发音和含义）
+        hintDetailsEl.classList.remove('hidden');
+        pronunciationEl.textContent = gameState.currentPronunciation;
+        meaningEl.textContent = gameState.currentMeaning;
+        
+        // 设置音频按钮事件
+        document.getElementById('us-pronunciation').onclick = function() {
+          playAudio(gameState.currentUsAudio);
+        };
+        
+        document.getElementById('uk-pronunciation').onclick = function() {
+          playAudio(gameState.currentUkAudio);
+        };
+      }
+    }
+    
+    // 播放音频
+    function playAudio(audioUrl) {
+      const audio = new Audio(audioUrl);
+      audio.play().catch(error => {
+        console.error("Error playing audio:", error);
+      });
+    }
+    
+    // 洗牌功能
+    function shuffleLetters() {
+      if (gameState.selectedLetters.length > 0) {
+        // 只有未选择任何字母时才允许洗牌
+        return;
+      }
+      
+      // 重新打乱当前单词
+      do {
+        gameState.scrambledWord = scrambleWord(gameState.currentWord);
+      } while (gameState.scrambledWord === gameState.currentWord);
+      
+      // 更新UI
+      renderLetterButtons();
+    }
+    
+    // 结束游戏
+    function endGame() {
+      // 停止计时器
+      clearInterval(gameState.timer);
+      
+      // 显示最终分数
+      finalScoreEl.textContent = gameState.score;
+      
+      // 显示游戏结束界面
+      gamePlayEl.classList.add('hidden');
+      gameOverEl.classList.remove('hidden');
+      
+      // 重置游戏状态
+      gameState.isGameStarted = false;
+    }
+    
+    // 事件监听器
+    checkBtn.addEventListener('click', function() {
+      if (gameState.guessedWord && gameState.isGameStarted) {
+        checkAnswer();
+      }
+    });
+    
+    hintBtn.addEventListener('click', function() {
+      if (gameState.isGameStarted && gameState.hintLevel < 2) {
+        useHint();
+      }
+    });
+    
+    shuffleBtn.addEventListener('click', function() {
+      if (gameState.isGameStarted) {
+        shuffleLetters();
+      }
+    });
+    
+    nextBtn.addEventListener('click', function() {
+      if (gameState.isGameStarted) {
+        // 重置并获取新单词
+        checkBtn.disabled = false;
+        hintBtn.disabled = false;
+        scrambledWordEl.style.color = '#2c3e50';
+        getNewWord();
+      }
+    });
+    
+    playAgainBtn.addEventListener('click', function() {
+      // 返回难度选择界面
+      gameOverEl.classList.add('hidden');
+      difficultySelectionEl.classList.remove('hidden');
+    });
+    
+    // 难度按钮事件监听器
+    easyBtn.addEventListener('click', function() {
+      setDifficulty('easy');
+    });
+    
+    mediumBtn.addEventListener('click', function() {
+      setDifficulty('medium');
+    });
+    
+    hardBtn.addEventListener('click', function() {
+      setDifficulty('hard');
+    });
+    
+    // 设置难度
+    function setDifficulty(difficulty) {
+      gameState.difficulty = difficulty;
+      
+      // 更新UI
+      document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      document.getElementById(`${difficulty}-btn`).classList.add('active');
+    }
+    
+    // 开始游戏按钮事件监听器
+    startGameBtn.addEventListener('click', function() {
+      initGame();
+    });
+    
+    // 初始化页面
+    document.addEventListener('DOMContentLoaded', function() {
+      // 显示难度选择界面
+      difficultySelectionEl.classList.remove('hidden');
+      gamePlayEl.classList.add('hidden');
+      gameOverEl.classList.add('hidden');
+    });
   </script>
 </body>
 </html> 

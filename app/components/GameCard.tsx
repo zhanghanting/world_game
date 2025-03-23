@@ -37,8 +37,8 @@ const GameCard: React.FC<GameCardProps> = ({ game, priority = false, onClick }) 
   const [showModal, setShowModal] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Default image if game image not found
-  const fallbackImage = '/images/game-placeholder.jpg';
+  // Default image if game image not found - 使用已有的默认图片
+  const fallbackImage = '/images/default.svg';
   
   // Calculate rating stars (filled and outline)
   const rating = game.rating || 4.5;
@@ -73,6 +73,13 @@ const GameCard: React.FC<GameCardProps> = ({ game, priority = false, onClick }) 
             height={360}
             className="object-cover w-full h-full transition-transform duration-700 transform group-hover:scale-110"
             priority={priority}
+            onError={(e) => {
+              // 当图片加载失败时，替换为默认图片
+              const imgElement = e.currentTarget as HTMLImageElement;
+              if (imgElement.src !== fallbackImage) {
+                imgElement.src = fallbackImage;
+              }
+            }}
           />
           
           {/* Overlay on Hover */}
