@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贪吃蛇游戏 - 增强版</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+    
+    .game-container {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      margin: 0 auto;
+      border: 2px solid #334155;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    canvas {
+      background-color: #1e293b;
+    }
+    
+    .info-panel {
+      display: flex;
+      justify-content: space-between;
+      width: 400px;
+      margin-top: 1rem;
+      padding: 0.5rem;
+      background-color: #334155;
+      border-radius: 8px;
+    }
+    
+    .info-item {
+      text-align: center;
+      flex: 1;
+    }
+    
+    .info-label {
+      font-size: 0.875rem;
+      color: #94a3b8;
+    }
+    
+    .info-value {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+    
+    #startMenu {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(15, 23, 42, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+    
+    #gameOverScreen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(15, 23, 42, 0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+    
+    h1 {
+      color: #f8fafc;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    button {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin: 0.5rem 0;
+    }
+    
+    button:hover {
+      background-color: #2563eb;
+    }
+    
+    .food-types {
+      display: flex;
+      margin-top: 1.5rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 400px;
+    }
+    
+    .food-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    .food-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
+      margin-right: 0.5rem;
+    }
+    
+    .normal-food {
+      background-color: #f59e0b;
+    }
+    
+    .speed-food {
+      background-color: #ef4444;
+    }
+    
+    .growth-food {
+      background-color: #8b5cf6;
+    }
+    
+    .difficulty-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    
+    .difficulty-btn {
+      background-color: #475569;
+      padding: 0.5rem 1rem;
+    }
+    
+    .difficulty-btn.active {
+      background-color: #3b82f6;
+    }
+
+    /* 关卡系统相关样式 */
+    .mode-selection {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    
+    .mode-btn {
+      background-color: #475569;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .mode-btn.active {
+      background-color: #3b82f6;
+    }
+    
+    .level-selection {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    
+    .levels-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    
+    .level-btn {
+      background-color: #475569;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .level-btn:hover {
+      background-color: #3b82f6;
+    }
+    
+    .obstacle {
+      background-color: #64748b;
+      position: absolute;
+    }
+    
+    .menu-row {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    
+    .menu-row h3 {
+      margin-bottom: 0.5rem;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <canvas width="400" height="400" id="game"></canvas>
+    
+    <div id="startMenu">
+      <h1>贪吃蛇 - 增强版</h1>
+      
+      <div class="menu-row">
+        <h3>游戏难度:</h3>
+        <div class="difficulty-buttons">
+          <button class="difficulty-btn active" data-speed="normal">普通</button>
+          <button class="difficulty-btn" data-speed="fast">快速</button>
+          <button class="difficulty-btn" data-speed="very-fast">极速</button>
+        </div>
+      </div>
+      
+      <div class="menu-row">
+        <h3>游戏模式:</h3>
+        <div class="mode-selection">
+          <button class="mode-btn active" data-mode="classic">经典模式</button>
+          <button class="mode-btn" data-mode="levels">关卡模式</button>
+        </div>
+      </div>
+      
+      <!-- 关卡选择界面 -->
+      <div id="level-selection" class="level-selection">
+        <h3>选择关卡:</h3>
+        <div class="levels-grid">
+          <button class="level-btn" data-level="1">关卡 1</button>
+          <button class="level-btn" data-level="2">关卡 2</button>
+          <button class="level-btn" data-level="3">关卡 3</button>
+          <button class="level-btn" data-level="4">关卡 4</button>
+          <button class="level-btn" data-level="5">关卡 5</button>
+        </div>
+      </div>
+      
+      <button id="startButton">开始游戏</button>
+      
+      <div class="food-types">
+        <div class="food-item">
+          <div class="food-icon normal-food"></div>
+          <span>普通食物 (+1分)</span>
+        </div>
+        <div class="food-item">
+          <div class="food-icon speed-food"></div>
+          <span>加速食物 (+2分, 临时提速)</span>
+        </div>
+        <div class="food-item">
+          <div class="food-icon growth-food"></div>
+          <span>增长食物 (+3分, 多增长)</span>
+        </div>
+      </div>
+    </div>
+    
+    <div id="gameOverScreen">
+      <h1>游戏结束!</h1>
+      <p>得分: <span id="finalScore">0</span></p>
+      <p>蛇长度: <span id="finalLength">3</span></p>
+      <button id="restartButton">再玩一次</button>
+      <button id="menuButton">返回菜单</button>
+    </div>
+  </div>
+  
+  <div class="info-panel">
+    <div class="info-item">
+      <div class="info-label">得分</div>
+      <div class="info-value" id="score">0</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">蛇长度</div>
+      <div class="info-value" id="snake-length">3</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">速度</div>
+      <div class="info-value" id="speed-level">普通</div>
+    </div>
+  </div>
+  
+  <script>
+    // 获取画布和上下文
+    const canvas = document.getElementById('game');
+    const context = canvas.getContext('2d');
+    
+    // 网格大小
+    const grid = 16;
+    
+    // 蛇对象
+    const snake = {
+      x: 160,
+      y: 160,
+      dx: grid, // 水平速度
+      dy: 0,    // 垂直速度
+      cells: [], // 蛇的所有格子
+      maxCells: 3 // 蛇的初始长度
+    };
+    
+    // 食物对象
+    const apple = {
+      x: 320,
+      y: 320,
+      type: 'normal' // 默认为普通食物
+    };
+    
+    // 游戏状态
+    let score = 0;
+    let gameStarted = false;
+    let gameEnded = false;
+    let gameSpeed = 'normal'; // 'normal', 'fast', 'very-fast'
+    let speedMultiplier = 1;
+    let temporarySpeedEnd = 0;
+    
+    // 游戏模式和关卡相关变量
+    let gameMode = 'classic'; // 'classic' 或 'levels'
+    let currentLevel = 1;
+    let obstacles = []; // 障碍物数组
+    
+    // 关卡设计 - 每个关卡包含一系列障碍物
+    const levelDesigns = {
+      1: [ // 简单边界
+        {x: 80, y: 80, width: 240, height: 16},
+        {x: 80, y: 304, width: 240, height: 16}
+      ],
+      2: [ // 十字形障碍
+        {x: 192, y: 80, width: 16, height: 240}
+      ],
+      3: [ // 迷宫型
+        {x: 80, y: 80, width: 16, height: 112},
+        {x: 80, y: 80, width: 112, height: 16},
+        {x: 304, y: 80, width: 16, height: 112},
+        {x: 208, y: 80, width: 112, height: 16},
+        {x: 80, y: 304, width: 112, height: 16},
+        {x: 304, y: 304, width: 112, height: 16},
+        {x: 80, y: 208, width: 16, height: 112},
+        {x: 304, y: 208, width: 16, height: 112}
+      ],
+      4: [ // 多岛型
+        {x: 80, y: 80, width: 48, height: 48},
+        {x: 272, y: 80, width: 48, height: 48},
+        {x: 80, y: 272, width: 48, height: 48},
+        {x: 272, y: 272, width: 48, height: 48},
+        {x: 176, y: 176, width: 48, height: 48}
+      ],
+      5: [ // 迷宫挑战
+        {x: 48, y: 48, width: 16, height: 304},
+        {x: 336, y: 48, width: 16, height: 304},
+        {x: 48, y: 48, width: 304, height: 16},
+        {x: 48, y: 336, width: 304, height: 16},
+        {x: 112, y: 112, width: 176, height: 16},
+        {x: 112, y: 272, width: 16, height: 64},
+        {x: 272, y: 272, width: 16, height: 64},
+        {x: 112, y: 208, width: 176, height: 16}
+      ]
+    };
+    
+    // 随机整数生成函数
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min)) + min;
+    }
+    
+    // 获取随机食物类型
+    function getRandomFoodType() {
+      const types = ['normal', 'speed', 'growth'];
+      const weights = [0.7, 0.15, 0.15]; // 各类型的权重
+      
+      const rand = Math.random();
+      let sum = 0;
+      
+      for(let i = 0; i < weights.length; i++) {
+        sum += weights[i];
+        if(rand < sum) {
+          return types[i];
+        }
+      }
+      
+      return 'normal';
+    }
+    
+    // 重置游戏状态
+    function resetGame() {
+      snake.x = 160;
+      snake.y = 160;
+      snake.cells = [];
+      snake.maxCells = 3;
+      snake.dx = grid;
+      snake.dy = 0;
+      
+      apple.x = getRandomInt(0, 25) * grid;
+      apple.y = getRandomInt(0, 25) * grid;
+      apple.type = getRandomFoodType();
+      
+      score = 0;
+      gameEnded = false;
+      
+      document.getElementById('score').textContent = score;
+      document.getElementById('snake-length').textContent = snake.maxCells;
+      
+      // 加载关卡障碍物
+      loadLevelObstacles();
+    }
+    
+    // 游戏结束处理
+    function gameOver() {
+      gameEnded = true;
+      document.getElementById('finalScore').textContent = score;
+      document.getElementById('finalLength').textContent = snake.maxCells;
+      document.getElementById('gameOverScreen').style.display = 'flex';
+    }
+    
+    // 加载关卡障碍物
+    function loadLevelObstacles() {
+      // 清除现有障碍物
+      obstacles.forEach(obstacle => {
+        if(obstacle.element) {
+          obstacle.element.remove();
+        }
+      });
+      obstacles = [];
+      
+      // 如果不是关卡模式，直接返回
+      if(gameMode !== 'levels') return;
+      
+      // 获取当前关卡设计
+      const levelObstacles = levelDesigns[currentLevel] || [];
+      
+      // 创建障碍物
+      levelObstacles.forEach(obstacleData => {
+        const obstacle = {
+          x: obstacleData.x,
+          y: obstacleData.y,
+          width: obstacleData.width,
+          height: obstacleData.height,
+          element: document.createElement('div')
+        };
+        
+        // 设置障碍物样式
+        obstacle.element.className = 'obstacle';
+        obstacle.element.style.left = obstacle.x + 'px';
+        obstacle.element.style.top = obstacle.y + 'px';
+        obstacle.element.style.width = obstacle.width + 'px';
+        obstacle.element.style.height = obstacle.height + 'px';
+        
+        // 添加到DOM
+        document.querySelector('.game-container').appendChild(obstacle.element);
+        
+        // 添加到障碍物数组
+        obstacles.push(obstacle);
+      });
+      
+      // 确保食物不会生成在障碍物上
+      placeAppleSafely();
+    }
+    
+    // 安全地放置食物（避开蛇和障碍物）
+    function placeAppleSafely() {
+      let safe = false;
+      
+      while(!safe) {
+        apple.x = getRandomInt(0, 25) * grid;
+        apple.y = getRandomInt(0, 25) * grid;
+        
+        // 检查是否与障碍物重叠
+        safe = true;
+        for(let i = 0; i < obstacles.length; i++) {
+          const obs = obstacles[i];
+          if(apple.x < obs.x + obs.width &&
+             apple.x + grid > obs.x &&
+             apple.y < obs.y + obs.height &&
+             apple.y + grid > obs.y) {
+            safe = false;
+            break;
+          }
+        }
+        
+        // 检查是否与蛇重叠
+        if(safe) {
+          for(let i = 0; i < snake.cells.length; i++) {
+            if(apple.x === snake.cells[i].x && apple.y === snake.cells[i].y) {
+              safe = false;
+              break;
+            }
+          }
+        }
+      }
+      
+      // 随机设置食物类型
+      apple.type = getRandomFoodType();
+    }
+    
+    // 检查碰撞
+    function checkCollision() {
+      // 检查墙壁碰撞
+      if (snake.x < 0 || snake.x >= canvas.width || snake.y < 0 || snake.y >= canvas.height) {
+        return true;
+      }
+      
+      // 检查自身碰撞
+      for (let i = 1; i < snake.cells.length; i++) {
+        if (snake.x === snake.cells[i].x && snake.y === snake.cells[i].y) {
+          return true;
+        }
+      }
+      
+      // 检查障碍物碰撞
+      for (let i = 0; i < obstacles.length; i++) {
+        const obs = obstacles[i];
+        
+        // 如果蛇头与障碍物相交
+        if (snake.x < obs.x + obs.width &&
+            snake.x + grid > obs.x &&
+            snake.y < obs.y + obs.height &&
+            snake.y + grid > obs.y) {
+          return true;
+        }
+      }
+      
+      return false;
+    }
+    
+    // 获取当前游戏速度值
+    function getGameSpeed() {
+      // 根据游戏速度返回相应的延迟时间
+      let baseSpeed;
+      
+      switch(gameSpeed) {
+        case 'normal':
+          baseSpeed = 150;
+          break;
+        case 'fast':
+          baseSpeed = 100;
+          break;
+        case 'very-fast':
+          baseSpeed = 70;
+          break;
+        default:
+          baseSpeed = 150;
+      }
+      
+      // 应用临时速度加成
+      if(Date.now() < temporarySpeedEnd) {
+        return baseSpeed / (speedMultiplier * 1.5); // 临时加速效果
+      }
+      
+      return baseSpeed / speedMultiplier;
+    }
+    
+    // 绘制食物
+    function drawFood() {
+      if(apple.type === 'normal') {
+        context.fillStyle = '#f59e0b'; // 黄色 - 普通食物
+      } else if(apple.type === 'speed') {
+        context.fillStyle = '#ef4444'; // 红色 - 加速食物
+      } else if(apple.type === 'growth') {
+        context.fillStyle = '#8b5cf6'; // 紫色 - 快速增长食物
+      }
+      
+      context.fillRect(apple.x, apple.y, grid-1, grid-1);
+    }
+    
+    // 绘制障碍物
+    function drawObstacles() {
+      context.fillStyle = '#64748b'; // 障碍物颜色
+      
+      obstacles.forEach(obs => {
+        context.fillRect(obs.x, obs.y, obs.width, obs.height);
+      });
+    }
+    
+    // 处理食物效果
+    function handleFoodEffect() {
+      if(apple.type === 'normal') {
+        snake.maxCells++; // 普通食物 - 长度+1
+        score++;
+      } else if(apple.type === 'speed') {
+        // 加速食物 - 临时提速
+        snake.maxCells++;
+        temporarySpeedEnd = Date.now() + 3000; // 3秒加速效果
+        score += 2;
+      } else if(apple.type === 'growth') {
+        snake.maxCells += 3; // 快速增长食物 - 长度+3
+        score += 3;
+      }
+      
+      document.getElementById('score').textContent = score;
+      document.getElementById('snake-length').textContent = snake.maxCells;
+      
+      // 生成新食物
+      placeAppleSafely();
+    }
+    
+    // 游戏主循环
+    function loop() {
+      // 根据游戏速度设置帧率
+      setTimeout(function() {
+        if(gameStarted && !gameEnded) {
+          requestAnimationFrame(loop);
+        }
+      }, getGameSpeed());
+      
+      // 清除画布
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // 蛇移动逻辑
+      snake.x += snake.dx;
+      snake.y += snake.dy;
+      
+      // 碰撞检测
+      if (checkCollision()) {
+        gameOver();
+        return;
+      }
+      
+      // 将当前位置添加到蛇身
+      snake.cells.unshift({x: snake.x, y: snake.y});
+      
+      // 如果蛇身体超过最大长度，移除尾部
+      if (snake.cells.length > snake.maxCells) {
+        snake.cells.pop();
+      }
+      
+      // 绘制食物
+      drawFood();
+      
+      // 绘制障碍物
+      drawObstacles();
+      
+      // 绘制蛇
+      context.fillStyle = '#10b981';
+      snake.cells.forEach(function(cell, index) {
+        context.fillRect(cell.x, cell.y, grid-1, grid-1);  
+        
+        // 检测是否吃到食物
+        if (cell.x === apple.x && cell.y === apple.y) {
+          // 处理食物效果
+          handleFoodEffect();
+        }
+      });
+    }
+    
+    // 键盘控制
+    document.addEventListener('keydown', function(e) {
+      // 如果游戏未开始或已结束，忽略按键
+      if(gameEnded) return;
+      
+      // 左方向键，不允许反向
+      if (e.key === 'ArrowLeft' && snake.dx === 0) {
+        snake.dx = -grid;
+        snake.dy = 0;
+      }
+      // 上方向键，不允许反向
+      else if (e.key === 'ArrowUp' && snake.dy === 0) {
+        snake.dy = -grid;
+        snake.dx = 0;
+      }
+      // 右方向键，不允许反向
+      else if (e.key === 'ArrowRight' && snake.dx === 0) {
+        snake.dx = grid;
+        snake.dy = 0;
+      }
+      // 下方向键，不允许反向
+      else if (e.key === 'ArrowDown' && snake.dy === 0) {
+        snake.dy = grid;
+        snake.dx = 0;
+      }
+    });
+    
+    // 难度按钮事件
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // 移除所有按钮的active类
+        document.querySelectorAll('.difficulty-btn').forEach(b => {
+          b.classList.remove('active');
+        });
+        
+        // 添加当前按钮的active类
+        this.classList.add('active');
+        
+        // 设置游戏速度
+        gameSpeed = this.dataset.speed;
+        
+        // 更新显示
+        const speedDisplay = document.getElementById('speed-level');
+        if(gameSpeed === 'normal') {
+          speedDisplay.textContent = '普通';
+        } else if(gameSpeed === 'fast') {
+          speedDisplay.textContent = '快速';
+        } else if(gameSpeed === 'very-fast') {
+          speedDisplay.textContent = '极速';
+        }
+      });
+    });
+    
+    // 模式选择按钮事件
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // 移除所有按钮的active类
+        document.querySelectorAll('.mode-btn').forEach(b => {
+          b.classList.remove('active');
+        });
+        
+        // 添加当前按钮的active类
+        this.classList.add('active');
+        
+        // 设置游戏模式
+        gameMode = this.dataset.mode;
+        
+        // 根据模式显示或隐藏关卡选择
+        if(gameMode === 'levels') {
+          document.getElementById('level-selection').style.display = 'flex';
+        } else {
+          document.getElementById('level-selection').style.display = 'none';
+        }
+      });
+    });
+    
+    // 关卡选择按钮事件
+    document.querySelectorAll('.level-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        currentLevel = parseInt(this.dataset.level);
+        
+        // 高亮显示选中的关卡
+        document.querySelectorAll('.level-btn').forEach(b => {
+          b.style.backgroundColor = '#475569';
+        });
+        this.style.backgroundColor = '#3b82f6';
+      });
+    });
+    
+    // 开始游戏按钮事件
+    document.getElementById('startButton').addEventListener('click', function() {
+      gameStarted = true;
+      resetGame();
+      document.getElementById('startMenu').style.display = 'none';
+      
+      // 开始游戏循环
+      requestAnimationFrame(loop);
+    });
+    
+    // 重新开始按钮事件
+    document.getElementById('restartButton').addEventListener('click', function() {
+      gameStarted = true;
+      resetGame();
+      document.getElementById('gameOverScreen').style.display = 'none';
+      
+      // 开始游戏循环
+      requestAnimationFrame(loop);
+    });
+    
+    // 返回菜单按钮事件
+    document.getElementById('menuButton').addEventListener('click', function() {
+      gameStarted = false;
+      document.getElementById('gameOverScreen').style.display = 'none';
+      document.getElementById('startMenu').style.display = 'flex';
+    });
+  </script>
+</body>
+</html> 

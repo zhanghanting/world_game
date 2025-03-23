@@ -60,6 +60,31 @@ const featuredGames = [
 
 const popularGames = [
   {
+    id: 'klotski',
+    name: 'Klotski',
+    title: 'Sliding Block Puzzle',
+    description: 'Klotski is an ancient sliding block puzzle. Move the blocks around to help the large red block escape through the exit.',
+    image: '/images/klotski.svg',
+    coverImage: '/images/klotski.svg',
+    categories: ['puzzle', 'strategy'],
+    difficulty: 'medium',
+    embedUrl: '/games/klotski/index.html',
+    canEmbed: true,
+    isImplemented: true
+  },
+  {
+    id: '10',
+    name: 'Sudoku',
+    title: 'Sudoku',
+    description: 'Fill the 9x9 grid so each row, column, and 3x3 box contains all numbers from 1 to 9. A puzzle game that challenges your logic.',
+    image: '/images/sudoku.svg',
+    coverImage: '/images/sudoku.svg',
+    rating: 4.9,
+    category: 'Puzzle',
+    embedUrl: '/games/sudoku/index.html',
+    isEmbeddable: true
+  },
+  {
     id: '5',
     name: 'Bubble Shooter',
     title: 'Bubble Shooter',
@@ -96,18 +121,6 @@ const recentGames = [
     rating: 4.2,
     category: 'Arcade',
     embedUrl: '/games/snake/index.html',
-    isEmbeddable: true
-  },
-  {
-    id: '8',
-    name: 'Sudoku',
-    title: 'Sudoku',
-    description: 'Fill the grid so each column, row, and 3×3 box contain numbers 1-9.',
-    image: '/images/sudoku.svg',
-    coverImage: '/images/sudoku.svg',
-    rating: 4.5,
-    category: 'Puzzle',
-    embedUrl: '/games/sudoku/index.html',
     isEmbeddable: true
   }
 ];

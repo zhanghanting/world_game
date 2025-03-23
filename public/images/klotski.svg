@@ -1,0 +1,58 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="64" fill="#7C2D12"/>
+  <rect x="76" y="76" width="360" height="360" rx="16" fill="#92400E" stroke="#D97706" stroke-width="8"/>
+  
+  <!-- Main block - The largest block -->
+  <rect x="156" y="96" width="200" height="200" rx="12" fill="url(#cao-cao)" stroke="#92400E" stroke-width="6"/>
+  <text x="256" y="196" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#FEF3C7">Red</text>
+  
+  <!-- Horizontal block -->
+  <rect x="156" y="316" width="200" height="96" rx="12" fill="url(#guan-yu)" stroke="#92400E" stroke-width="6"/>
+  <text x="256" y="368" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="#FEE2E2">H-Block</text>
+  
+  <!-- Vertical block 1 -->
+  <rect x="96" y="96" width="40" height="200" rx="8" fill="url(#zhang-fei)" stroke="#92400E" stroke-width="4"/>
+  <text x="116" y="196" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#D1FAE5" transform="rotate(-90, 116, 196)">V-Block</text>
+  
+  <!-- Vertical block 2 -->
+  <rect x="376" y="96" width="40" height="200" rx="8" fill="url(#zhao-yun)" stroke="#92400E" stroke-width="4"/>
+  <text x="396" y="196" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#D1FAE5" transform="rotate(-90, 396, 196)">V-Block</text>
+  
+  <!-- Small blocks - four small squares -->
+  <rect x="96" y="316" width="40" height="40" rx="6" fill="url(#soldier)" stroke="#92400E" stroke-width="3"/>
+  <rect x="96" y="376" width="40" height="40" rx="6" fill="url(#soldier)" stroke="#92400E" stroke-width="3"/>
+  <rect x="376" y="316" width="40" height="40" rx="6" fill="url(#soldier)" stroke="#92400E" stroke-width="3"/>
+  <rect x="376" y="376" width="40" height="40" rx="6" fill="url(#soldier)" stroke="#92400E" stroke-width="3"/>
+  
+  <!-- Exit -->
+  <path d="M256 436 L306 436 C316 436 326 446 326 456 L326 476 L186 476 L186 456 C186 446 196 436 206 436 L256 436" fill="#FEF3C7" stroke="#92400E" stroke-width="4"/>
+  <text x="256" y="466" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#92400E">Exit</text>
+  
+  <!-- Gradient definitions -->
+  <defs>
+    <linearGradient id="cao-cao" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    
+    <linearGradient id="guan-yu" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F87171"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+    
+    <linearGradient id="zhang-fei" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    
+    <linearGradient id="zhao-yun" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    
+    <linearGradient id="soldier" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+  </defs>
+</svg>

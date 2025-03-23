@@ -147,33 +147,36 @@ export const GameModal: React.FC<GameModalProps> = ({ game, isOpen, onClose }) =
           )}
           
           {/* Game iframe */}
-          {game.embedUrl && (
+          {game.embedUrl && game.isEmbeddable !== false ? (
             <iframe
               id="game-iframe"
               src={game.embedUrl}
               className="w-full h-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
               onLoad={handleIframeLoad}
               onError={handleIframeError}
-              allowFullScreen
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             ></iframe>
-          )}
-          
-          {/* Fallback for games without embed URL */}
-          {!game.embedUrl && !isLoading && !loadError && (
+          ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900">
-              <p className="text-gray-300 mb-4">This game cannot be embedded.</p>
-              {game.gameUrl && (
-                <a
-                  href={game.gameUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-                >
-                  <ArrowTopRightOnSquareIcon className="h-5 w-5 mr-2" />
-                  Open Game in New Tab
-                </a>
-              )}
+              <div className="text-blue-500 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">外部游戏</h3>
+              <p className="text-gray-400 mb-4 text-center max-w-md px-4">
+                此游戏需要在外部网站上玩，点击下方按钮在新标签页中打开游戏。
+              </p>
+              <a
+                href={game.gameUrl || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full transition-all transform hover:scale-105"
+              >
+                <ArrowTopRightOnSquareIcon className="h-5 w-5 mr-2" />
+                在新标签页中打开
+              </a>
             </div>
           )}
         </div>

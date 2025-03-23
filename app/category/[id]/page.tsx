@@ -96,8 +96,8 @@ export default function CategoryPage() {
                 {category.icon} {category.name}
               </Link>
             ))}
-          </div>
         </div>
+      </div>
       </section>
 
       {/* 游戏列表 */}
@@ -123,8 +123,8 @@ export default function CategoryPage() {
                 浏览所有游戏
               </Link>
             </div>
-          )}
-        </div>
+      )}
+    </div>
       </section>
     </main>
   );

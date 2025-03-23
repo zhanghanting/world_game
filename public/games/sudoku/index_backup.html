@@ -19,7 +19,7 @@
     
     body {
       display: grid;
-      /* 修改网格布局，使用相等的比例，并将中间内容居中 */
+      /* 修改网格布局，使用相等的比例，并将中间内容居�?*/
       grid-template-columns: minmax(280px, 1fr) minmax(550px, 2fr) minmax(280px, 1fr);
       grid-template-rows: auto 1fr auto;
       grid-template-areas: 
@@ -66,12 +66,12 @@
       flex-direction: column;
       align-items: stretch;
       justify-content: center; /* 改为居中对齐 */
-      padding-top: 0; /* 移除顶部内边距 */
-      padding-bottom: 2rem; /* 添加底部内边距 */
+      padding-top: 0; /* 移除顶部内边�?*/
+      padding-bottom: 2rem; /* 添加底部内边�?*/
       gap: 1.5rem;
       width: 100%;
       max-width: 280px;
-      /* 确保对齐到右侧 */
+      /* 确保对齐到右�?*/
       justify-self: end;
       margin-right: 1rem;
       /* 调整整体位置 */
@@ -85,12 +85,12 @@
       flex-direction: column;
       align-items: stretch;
       justify-content: center; /* 居中对齐 */
-      padding-top: 0; /* 移除顶部内边距 */
+      padding-top: 0; /* 移除顶部内边�?*/
       padding-bottom: 2rem; /* 添加底部内边距，平衡布局 */
       gap: 1.5rem;
       width: 100%;
       max-width: 280px;
-      /* 确保对齐到左侧 */
+      /* 确保对齐到左�?*/
       justify-self: start;
       margin-left: 1rem;
       /* 调整整体位置 */
@@ -195,7 +195,7 @@
       position: relative;
       overflow: hidden;
       
-      /* 默认薄边框 */
+      /* 默认薄边�?*/
       border-right: 1px solid #334155;
       border-bottom: 1px solid #334155;
     }
@@ -227,9 +227,9 @@
     }
     
     /* 3x3 grid borders - NEW IMPLEMENTATION */
-    /* 删除所有旧的边框样式 */
+    /* 删除所有旧的边框样�?*/
     
-    /* 重新设计所有单元格的基本边框 */
+    /* 重新设计所有单元格的基本边�?*/
     .cell[data-col="2"],
     .cell[data-col="5"] {
       border-right: 3px solid #64748b !important;
@@ -326,7 +326,7 @@
       gap: 0.75rem;
       width: 100%;
       max-width: 240px;
-      margin-top: 0; /* 移除顶部外边距 */
+      margin-top: 0; /* 移除顶部外边�?*/
       background-color: rgba(30, 41, 59, 0.4);
       border-radius: 0.8rem;
       padding: 1rem;
@@ -636,7 +636,7 @@
     /* Responsive design */
     @media (max-width: 1200px) {
       body {
-        /* 较窄屏幕时调整列宽比例 */
+        /* 较窄屏幕时调整列宽比�?*/
         grid-template-columns: minmax(250px, 1fr) minmax(auto, 2fr) minmax(250px, 1fr);
         gap: 1rem;
       }
@@ -760,7 +760,7 @@
       display: none !important;
     }
     
-    /* 移除之前的伪元素网格线样式 */
+    /* 移除之前的伪元素网格线样�?*/
     .sudoku-board::before,
     .cell[data-row="5"]::after,
     .sudoku-board::after {
@@ -1291,7 +1291,7 @@
       100% { transform: translateY(0); opacity: 1; }
     }
     
-    /* 提高单元格交互体验 */
+    /* 提高单元格交互体�?*/
     .cell {
       transition: all 0.15s ease;
     }
@@ -1320,7 +1320,7 @@
       50% { background-color: rgba(252, 165, 165, 0.3); }
     }
     
-    /* 提高模态框美观度 */
+    /* 提高模态框美观�?*/
     .modal-content {
       border-radius: 1rem;
       background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
@@ -1372,7 +1372,7 @@
       margin: 0;
     }
     
-    /* 统一右侧面板所有按钮样式 */
+    /* 统一右侧面板所有按钮样�?*/
     .right-panel .action-buttons {
       margin-bottom: 0.75rem;
     }
@@ -1392,7 +1392,7 @@
 <body>
   <h1>Sudoku</h1>
   
-  <!-- 左侧面板只保留难度选择和记录显示 -->
+  <!-- 左侧面板只保留难度选择和记录显�?-->
   <div class="left-panel">
     <div class="difficulty">
       <div class="difficulty-title">Game Level</div>
@@ -1414,20 +1414,20 @@
     </div>
   </div>
   
-  <!-- 主游戏区域 -->
+  <!-- 主游戏区�?-->
   <div class="game-container">
     <div class="board-container">
       <div class="sudoku-board" id="board"></div>
     </div>
     
-    <!-- 移动状态信息到主游戏区域下方 -->
+    <!-- 移动状态信息到主游戏区域下�?-->
     <div class="game-info">
       <div class="game-status" id="status">Loading...</div>
       <div class="timer" id="timer">00:00</div>
     </div>
   </div>
   
-  <!-- 右侧面板现在包含数字选择和所有操作按钮 -->
+  <!-- 右侧面板现在包含数字选择和所有操作按�?-->
   <div class="right-panel">
     <div class="number-controls">
       <div class="controls-title">Choose Number</div>
@@ -1449,7 +1449,7 @@
       </div>
     </div>
     
-    <!-- 将操作按钮移到右侧面板 -->
+    <!-- 将操作按钮移到右侧面�?-->
     <div class="action-buttons">
       <button class="action-btn new-game-btn" onclick="newGame()">New Game</button>
       <button class="action-btn daily-btn" onclick="startDailyChallenge()">Daily Challenge</button>
@@ -1467,9 +1467,9 @@
       <p>You completed the Sudoku puzzle!</p>
       
       <div class="completion-stars" id="completeStars">
-        <span class="star filled">★</span>
-        <span class="star filled">★</span>
-        <span class="star filled">★</span>
+        <span class="star filled">�?/span>
+        <span class="star filled">�?/span>
+        <span class="star filled">�?/span>
       </div>
       
       <p>Time: <span id="completeTime">00:00</span></p>
@@ -2128,8 +2128,7 @@
       gameState.board[row][col] = gameState.solution[row][col];
       gameState.hintsUsed++;
       
-      // 更新状态信息
-      updateStatusText();
+      // 更新状态信�?      updateStatusText();
       updateBoard();
     }
     
@@ -2216,9 +2215,9 @@
       let html = '';
       for (let i = 0; i < 3; i++) {
         if (i < count) {
-          html += '<span class="star filled">★</span>';
+          html += '<span class="star filled">�?/span>';
         } else {
-          html += '<span class="star">☆</span>';
+          html += '<span class="star">�?/span>';
         }
       }
       return html;
@@ -2426,7 +2425,7 @@
       const time = document.getElementById('completeTime').textContent;
       const stars = gameState.stars;
       
-      const starsText = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+      const starsText = '�?.repeat(stars) + '�?.repeat(3 - stars);
       
       const message = `I completed a ${difficulty} Sudoku puzzle in ${time} with ${starsText} stars!`;
       
