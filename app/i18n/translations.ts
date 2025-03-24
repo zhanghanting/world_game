@@ -29,6 +29,13 @@ const translations: Translations = {
     'home.recent': 'Recently Added',
     'home.explore': 'Explore Games',
     'home.viewAll': 'View All',
+    'home.totalGames': 'Total Games',
+    'home.activeUsers': 'Active Users',
+    'home.free': 'Free to Play',
+    'home.popularCategories': 'Popular Categories',
+    'home.arcade': 'Arcade Games',
+    'categories.puzzle': 'Puzzle Games',
+    'categories.strategy': 'Strategy Games',
     
     // 游戏卡片
     'game.play': 'Play Now',
@@ -87,6 +94,13 @@ const translations: Translations = {
     'home.recent': '最近添加',
     'home.explore': '探索游戏',
     'home.viewAll': '查看全部',
+    'home.totalGames': '游戏总数',
+    'home.activeUsers': '活跃用户',
+    'home.free': '免费游玩',
+    'home.popularCategories': '热门分类',
+    'home.arcade': '街机游戏',
+    'categories.puzzle': '益智游戏',
+    'categories.strategy': '策略游戏',
     
     // 游戏卡片
     'game.play': '立即玩',
@@ -145,6 +159,13 @@ const translations: Translations = {
     'home.recent': '最近追加',
     'home.explore': 'ゲームを探す',
     'home.viewAll': '全て見る',
+    'home.totalGames': 'ゲーム総数',
+    'home.activeUsers': 'アクティブユーザー',
+    'home.free': '無料で遊べる',
+    'home.popularCategories': '人気カテゴリー',
+    'home.arcade': 'アーケードゲーム',
+    'categories.puzzle': 'パズルゲーム',
+    'categories.strategy': '戦略ゲーム',
     
     // 游戏卡片
     'game.play': '今すぐプレイ',
@@ -203,6 +224,13 @@ const translations: Translations = {
     'home.recent': '최근 추가됨',
     'home.explore': '게임 탐색',
     'home.viewAll': '모두 보기',
+    'home.totalGames': '게임 총 개수',
+    'home.activeUsers': '활동 중인 유저',
+    'home.free': '무료 플레이',
+    'home.popularCategories': '인기 카테고리',
+    'home.arcade': '아케이드 게임',
+    'categories.puzzle': '퍼즐 게임',
+    'categories.strategy': '전략 게임',
     
     // 游戏卡片
     'game.play': '지금 플레이',
@@ -261,6 +289,13 @@ const translations: Translations = {
     'home.recent': 'Añadidos Recientemente',
     'home.explore': 'Explorar Juegos',
     'home.viewAll': 'Ver Todos',
+    'home.totalGames': 'Total de Juegos',
+    'home.activeUsers': 'Usuarios Activos',
+    'home.free': 'Gratis para Jugar',
+    'home.popularCategories': 'Categorías Populares',
+    'home.arcade': 'Juegos de Arcade',
+    'categories.puzzle': 'Juegos de Puzzle',
+    'categories.strategy': 'Juegos de Estrategia',
     
     // 游戏卡片
     'game.play': 'Jugar Ahora',
@@ -319,6 +354,13 @@ const translations: Translations = {
     'home.recent': 'Ajoutés Récemment',
     'home.explore': 'Explorer les Jeux',
     'home.viewAll': 'Voir Tout',
+    'home.totalGames': 'Total des Jeux',
+    'home.activeUsers': 'Utilisateurs Actifs',
+    'home.free': 'Gratuit à Jouer',
+    'home.popularCategories': 'Catégories Populaires',
+    'home.arcade': 'Jeux d\'Arcade',
+    'categories.puzzle': 'Jeux de Puzzle',
+    'categories.strategy': 'Jeux de Stratégie',
     
     // 游戏卡片
     'game.play': 'Jouer Maintenant',
@@ -377,6 +419,13 @@ const translations: Translations = {
     'home.recent': 'Kürzlich hinzugefügt',
     'home.explore': 'Spiele erkunden',
     'home.viewAll': 'Alle anzeigen',
+    'home.totalGames': 'Gesamtzahl der Spiele',
+    'home.activeUsers': 'Aktive Nutzer',
+    'home.free': 'Kostenlos spielen',
+    'home.popularCategories': 'Beliebte Kategorien',
+    'home.arcade': 'Arcade-Spiele',
+    'categories.puzzle': 'Puzzlespiele',
+    'categories.strategy': 'Strategiespiele',
     
     // 游戏卡片
     'game.play': 'Jetzt spielen',
@@ -435,6 +484,13 @@ const translations: Translations = {
     'home.recent': 'Adicionados Recentemente',
     'home.explore': 'Explorar Jogos',
     'home.viewAll': 'Ver Todos',
+    'home.totalGames': 'Total de Jogos',
+    'home.activeUsers': 'Usuários Ativos',
+    'home.free': 'Gratis para Jogar',
+    'home.popularCategories': 'Categorias Populares',
+    'home.arcade': 'Jogos de Arcade',
+    'categories.puzzle': 'Jogos de Quebra-Cabeça',
+    'categories.strategy': 'Jogos de Estratégia',
     
     // 游戏卡片
     'game.play': 'Jogar Agora',
@@ -493,6 +549,13 @@ const translations: Translations = {
     'home.recent': 'Недавно добавленные',
     'home.explore': 'Исследовать игры',
     'home.viewAll': 'Смотреть все',
+    'home.totalGames': 'Общее количество игр',
+    'home.activeUsers': 'Активные пользователи',
+    'home.free': 'Бесплатно играть',
+    'home.popularCategories': 'Популярные категории',
+    'home.arcade': 'Аркадные игры',
+    'categories.puzzle': 'Головоломки',
+    'categories.strategy': 'Стратегические игры',
     
     // 游戏卡片
     'game.play': 'Играть сейчас',
@@ -551,6 +614,13 @@ const translations: Translations = {
     'home.recent': 'Aggiunti di Recente',
     'home.explore': 'Esplora i Giochi',
     'home.viewAll': 'Vedi Tutti',
+    'home.totalGames': 'Totale dei Giochi',
+    'home.activeUsers': 'Utenti Attivi',
+    'home.free': 'Gratis per Giocare',
+    'home.popularCategories': 'Categorie Popolari',
+    'home.arcade': 'Giochi Arcade',
+    'categories.puzzle': 'Giochi di Puzzle',
+    'categories.strategy': 'Giochi di Strategia',
     
     // 游戏卡片
     'game.play': 'Gioca Ora',

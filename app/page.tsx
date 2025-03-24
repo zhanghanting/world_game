@@ -167,9 +167,48 @@ export default function Home() {
                 {t('home.hero.title')} <br/>
                 <span className="text-blue-400">{t('home.hero.subtitle')}</span>
               </h1>
-              <p className="text-lg text-gray-300 mb-8 max-w-lg">
+              <p className="text-lg text-gray-300 mb-6 max-w-lg">
                 {t('home.hero.description')}
               </p>
+              
+              {/* 新增统计数据部分 */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-3 border border-gray-700">
+                  <div className="text-2xl font-bold text-blue-400">500+</div>
+                  <div className="text-sm text-gray-400">{t('home.totalGames')}</div>
+                </div>
+                <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-3 border border-gray-700">
+                  <div className="text-2xl font-bold text-purple-400">10K+</div>
+                  <div className="text-sm text-gray-400">{t('home.activeUsers')}</div>
+                </div>
+                <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-3 border border-gray-700">
+                  <div className="text-2xl font-bold text-green-400">100%</div>
+                  <div className="text-sm text-gray-400">{t('home.free')}</div>
+                </div>
+              </div>
+              
+              {/* 新增热门类别标签 */}
+              <div className="mb-8">
+                <p className="text-sm text-gray-400 mb-2">{t('home.popularCategories')}:</p>
+                <div className="flex flex-wrap gap-2">
+                  <Link href="/category/puzzle" className="text-xs bg-blue-900/50 hover:bg-blue-800/60 text-blue-300 px-3 py-1 rounded-full border border-blue-800/50 transition-colors duration-200">
+                    🧩 {t('categories.puzzle')}
+                  </Link>
+                  <Link href="/category/action" className="text-xs bg-red-900/50 hover:bg-red-800/60 text-red-300 px-3 py-1 rounded-full border border-red-800/50 transition-colors duration-200">
+                    ⚡️ {t('categories.action')}
+                  </Link>
+                  <Link href="/category/strategy" className="text-xs bg-green-900/50 hover:bg-green-800/60 text-green-300 px-3 py-1 rounded-full border border-green-800/50 transition-colors duration-200">
+                    🧠 {t('categories.strategy')}
+                  </Link>
+                  <Link href="/category/arcade" className="text-xs bg-yellow-900/50 hover:bg-yellow-800/60 text-yellow-300 px-3 py-1 rounded-full border border-yellow-800/50 transition-colors duration-200">
+                    🕹️ {t('home.arcade')}
+                  </Link>
+                  <Link href="/category/card" className="text-xs bg-purple-900/50 hover:bg-purple-800/60 text-purple-300 px-3 py-1 rounded-full border border-purple-800/50 transition-colors duration-200">
+                    🃏 {t('categories.card')}
+                  </Link>
+                </div>
+              </div>
+              
               <div className="flex flex-wrap gap-4">
                 <Link 
                   href="/new" 
