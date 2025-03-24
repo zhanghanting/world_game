@@ -4,6 +4,8 @@ import { Inter } from 'next/font/google';
 import Navbar from './components/Navbar';
 import SideNav from './components/SideNav';
 import Providers from './providers';
+import ClientEffects from './components/ClientEffects';
+import { defaultLocale } from './i18n/config';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -49,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={defaultLocale} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
         <link rel="alternate icon" href="/images/favicon.png" type="image/png" />
@@ -70,6 +72,9 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} bg-gray-900 text-white`}>
         <Providers>
+          {/* 客户端渲染的特效组件 */}
+          <ClientEffects />
+          
           <Navbar />
           <SideNav />
           <div className="md:ml-64 min-h-screen">
