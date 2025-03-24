@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { XMarkIcon, ArrowTopRightOnSquareIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { Game } from './GameCard';
+import { useEffects } from '../providers';
 
 interface GameModalProps {
   game: Game | null;
@@ -14,18 +15,31 @@ export const GameModal: React.FC<GameModalProps> = ({ game, isOpen, onClose }) =
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
+  
+  // 获取3D效果控制
+  const { effectsEnabled, toggleEffects } = useEffects();
+  
+  // 保存之前的效果状态
+  const [previousEffectsState, setPreviousEffectsState] = useState(true);
 
   useEffect(() => {
     if (isOpen) {
-      // Prevent scrolling when modal is open
+      // 当模态框打开时，保存当前效果状态并禁用3D效果
+      setPreviousEffectsState(effectsEnabled);
+      toggleEffects(false);
+      
+      // 防止滚动
       document.body.style.overflow = 'hidden';
     }
     
     return () => {
-      // Re-enable scrolling when modal is closed
+      // 当模态框关闭时，恢复之前的效果状态
+      toggleEffects(previousEffectsState);
+      
+      // 恢复滚动
       document.body.style.overflow = 'auto';
     };
-  }, [isOpen]);
+  }, [isOpen, effectsEnabled, toggleEffects, previousEffectsState]);
 
   const handleIframeLoad = () => {
     setIsLoading(false);
@@ -46,36 +60,51 @@ export const GameModal: React.FC<GameModalProps> = ({ game, isOpen, onClose }) =
       iframe.src = iframe.src;
     }
   };
+  
+  // 安全关闭函数，确保恢复效果状态
+  const handleClose = () => {
+    toggleEffects(previousEffectsState);
+    onClose();
+  };
 
   // Close modal when escape key is pressed
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') handleClose();
     };
     
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
+  }, [handleClose]);
 
   if (!game) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center" 
+      style={{ perspective: 'none' }}
+    >
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={handleClose}
       ></div>
       
-      {/* Modal Container */}
+      {/* Modal Container - 完全扁平化设计，无任何3D效果 */}
       <div 
-        className={`relative bg-gray-900 rounded-lg overflow-hidden shadow-xl transition-all duration-300 z-10 ${
-          fullscreen ? 'w-screen h-screen rounded-none' : 'w-[95%] max-w-6xl h-[80vh]'
+        className={`relative bg-gray-900 rounded-lg overflow-hidden z-10 flex flex-col ${
+          fullscreen ? 'w-screen h-screen rounded-none' : 'w-[95%] max-w-6xl h-[90vh] max-h-[800px]'
         }`}
         onClick={(e) => e.stopPropagation()}
+        style={{ 
+          transform: 'none',
+          perspective: 'none',
+          transformStyle: 'flat',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+        }}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-800">
+        <div className="flex items-center justify-between p-4 border-b border-gray-800 shrink-0">
           <h3 className="text-xl font-semibold text-white">
             {game.title || game.name}
           </h3>
@@ -93,7 +122,7 @@ export const GameModal: React.FC<GameModalProps> = ({ game, isOpen, onClose }) =
               </svg>
             </button>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="text-gray-400 hover:text-white p-1"
             >
               <XMarkIcon className="h-6 w-6" />
@@ -102,7 +131,7 @@ export const GameModal: React.FC<GameModalProps> = ({ game, isOpen, onClose }) =
         </div>
         
         {/* Game Content */}
-        <div className="relative w-full h-[calc(100%-4rem)] bg-black">
+        <div className="relative flex-grow w-full bg-black">
           {/* Loading Spinner */}
           {isLoading && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900">
@@ -146,17 +175,34 @@ export const GameModal: React.FC<GameModalProps> = ({ game, isOpen, onClose }) =
             </div>
           )}
           
-          {/* Game iframe */}
+          {/* Game iframe - 确保完全平面化显示 */}
           {game.embedUrl && game.isEmbeddable !== false ? (
-            <iframe
-              id="game-iframe"
-              src={game.embedUrl}
-              className="w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              onLoad={handleIframeLoad}
-              onError={handleIframeError}
-            ></iframe>
+            <div 
+              className="w-full h-full"
+              style={{ 
+                transform: 'none',
+                perspective: 'none',
+                transformStyle: 'flat',
+                overflow: 'hidden'
+              }}
+            >
+              <iframe
+                id="game-iframe"
+                src={game.embedUrl}
+                className="w-full h-full"
+                style={{ 
+                  transform: 'none',
+                  perspective: 'none',
+                  transformStyle: 'flat',
+                  border: 'none',
+                  display: 'block'
+                }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                onLoad={handleIframeLoad}
+                onError={handleIframeError}
+              ></iframe>
+            </div>
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900">
               <div className="text-blue-500 mb-4">
@@ -172,7 +218,8 @@ export const GameModal: React.FC<GameModalProps> = ({ game, isOpen, onClose }) =
                 href={game.gameUrl || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full transition-all transform hover:scale-105"
+                className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full"
+                style={{ transform: 'none' }}
               >
                 <ArrowTopRightOnSquareIcon className="h-5 w-5 mr-2" />
                 在新标签页中打开
