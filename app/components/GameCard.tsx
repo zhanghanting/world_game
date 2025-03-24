@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { PlayIcon, StarIcon } from '@heroicons/react/24/solid';
 import { StarIcon as StarOutlineIcon } from '@heroicons/react/24/outline';
 import { GameModal } from './GameModal';
+import { useTranslation } from '../i18n/useTranslation';
 
 // Define the Game type if it doesn't exist
 export interface Game {
@@ -36,6 +37,7 @@ interface GameCardProps {
 const GameCard: React.FC<GameCardProps> = ({ game, priority = false, onClick }) => {
   const [showModal, setShowModal] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const { t } = useTranslation();
 
   // Default image if game image not found - 使用已有的默认图片
   const fallbackImage = '/images/default.svg';
@@ -90,7 +92,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, priority = false, onClick }) 
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-full flex items-center transition-transform duration-300 transform hover:scale-105"
               >
                 <PlayIcon className="h-5 w-5 mr-2" />
-                <span>Play Now</span>
+                <span>{t('game.play')}</span>
               </button>
             </div>
           </div>
@@ -141,14 +143,14 @@ const GameCard: React.FC<GameCardProps> = ({ game, priority = false, onClick }) 
               className="text-sm text-blue-400 hover:text-blue-300 flex items-center"
             >
               <PlayIcon className="h-4 w-4 mr-1" />
-              <span>Play</span>
+              <span>{t('game.play')}</span>
             </button>
             
             <Link 
               href={gameLink}
               className="text-sm text-gray-400 hover:text-white transition-colors"
             >
-              More Info
+              {t('game.info')}
             </Link>
           </div>
         </div>

@@ -4,7 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import GameCard from './components/GameCard';
+import TiltEffect from './components/TiltEffect';
+import ParallaxEffect from './components/ParallaxEffect';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from './i18n/useTranslation';
 
 // Placeholder data for games
 const featuredGames = [
@@ -127,6 +130,7 @@ const recentGames = [
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setIsLoaded(true);
@@ -139,102 +143,129 @@ export default function Home() {
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-blue-900/30 to-purple-900/30 z-0"></div>
         
+        {/* Parallax Background Elements */}
+        <ParallaxEffect 
+          className="absolute inset-0 z-0 pointer-events-none" 
+          sensitivity={0.03}
+          layers={[20, 40, 60]}
+        >
+          {/* 第一层：远景紫色光圈 */}
+          <div className="absolute top-1/4 right-10 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl"></div>
+          
+          {/* 第二层：中景蓝色光圈 */}
+          <div className="absolute bottom-1/3 left-10 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl"></div>
+          
+          {/* 第三层：近景亮光点 */}
+          <div className="absolute top-1/2 left-1/3 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+        </ParallaxEffect>
+        
         {/* Hero Content */}
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className={`transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-                World of Games <br/>
-                <span className="text-blue-400">Endless Entertainment</span>
+                {t('home.hero.title')} <br/>
+                <span className="text-blue-400">{t('home.hero.subtitle')}</span>
               </h1>
               <p className="text-lg text-gray-300 mb-8 max-w-lg">
-                Discover hundreds of free games to play directly in your browser. No downloads, no installs - just instant fun!
+                {t('home.hero.description')}
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link 
                   href="/new" 
                   className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
                 >
-                  Explore Games
+                  {t('home.explore')}
                 </Link>
                 <Link 
                   href="/trending" 
                   className="bg-gray-800 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 border border-gray-700 hover:border-gray-600"
                 >
-                  Popular Games
+                  {t('home.popular')}
                 </Link>
               </div>
             </div>
             
             <div className={`flex justify-center transition-all duration-1000 delay-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="relative w-full max-w-md aspect-square">
-                <div className="absolute inset-0 bg-blue-600 rounded-full opacity-20 blur-3xl animate-pulse"></div>
-                <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-6 shadow-xl border border-gray-700">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 aspect-square">
-                      <Image 
-                        src="/images/number-guessing.svg" 
-                        alt="Number Game" 
-                        width={200} 
-                        height={200} 
-                        className="w-full h-full object-cover" 
-                      />
-                    </div>
-                    <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 aspect-square">
-                      <Image 
-                        src="/images/card-match.svg" 
-                        alt="Card Game" 
-                        width={200} 
-                        height={200} 
-                        className="w-full h-full object-cover" 
-                      />
-                    </div>
-                    <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 aspect-square">
-                      <Image 
-                        src="/images/tetris.svg" 
-                        alt="Tetris" 
-                        width={200} 
-                        height={200} 
-                        className="w-full h-full object-cover" 
-                      />
-                    </div>
-                    <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 aspect-square">
-                      <Image 
-                        src="/images/snake.svg" 
-                        alt="Snake Game" 
-                        width={200} 
-                        height={200} 
-                        className="w-full h-full object-cover" 
-                      />
+              <TiltEffect options={{ max: 15, speed: 400, glare: true, "max-glare": 0.3 }}>
+                <div className="relative w-full max-w-md aspect-square">
+                  <div className="absolute inset-0 bg-blue-600 rounded-full opacity-20 blur-3xl animate-pulse"></div>
+                  <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-6 shadow-xl border border-gray-700">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 aspect-square">
+                        <Image 
+                          src="/images/number-guessing.svg" 
+                          alt="Number Game" 
+                          width={200} 
+                          height={200} 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                      <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 aspect-square">
+                        <Image 
+                          src="/images/card-match.svg" 
+                          alt="Card Game" 
+                          width={200} 
+                          height={200} 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                      <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 aspect-square">
+                        <Image 
+                          src="/images/tetris.svg" 
+                          alt="Tetris" 
+                          width={200} 
+                          height={200} 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                      <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700 aspect-square">
+                        <Image 
+                          src="/images/snake.svg" 
+                          alt="Snake Game" 
+                          width={200} 
+                          height={200} 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </TiltEffect>
             </div>
           </div>
         </div>
-        
-        {/* Decorative elements */}
-        <div className="absolute top-1/3 right-0 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 left-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"></div>
       </section>
 
       {/* Featured Games Section */}
       <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Featured Games</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white">{t('home.featured')}</h2>
             <Link 
               href="/featured" 
               className="text-blue-400 hover:text-blue-300 flex items-center"
             >
-              View All <ChevronRightIcon className="h-5 w-5 ml-1" />
+              {t('home.viewAll')} <ChevronRightIcon className="h-5 w-5 ml-1" />
             </Link>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredGames.map((game, index) => (
-              <GameCard key={game.id} game={game} priority={index < 4} />
+              <TiltEffect 
+                key={game.id} 
+                options={{ 
+                  max: 10, 
+                  speed: 400,
+                  scale: 1.02,
+                  glare: true, 
+                  "max-glare": 0.2,
+                  perspective: 1000
+                }}
+                className="h-full"
+              >
+                <GameCard game={game} priority={index < 4} />
+              </TiltEffect>
             ))}
           </div>
         </div>
@@ -244,18 +275,31 @@ export default function Home() {
       <section className="py-12 bg-gray-800/50">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Popular Games</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white">{t('home.popular')}</h2>
             <Link 
               href="/trending" 
               className="text-blue-400 hover:text-blue-300 flex items-center"
             >
-              View All <ChevronRightIcon className="h-5 w-5 ml-1" />
+              {t('home.viewAll')} <ChevronRightIcon className="h-5 w-5 ml-1" />
             </Link>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {popularGames.map((game, index) => (
-              <GameCard key={game.id} game={game} />
+              <TiltEffect 
+                key={game.id} 
+                options={{ 
+                  max: 10, 
+                  speed: 400,
+                  scale: 1.02,
+                  glare: true, 
+                  "max-glare": 0.2,
+                  perspective: 1000
+                }}
+                className="h-full"
+              >
+                <GameCard game={game} priority={index < 4} />
+              </TiltEffect>
             ))}
           </div>
         </div>
@@ -265,18 +309,31 @@ export default function Home() {
       <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Recently Added</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white">{t('home.recent')}</h2>
             <Link 
               href="/recent" 
               className="text-blue-400 hover:text-blue-300 flex items-center"
             >
-              View All <ChevronRightIcon className="h-5 w-5 ml-1" />
+              {t('home.viewAll')} <ChevronRightIcon className="h-5 w-5 ml-1" />
             </Link>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {recentGames.map((game, index) => (
-              <GameCard key={game.id} game={game} />
+              <TiltEffect 
+                key={game.id} 
+                options={{ 
+                  max: 10, 
+                  speed: 400,
+                  scale: 1.02,
+                  glare: true, 
+                  "max-glare": 0.2,
+                  perspective: 1000
+                }}
+                className="h-full"
+              >
+                <GameCard game={game} />
+              </TiltEffect>
             ))}
           </div>
         </div>
@@ -337,9 +394,6 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        {/* Decorative elements */}
-        <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 right-0 transform -translate-y-1/2 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl"></div>
       </section>
 
       {/* Footer */}

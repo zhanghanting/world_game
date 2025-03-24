@@ -15,10 +15,13 @@ import {
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { Transition } from '@headlessui/react';
+import LanguageSelector from './LanguageSelector';
+import { useTranslation } from '../i18n/useTranslation';
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -34,11 +37,11 @@ const Navbar: React.FC = () => {
 
   // Mobile navigation items
   const mobileNavItems = [
-    { name: 'Home', icon: <HomeIcon className="w-5 h-5" />, href: '/' },
-    { name: 'Recently Played', icon: <ClockIcon className="w-5 h-5" />, href: '/recent' },
-    { name: 'New Games', icon: <SparklesIcon className="w-5 h-5" />, href: '/new' },
-    { name: 'Trending Games', icon: <FireIcon className="w-5 h-5" />, href: '/trending' },
-    { name: 'Updated Games', icon: <ArrowPathIcon className="w-5 h-5" />, href: '/updated' },
+    { name: t('nav.home'), icon: <HomeIcon className="w-5 h-5" />, href: '/' },
+    { name: t('nav.recent'), icon: <ClockIcon className="w-5 h-5" />, href: '/recent' },
+    { name: t('nav.new'), icon: <SparklesIcon className="w-5 h-5" />, href: '/new' },
+    { name: t('nav.trending'), icon: <FireIcon className="w-5 h-5" />, href: '/trending' },
+    { name: t('nav.updated'), icon: <ArrowPathIcon className="w-5 h-5" />, href: '/updated' },
   ];
 
   // Detect scroll to add background to navbar
@@ -103,15 +106,16 @@ const Navbar: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for games..."
+                  placeholder={t('nav.search')}
                   className="w-full py-2 pl-10 pr-4 text-sm bg-gray-800 border border-gray-700 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
               </form>
             </div>
 
-            {/* User Profile */}
+            {/* Language Selector & User Profile */}
             <div className="hidden md:flex items-center">
+              <LanguageSelector />
               <Link 
                 href="/profile" 
                 className="ml-4 text-gray-300 hover:text-white flex items-center"
@@ -129,7 +133,7 @@ const Navbar: React.FC = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for games..."
+                placeholder={t('nav.search')}
                 className="w-full py-2 pl-10 pr-4 text-sm bg-gray-800 border border-gray-700 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
@@ -176,6 +180,11 @@ const Navbar: React.FC = () => {
               
               {/* Divider */}
               <div className="mx-3 my-2 border-b border-gray-800"></div>
+              
+              {/* Language Selector for mobile */}
+              <div className="px-3 py-2 my-1">
+                <LanguageSelector />
+              </div>
               
               {/* User profile for mobile */}
               <Link

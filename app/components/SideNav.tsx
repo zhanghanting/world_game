@@ -11,40 +11,42 @@ import {
 } from '@heroicons/react/24/outline';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
+import { useTranslation } from '../i18n/useTranslation';
 
 const SideNav: React.FC = () => {
   const pathname = usePathname();
+  const { t } = useTranslation();
   
   // Main navigation items
   const mainNavItems = [
-    { name: 'Home', icon: <HomeIcon className="w-5 h-5" />, href: '/' },
-    { name: 'Recently Played', icon: <ClockIcon className="w-5 h-5" />, href: '/recent' },
-    { name: 'New Games', icon: <SparklesIcon className="w-5 h-5" />, href: '/new' },
-    { name: 'Trending Games', icon: <FireIcon className="w-5 h-5" />, href: '/trending' },
-    { name: 'Updated Games', icon: <ArrowPathIcon className="w-5 h-5" />, href: '/updated' },
+    { name: t('nav.home'), icon: <HomeIcon className="w-5 h-5" />, href: '/' },
+    { name: t('nav.recent'), icon: <ClockIcon className="w-5 h-5" />, href: '/recent' },
+    { name: t('nav.new'), icon: <SparklesIcon className="w-5 h-5" />, href: '/new' },
+    { name: t('nav.trending'), icon: <FireIcon className="w-5 h-5" />, href: '/trending' },
+    { name: t('nav.updated'), icon: <ArrowPathIcon className="w-5 h-5" />, href: '/updated' },
   ];
   
   // Game categories
   const categories = [
-    { name: 'Original Games', icon: '🎮', href: '/category/originals' },
-    { name: 'Multiplayer', icon: '👥', href: '/category/multiplayer' },
-    { name: '2-Player Games', icon: '👫', href: '/category/2player' },
-    { name: 'Action Games', icon: '⚔️', href: '/category/action' },
-    { name: 'Adventure Games', icon: '🗺️', href: '/category/adventure' },
-    { name: 'Basketball', icon: '🏀', href: '/category/basketball' },
-    { name: 'Beauty Games', icon: '💄', href: '/category/beauty' },
-    { name: 'Bike Games', icon: '🚲', href: '/category/bike' },
-    { name: 'Car Games', icon: '🚗', href: '/category/car' },
-    { name: 'Card Games', icon: '🃏', href: '/category/card' },
-    { name: 'Casual Games', icon: '🎲', href: '/category/casual' },
-    { name: 'Clicker Games', icon: '👆', href: '/category/clicker' },
-    { name: 'Controller Games', icon: '🎮', href: '/category/controller' },
-    { name: 'Dress Up Games', icon: '👗', href: '/category/dressup' },
-    { name: 'Driving Games', icon: '🚦', href: '/category/driving' },
-    { name: 'Escape Games', icon: '🚪', href: '/category/escape' },
-    { name: 'Flash Games', icon: '⚡', href: '/category/flash' },
-    { name: 'FPS Games', icon: '🔫', href: '/category/fps' },
-    { name: 'Horror Games', icon: '👻', href: '/category/horror' },
+    { name: t('categories.originals'), icon: '🎮', href: '/category/originals' },
+    { name: t('categories.multiplayer'), icon: '👥', href: '/category/multiplayer' },
+    { name: t('categories.twoPlayer'), icon: '👫', href: '/category/2player' },
+    { name: t('categories.action'), icon: '⚔️', href: '/category/action' },
+    { name: t('categories.adventure'), icon: '🗺️', href: '/category/adventure' },
+    { name: t('categories.basketball'), icon: '🏀', href: '/category/basketball' },
+    { name: t('categories.beauty'), icon: '💄', href: '/category/beauty' },
+    { name: t('categories.bike'), icon: '🚲', href: '/category/bike' },
+    { name: t('categories.car'), icon: '🚗', href: '/category/car' },
+    { name: t('categories.card'), icon: '🃏', href: '/category/card' },
+    { name: t('categories.casual'), icon: '🎲', href: '/category/casual' },
+    { name: t('categories.clicker'), icon: '👆', href: '/category/clicker' },
+    { name: t('categories.controller'), icon: '🎮', href: '/category/controller' },
+    { name: t('categories.dressUp'), icon: '👗', href: '/category/dressup' },
+    { name: t('categories.driving'), icon: '🚦', href: '/category/driving' },
+    { name: t('categories.escape'), icon: '🚪', href: '/category/escape' },
+    { name: t('categories.flash'), icon: '⚡', href: '/category/flash' },
+    { name: t('categories.fps'), icon: '🔫', href: '/category/fps' },
+    { name: t('categories.horror'), icon: '👻', href: '/category/horror' },
   ];
 
   return (
