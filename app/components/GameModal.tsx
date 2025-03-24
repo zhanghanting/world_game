@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { XMarkIcon, ArrowTopRightOnSquareIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { Game } from './GameCard';
 import { useEffects } from '../providers';
@@ -17,29 +17,40 @@ export const GameModal: React.FC<GameModalProps> = ({ game, isOpen, onClose }) =
   const [fullscreen, setFullscreen] = useState(false);
   
   // 获取3D效果控制
-  const { effectsEnabled, toggleEffects } = useEffects();
+  const { tiltEffectsEnabled, mouseEffectsEnabled, toggleTiltEffects } = useEffects();
   
   // 保存之前的效果状态
-  const [previousEffectsState, setPreviousEffectsState] = useState(true);
+  const [previousTiltState, setPreviousTiltState] = useState(true);
 
+  // 监听模态框打开/关闭状态
   useEffect(() => {
+    // 只在状态变化时执行
     if (isOpen) {
-      // 当模态框打开时，保存当前效果状态并禁用3D效果
-      setPreviousEffectsState(effectsEnabled);
-      toggleEffects(false);
+      // 打开时：保存当前状态并禁用3D效果
+      console.log('Modal opened: Disabling tilt effects');
+      setPreviousTiltState(tiltEffectsEnabled);
+      toggleTiltEffects(false);
       
       // 防止滚动
       document.body.style.overflow = 'hidden';
-    }
-    
-    return () => {
-      // 当模态框关闭时，恢复之前的效果状态
-      toggleEffects(previousEffectsState);
+    } else {
+      // 关闭时：恢复之前的状态
+      console.log('Modal closed: Restoring tilt effects to', previousTiltState);
+      toggleTiltEffects(previousTiltState);
       
       // 恢复滚动
       document.body.style.overflow = 'auto';
+    }
+    
+    // 组件卸载时也恢复状态
+    return () => {
+      if (isOpen) {
+        console.log('Component unmounting: Restoring tilt effects');
+        toggleTiltEffects(previousTiltState);
+        document.body.style.overflow = 'auto';
+      }
     };
-  }, [isOpen, effectsEnabled, toggleEffects, previousEffectsState]);
+  }, [isOpen, toggleTiltEffects, previousTiltState]);
 
   const handleIframeLoad = () => {
     setIsLoading(false);
@@ -61,11 +72,11 @@ export const GameModal: React.FC<GameModalProps> = ({ game, isOpen, onClose }) =
     }
   };
   
-  // 安全关闭函数，确保恢复效果状态
-  const handleClose = () => {
-    toggleEffects(previousEffectsState);
+  // 使用useCallback包装handleClose，避免每次渲染都重新创建
+  const handleClose = useCallback(() => {
     onClose();
-  };
+    // 不在这里设置状态，由useEffect监听isOpen变化来处理
+  }, [onClose]);
 
   // Close modal when escape key is pressed
   useEffect(() => {

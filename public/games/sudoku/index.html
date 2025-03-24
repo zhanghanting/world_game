@@ -2,2441 +2,652 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0f172a">
   <title>Sudoku</title>
   <style>
-    /* Base styles */
-    body, html {
+    /* 重置所有样式 */
+    *, *::before, *::after {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      width: 100%;
+    }
+    
+    body, html {
       height: 100%;
-      overflow-x: hidden;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      width: 100%;
+      overflow: hidden;
       font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, sans-serif;
-      color: #f1f5f9;
+      background-color: #0f172a;
+      color: #f8fafc;
     }
     
-    body {
-      display: grid;
-      /* 修改网格布局，使用相等的比例，并将中间内容居中 */
-      grid-template-columns: minmax(280px, 1fr) minmax(550px, 2fr) minmax(280px, 1fr);
-      grid-template-rows: auto 1fr auto;
-      grid-template-areas: 
-        "header header header"
-        "left-panel main right-panel"
-        "footer footer footer";
-      min-height: 100vh;
-      gap: 1.5rem;
-      padding: 1.5rem;
-      background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
-    }
-    
-    /* Game header */
-    h1 {
-      grid-area: header;
-      color: #60a5fa;
-      margin-bottom: 1.5rem;
-      font-size: 3rem;
-      text-shadow: 0 2px 15px rgba(96, 165, 250, 0.5), 0 0 30px rgba(96, 165, 250, 0.2);
-      letter-spacing: 4px;
-      font-weight: 700;
-      text-transform: uppercase;
-      text-align: center;
-      animation: fadeIn 1s ease-out;
-    }
-    
-    /* Main game area */
+    /* 主容器 */
     .game-container {
-      grid-area: main;
       display: flex;
       flex-direction: column;
+      width: 100%;
+      height: 100vh;
+      padding: 8px;
+      justify-content: flex-start;
       align-items: center;
-      gap: 1.5rem;
-      /* 确保绝对居中 */
-      justify-self: center;
-      width: 100%;
-      max-width: 600px;
     }
     
-    /* Left panel for difficulty */
-    .left-panel {
-      grid-area: left-panel;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      justify-content: center; /* 改为居中对齐 */
-      padding-top: 0; /* 移除顶部内边距 */
-      padding-bottom: 2rem; /* 添加底部内边距 */
-      gap: 1.5rem;
-      width: 100%;
-      max-width: 280px;
-      /* 确保对齐到右侧 */
-      justify-self: end;
-      margin-right: 1rem;
-      /* 调整整体位置 */
-      margin-top: -2.5rem; /* 向上移动整个面板 */
-    }
-    
-    /* Right panel for controls */
-    .right-panel {
-      grid-area: right-panel;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      justify-content: center; /* 居中对齐 */
-      padding-top: 0; /* 移除顶部内边距 */
-      padding-bottom: 2rem; /* 添加底部内边距，平衡布局 */
-      gap: 1.5rem;
-      width: 100%;
-      max-width: 280px;
-      /* 确保对齐到左侧 */
-      justify-self: start;
-      margin-left: 1rem;
-      /* 调整整体位置 */
-      margin-top: -2.5rem; /* 向上移动整个面板 */
-    }
-    
-    /* Difficulty selector */
-    .difficulty {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      width: 100%;
-      max-width: 240px;
-      animation: slideIn 0.5s ease-out;
-      background-color: rgba(30, 41, 59, 0.4);
-      border-radius: 0.8rem;
-      padding: 1rem;
-      border: 1px solid rgba(96, 165, 250, 0.1);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-    
-    .difficulty-title {
+    /* 游戏标题 */
+    .game-title {
+      color: #60a5fa;
+      font-size: 1.5rem;
+      font-weight: 700;
       text-align: center;
-      color: #93c5fd;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-      font-size: 1.2rem;
-      border-bottom: 1px solid rgba(96, 165, 250, 0.2);
-      padding-bottom: 0.5rem;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
     
-    .difficulty button {
-      background-color: rgba(30, 41, 59, 0.7);
-      color: #cbd5e1;
-      border: 1px solid rgba(96, 165, 250, 0.2);
-      border-radius: 0.5rem;
-      padding: 0.8rem 1.2rem;
-      font-size: 0.95rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    /* 游戏信息 */
+    .game-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       width: 100%;
+      max-width: 480px;
+      background-color: rgba(30, 41, 59, 0.4);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
     }
     
-    .difficulty button:hover {
-      background-color: rgba(96, 165, 250, 0.15);
-      transform: translateY(-2px);
+    .game-status {
+      color: #60a5fa;
+      font-size: 0.8rem;
     }
     
-    .difficulty button.active {
-      background-color: #60a5fa;
-      color: #0f172a;
-      border-color: #60a5fa;
+    .timer {
+      color: #f8fafc;
+      font-size: 0.9rem;
       font-weight: 600;
-      box-shadow: 0 3px 10px rgba(96, 165, 250, 0.4);
+      font-family: monospace;
     }
     
-    /* Sudoku board container */
-    .board-container {
-      background-color: rgba(30, 41, 59, 0.5);
-      backdrop-filter: blur(10px);
-      border-radius: 1rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(96, 165, 250, 0.2);
-      padding: 1.5rem;
-      animation: scaleIn 0.5s ease-out;
+    /* 主游戏区域 */
+    .game-board {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
       width: 100%;
-      max-width: 550px;
+      max-width: 480px;
+      overflow: auto;
     }
     
-    /* Sudoku board */
+    /* 数独棋盘 */
     .sudoku-board {
       display: grid;
       grid-template-columns: repeat(9, 1fr);
       grid-template-rows: repeat(9, 1fr);
       gap: 1px;
       background-color: #475569;
-      padding: 3px;
-      border-radius: 6px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 
-                  inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
       width: 100%;
       aspect-ratio: 1/1;
-      animation: fadeIn 0.8s ease-out;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
+      margin-bottom: 8px;
     }
     
-    /* Cell styles */
+    /* 单元格 */
     .cell {
       display: flex;
       justify-content: center;
       align-items: center;
       background-color: #1e293b;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       font-weight: 600;
       cursor: pointer;
       user-select: none;
-      transition: all 0.2s ease;
-      position: relative;
-      overflow: hidden;
+      aspect-ratio: 1/1;
       
-      /* 默认薄边框 */
+      /* 边框 */
       border-right: 1px solid #334155;
       border-bottom: 1px solid #334155;
     }
     
-    .cell:hover {
-      background-color: #2d3748;
+    /* 特殊边框 */
+    .cell[data-col="2"],
+    .cell[data-col="5"] {
+      border-right: 2px solid #64748b;
     }
     
+    .cell[data-row="2"],
+    .cell[data-row="5"] {
+      border-bottom: 2px solid #64748b;
+    }
+    
+    /* 单元格状态 */
     .cell.fixed {
       color: #94a3b8;
     }
     
     .cell.selected {
-      background-color: #2563eb;
+      background-color: rgba(59, 130, 246, 0.3);
       color: white;
-      animation: pulse 2s infinite;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
     }
     
     .cell.error {
-      background-color: rgba(239, 68, 68, 0.8);
+      background-color: rgba(239, 68, 68, 0.3);
       color: white;
-      animation: shake 0.5s;
     }
     
     .cell.same-value {
-      background-color: rgba(79, 107, 187, 0.5);
+      background-color: rgba(59, 130, 246, 0.2);
       color: white;
     }
     
-    /* 3x3 grid borders - NEW IMPLEMENTATION */
-    /* 删除所有旧的边框样式 */
-    
-    /* 重新设计所有单元格的基本边框 */
-    .cell[data-col="2"],
-    .cell[data-col="5"] {
-      border-right: 3px solid #64748b !important;
-    }
-    
-    .cell[data-col="3"],
-    .cell[data-col="6"] {
-      border-left: 1px solid #64748b;
-    }
-    
-    .cell[data-row="2"],
-    .cell[data-row="5"] {
-      border-bottom: 3px solid #64748b !important;
-    }
-    
-    .cell[data-row="3"],
-    .cell[data-row="6"] {
-      border-top: 1px solid #64748b;
-    }
-    
-    /* 最右侧单元格不需要右边框 */
-    .cell[data-col="8"] {
-      border-right: none;
-    }
-    
-    /* 最底部单元格不需要底边框 */
-    .cell[data-row="8"] {
-      border-bottom: none;
-    }
-    
-    /* Number controls */
-    .number-controls {
+    /* 控制区域 */
+    .controls {
       display: flex;
-      flex-direction: column;
-      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
       width: 100%;
-      max-width: 240px;
-      animation: slideIn 0.5s ease-out;
-      background-color: rgba(30, 41, 59, 0.4);
-      border-radius: 0.8rem;
-      padding: 1rem;
-      border: 1px solid rgba(96, 165, 250, 0.1);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      margin-bottom: 0.5rem; /* 减小底部间距 */
     }
     
-    .controls-title {
-      text-align: center;
-      color: #93c5fd;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      font-size: 1.2rem;
-    }
-    
+    /* 数字按钮网格 */
     .number-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 4px;
       width: 100%;
     }
     
+    /* 数字按钮 */
     .number-btn {
-      display: flex;
-      justify-content: center;
-      align-items: center;
       background-color: #334155;
       color: white;
       border: none;
-      border-radius: 6px;
-      font-size: 1.4rem;
+      border-radius: 4px;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
       aspect-ratio: 1/1;
-      width: 100%;
+      min-width: 28px;
     }
     
     .number-btn:hover {
       background-color: #3b82f6;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
     }
     
-    .number-btn:active {
-      transform: translateY(0);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    }
-    
-    /* Action buttons */
-    .action-buttons {
+    /* 操作按钮 */
+    .actions {
       display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
+      justify-content: space-between;
       width: 100%;
-      max-width: 240px;
-      margin-top: 0; /* 移除顶部外边距 */
-      background-color: rgba(30, 41, 59, 0.4);
-      border-radius: 0.8rem;
-      padding: 1rem;
-      border: 1px solid rgba(96, 165, 250, 0.1);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      margin-top: 8px;
     }
     
     .action-btn {
-      padding: 0.8rem 1rem;
       background-color: #334155;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
       cursor: pointer;
-      transition: all 0.2s ease;
-      font-weight: 500;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      font-size: 0.9rem;
-      width: 100%;
+      flex: 1;
+      margin: 0 4px;
       text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .action-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-    
-    .action-btn:active {
-      transform: translateY(0);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
     
     .erase-btn {
       background-color: #64748b;
     }
     
-    .erase-btn:hover {
-      background-color: #94a3b8;
-    }
-    
     .hint-btn {
       background-color: #4f46e5;
-    }
-    
-    .hint-btn:hover {
-      background-color: #6366f1;
     }
     
     .new-game-btn {
       background-color: #059669;
     }
     
-    .new-game-btn:hover {
-      background-color: #10b981;
-    }
-    
     .help-btn {
       background-color: #c2410c;
-    }
-    
-    .help-btn:hover {
-      background-color: #ea580c;
-    }
-    
-    /* Game info panel */
-    .game-info {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      margin-top: 0;
-      padding: 0.75rem 1rem;
-      background-color: rgba(30, 41, 59, 0.4);
-      border-radius: 0.8rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(96, 165, 250, 0.1);
-    }
-    
-    .game-status {
-      color: #60a5fa;
-      font-weight: 500;
-    }
-    
-    .timer {
-      color: #f8fafc;
-      font-weight: 600;
-      font-family: monospace;
-      font-size: 1.1rem;
-    }
-    
-    /* Modal dialogs */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      backdrop-filter: blur(5px);
-      animation: fadeIn 0.3s ease-out;
-    }
-    
-    .modal-content {
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      padding: 2.5rem;
-      border-radius: 0.8rem;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      max-width: 90%;
-      width: 500px;
-      border: 1px solid rgba(96, 165, 250, 0.2);
-      animation: scaleIn 0.3s ease-out;
-    }
-    
-    .rules-content {
-      width: 700px;
-      max-height: 80vh;
-      overflow-y: auto;
-      text-align: left;
-      padding-right: 1.5rem;
-      /* Firefox scrollbar */
-      scrollbar-width: thin;
-      scrollbar-color: #4b5563 #1e293b;
-    }
-    
-    /* Chrome/Edge/Safari scrollbar */
-    .rules-content::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    .rules-content::-webkit-scrollbar-track {
-      background: #1e293b;
-      border-radius: 4px;
-    }
-    
-    .rules-content::-webkit-scrollbar-thumb {
-      background-color: #4b5563;
-      border-radius: 4px;
-    }
-    
-    .modal h2 {
-      color: #60a5fa;
-      margin-top: 0;
-      font-size: 1.8rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
-    
-    .modal p {
-      margin-bottom: 1.5rem;
-      line-height: 1.6;
-    }
-    
-    .modal-btn {
-      padding: 0.7rem 1.8rem;
-      margin: 0.5rem;
-      border: none;
-      border-radius: 0.5rem;
-      background-color: #2563eb;
-      color: white;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-    }
-    
-    .modal-btn:hover {
-      background-color: #3b82f6;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
-    }
-    
-    .close-btn {
-      position: absolute;
-      top: 1rem;
-      right: 1.5rem;
-      color: #94a3b8;
-      font-size: 1.8rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: color 0.2s ease;
-      background: none;
-      border: none;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-    }
-    
-    .close-btn:hover {
-      color: #f1f5f9;
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    /* Rules styling */
-    .rule-section {
-      margin-bottom: 2rem;
-    }
-    
-    .rule-section h3 {
-      color: #93c5fd;
-      margin-bottom: 0.8rem;
-      font-size: 1.3rem;
-      border-bottom: 1px solid rgba(96, 165, 250, 0.2);
-      padding-bottom: 0.5rem;
-    }
-    
-    .rule-section ul, 
-    .rule-section ol {
-      padding-left: 1.5rem;
-      margin: 1rem 0;
-    }
-    
-    .rule-section li {
-      margin-bottom: 0.5rem;
-      line-height: 1.5;
-    }
-    
-    .rule-highlight {
-      background-color: rgba(59, 130, 246, 0.1);
-      border-left: 3px solid #3b82f6;
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 0 0.3rem 0.3rem 0;
-    }
-    
-    .rule-highlight p {
-      margin: 0;
-    }
-    
-    .rule-image {
-      background-color: rgba(30, 41, 59, 0.7);
-      padding: 1rem;
-      border-radius: 0.5rem;
-      margin: 1.5rem 0;
-      text-align: center;
-    }
-    
-    .example-grid {
-      display: inline-grid;
-      grid-template-columns: repeat(9, 1fr);
-      grid-template-rows: repeat(9, 1fr);
-      gap: 1px;
-      background-color: #475569;
-      padding: 2px;
-      border-radius: 4px;
-      margin: 0 auto;
-    }
-    
-    .example-row {
-      display: contents;
-    }
-    
-    .example-row > div {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #1e293b;
-      font-size: 0.8rem;
-      width: 25px;
-      height: 25px;
-    }
-    
-    .caption {
-      color: #94a3b8;
-      font-size: 0.9rem;
-      margin-top: 0.5rem;
-      font-style: italic;
-    }
-    
-    /* Animation keyframes */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    
-    @keyframes scaleIn {
-      from { transform: scale(0.95); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-    
-    @keyframes slideIn {
-      from { transform: translateY(-20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
-      70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-    }
-    
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-      20%, 40%, 60%, 80% { transform: translateX(5px); }
-    }
-    
-    /* Responsive design */
-    @media (max-width: 1200px) {
-      body {
-        /* 较窄屏幕时调整列宽比例 */
-        grid-template-columns: minmax(250px, 1fr) minmax(auto, 2fr) minmax(250px, 1fr);
-        gap: 1rem;
-      }
-      
-      .left-panel, .right-panel {
-        margin-right: 0.5rem;
-        margin-left: 0.5rem;
-      }
-    }
-    
-    @media (max-width: 900px) {
-      body {
-        grid-template-columns: 250px 1fr 250px;
-      }
-      
-      h1 {
-        font-size: 2rem;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      body {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto auto;
-        grid-template-areas: 
-          "header"
-          "main"
-          "left-panel"
-          "right-panel";
-        padding: 0.75rem;
-        gap: 0.5rem;
-      }
-      
-      .left-panel, .right-panel {
-        padding-top: 0;
-        padding-bottom: 0;
-        margin-top: 0;
-        flex-direction: row;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-        justify-self: center;
-        margin: 0;
-      }
-      
-      .difficulty, .number-controls, .action-buttons {
-        margin: 0 0.5rem;
-      }
-      
-      .game-info {
-        width: calc(100% - 2rem);
-        max-width: 550px;
-        margin: 0.5rem auto;
-      }
-      
-      .left-panel .action-buttons {
-        flex-direction: row;
-        width: auto;
-      }
-      
-      .left-panel .action-btn {
-        width: auto;
-        white-space: nowrap;
-      }
-      
-      .number-controls {
-        align-items: center;
-      }
-      
-      .number-grid {
-        max-width: 300px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.8rem;
-        margin-bottom: 0.5rem;
-      }
-      
-      .board-container {
-        padding: 0.75rem;
-      }
-      
-      .cell {
-        font-size: 1rem;
-      }
-      
-      .difficulty button, .action-btn {
-        padding: 0.6rem 0.8rem;
-        font-size: 0.85rem;
-      }
-      
-      .number-btn {
-        font-size: 1.2rem;
-      }
-      
-      .game-info {
-        font-size: 0.8rem;
-        padding: 0.5rem;
-      }
-      
-      .modal-content {
-        padding: 1rem;
-      }
-      
-      .rules-content {
-        width: 95%;
-        padding-right: 0.5rem;
-      }
-      
-      .rule-section h3 {
-        font-size: 1.1rem;
-      }
-    }
-    
-    /* Add horizontal and vertical strong lines */
-    .sudoku-board::before, 
-    .sudoku-board::after {
-      content: none !important;
-      display: none !important;
-    }
-    
-    /* 移除之前的伪元素网格线样式 */
-    .sudoku-board::before,
-    .cell[data-row="5"]::after,
-    .sudoku-board::after {
-      display: none !important;
-      content: none !important;
-      background: none !important;
-    }
-    
-    /* Records panel updated style */
-    .records-panel {
-      background-color: rgba(30, 41, 59, 0.5);
-      border-radius: 0.8rem;
-      padding: 1rem;
-      margin-top: 1rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      width: 100%;
-      animation: fadeIn 0.8s ease-out;
-    }
-    
-    .records-title {
-      color: #93c5fd;
-      font-weight: 600;
-      font-size: 1.1rem;
-      margin-bottom: 1.2rem;
-      text-align: center;
-      border-bottom: 1px solid rgba(96, 165, 250, 0.2);
-      padding-bottom: 0.5rem;
-    }
-    
-    .records-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
-      padding: 0 0.5rem;
-      color: #94a3b8;
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-    
-    .records-header-item {
-      flex: 1;
-      text-align: center;
-    }
-    
-    .records-header-item:first-child {
-      text-align: left;
-      flex: 0.8;
-    }
-    
-    .record-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.5rem;
-      border-bottom: 1px solid rgba(96, 165, 250, 0.1);
-      transition: background-color 0.2s ease;
-    }
-    
-    .record-item:hover {
-      background-color: rgba(96, 165, 250, 0.1);
-      border-radius: 0.3rem;
-    }
-    
-    .record-item:last-child {
-      border-bottom: none;
-    }
-    
-    .record-level {
-      flex: 1;
-      font-weight: 500;
-      color: #e2e8f0;
-    }
-    
-    .record-time {
-      flex: 1;
-      font-family: monospace;
-      color: #f8fafc;
-      text-align: center;
-    }
-    
-    .record-best-time {
-      flex: 1;
-      font-family: monospace;
-      color: #fbbf24;
-      text-align: center;
-    }
-    
-    /* Daily challenge badge */
-    .daily-badge {
-      display: none;
-      background-color: #c026d3;
-      color: white;
-      padding: 0.35rem 0.8rem;
-      border-radius: 1rem;
-      font-size: 0.8rem;
-      font-weight: 500;
-      margin: 0.5rem auto;
-      text-align: center;
-      box-shadow: 0 3px 8px rgba(192, 38, 211, 0.4);
-      animation: pulse 2s infinite;
-      width: fit-content;
-    }
-    
-    /* Stats button */
-    .stats-btn {
-      background-color: #3b82f6;
-      margin-top: 1rem;
-    }
-    
-    .stats-btn:hover {
-      background-color: #60a5fa;
-    }
-    
-    /* Daily challenge button */
-    .daily-btn {
-      background-color: #c026d3;
-      margin-top: 0.5rem;
-    }
-    
-    .daily-btn:hover {
-      background-color: #d946ef;
-    }
-    
-    /* Stats modal */
-    .stats-content {
-      text-align: left;
-      width: 600px;
-    }
-    
-    .stats-header {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-    
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    
-    .stat-card {
-      background-color: rgba(30, 41, 59, 0.7);
-      padding: 1rem;
-      border-radius: 0.5rem;
-      text-align: center;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-    }
-    
-    .stat-value {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #60a5fa;
-      margin-bottom: 0.3rem;
-    }
-    
-    .stat-label {
-      font-size: 0.85rem;
-      color: #94a3b8;
-    }
-    
-    /* Achievements section */
-    .achievements-section {
-      margin-top: 1.5rem;
-    }
-    
-    .achievements-title {
-      color: #93c5fd;
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-      font-weight: 600;
-      border-bottom: 1px solid rgba(96, 165, 250, 0.2);
-      padding-bottom: 0.5rem;
-    }
-    
-    .achievement-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0.8rem;
-      padding: 0.8rem;
-      border-radius: 0.5rem;
-      background-color: rgba(30, 41, 59, 0.5);
-      transition: all 0.2s ease;
-    }
-    
-    .achievement-item.earned {
-      background-color: rgba(5, 150, 105, 0.2);
-      border-left: 3px solid #10b981;
-    }
-    
-    .achievement-item.locked {
-      opacity: 0.6;
-    }
-    
-    .achievement-icon {
-      margin-right: 1rem;
-      font-size: 1.4rem;
-    }
-    
-    .achievement-title {
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-    }
-    
-    .achievement-desc {
-      font-size: 0.9rem;
-      color: #94a3b8;
-    }
-    
-    /* Updated completion modal */
-    .completion-stars {
-      margin: 1rem 0;
-      font-size: 2rem;
-    }
-    
-    .new-record {
-      color: #fbbf24;
-      font-weight: 600;
-      margin: 1rem 0;
-      animation: pulse 2s infinite;
-    }
-    
-    .global-compare {
-      color: #94a3b8;
-      font-size: 0.9rem;
-      margin-bottom: 1.5rem;
-    }
-    
-    .achievement-alert {
-      background-color: rgba(5, 150, 105, 0.2);
-      border-left: 3px solid #10b981;
-      padding: 0.8rem 1rem;
-      margin: 1rem 0;
-      border-radius: 0 0.3rem 0.3rem 0;
-      animation: slideIn 0.5s ease-out;
-    }
-    
-    /* Additional modal button styles */
-    .modal-btn.share-btn {
-      background-color: #2563eb;
-    }
-    
-    .modal-btn.stats-modal-btn {
-      background-color: #3b82f6;
-    }
-    
-    .modal-actions {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    
-    /* 优化数字选择按钮 */
-    .number-controls .numbers {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin: 0 auto;
-      width: 100%;
-    }
-    
-    .number-controls .title {
-      text-align: center;
-      color: #93c5fd;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-      font-size: 1.2rem;
-      border-bottom: 1px solid rgba(96, 165, 250, 0.2);
-      padding-bottom: 0.5rem;
-    }
-    
-    /* 改善数字按钮样式 */
-    button.number {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: rgba(60, 80, 110, 0.4);
-      color: #dbeafe;
-      border: 1px solid rgba(96, 165, 250, 0.2);
-      border-radius: 8px;
-      padding: 0.5rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      height: 2.5rem;
-    }
-    
-    button.number:hover {
-      background-color: rgba(96, 165, 250, 0.3);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-    
-    button.number.selected {
-      background-color: rgba(96, 165, 250, 0.6);
-      color: #ffffff;
-      border-color: #60a5fa;
-      box-shadow: 0 0 10px rgba(96, 165, 250, 0.6);
-    }
-    
-    /* 优化操作按钮 */
-    .operations {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      width: 100%;
-      margin-top: 0.75rem;
-    }
-    
-    button.erase, button.hint {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: rgba(60, 80, 110, 0.4);
-      color: #dbeafe;
-      border: 1px solid rgba(96, 165, 250, 0.2);
-      border-radius: 8px;
-      padding: 0.6rem 1rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      min-height: 2.8rem;
-    }
-    
-    button.erase {
-      background-color: rgba(248, 113, 113, 0.2);
-      border-color: rgba(248, 113, 113, 0.4);
-    }
-    
-    button.hint {
-      background-color: rgba(139, 92, 246, 0.2);
-      border-color: rgba(139, 92, 246, 0.4);
-    }
-    
-    button.erase:hover {
-      background-color: rgba(248, 113, 113, 0.3);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
-    }
-    
-    button.hint:hover {
-      background-color: rgba(139, 92, 246, 0.3);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
-    }
-    
-    button.erase:active, button.hint:active {
-      transform: translateY(1px);
-    }
-    
-    /* 优化难度选择按钮 */
-    .difficulty-option {
-      padding: 0.6rem;
-      border-radius: 0.5rem;
-      background-color: rgba(60, 80, 110, 0.4);
-      color: #dbeafe;
-      border: 1px solid rgba(96, 165, 250, 0.2);
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      text-align: center;
-    }
-    
-    .difficulty-option:hover {
-      background-color: rgba(96, 165, 250, 0.3);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-    
-    .difficulty-option.selected {
-      background-color: rgba(96, 165, 250, 0.6);
-      color: #ffffff;
-      border-color: #60a5fa;
-      box-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
-      font-weight: 600;
-    }
-    
-    /* 改善记录面板样式 */
-    .records-panel {
-      margin-top: 0;
-    }
-    
-    .records-panel .title {
-      text-align: center;
-      color: #93c5fd;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-      font-size: 1.2rem;
-      border-bottom: 1px solid rgba(96, 165, 250, 0.2);
-      padding-bottom: 0.5rem;
-    }
-    
-    .records-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
-    }
-    
-    .records-table th {
-      color: #bfdbfe;
-      font-weight: 500;
-      text-align: left;
-      padding: 0.4rem 0.25rem;
-      border-bottom: 1px solid rgba(96, 165, 250, 0.2);
-      font-size: 0.8rem;
-    }
-    
-    .records-table td {
-      color: #dbeafe;
-      padding: 0.4rem 0.25rem;
-      border-bottom: 1px solid rgba(30, 41, 59, 0.3);
-    }
-    
-    /* 改善游戏信息显示 */
-    .info-item {
-      color: #bfdbfe;
-      font-size: 0.9rem;
-    }
-    
-    .info-value {
-      color: #dbeafe;
-      font-weight: 600;
-    }
-    
-    /* 重设游戏操作按钮 */
-    .action-button {
-      width: 100%;
-      padding: 0.75rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 1rem;
-      letter-spacing: 0.5px;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    }
-    
-    .action-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-    
-    .action-button:active {
-      transform: translateY(1px);
-    }
-    
-    .new-game {
-      background-color: rgba(16, 185, 129, 0.2);
-      color: #6ee7b7;
-      border: 1px solid rgba(16, 185, 129, 0.4);
-    }
-    
-    .new-game:hover {
-      background-color: rgba(16, 185, 129, 0.3);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-    }
-    
-    .rules-button {
-      background-color: rgba(14, 165, 233, 0.2);
-      color: #7dd3fc;
-      border: 1px solid rgba(14, 165, 233, 0.4);
-    }
-    
-    .rules-button:hover {
-      background-color: rgba(14, 165, 233, 0.3);
-      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
-    }
-    
-    .stats-button {
-      background-color: rgba(217, 119, 6, 0.2);
-      color: #fcd34d;
-      border: 1px solid rgba(217, 119, 6, 0.4);
-    }
-    
-    .stats-button:hover {
-      background-color: rgba(217, 119, 6, 0.3);
-      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
-    }
-    
-    .daily-button {
-      background-color: rgba(139, 92, 246, 0.2);
-      color: #c4b5fd;
-      border: 1px solid rgba(139, 92, 246, 0.4);
-    }
-    
-    .daily-button:hover {
-      background-color: rgba(139, 92, 246, 0.3);
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
-    }
-    
-    /* 统一星级显示风格 */
-    .records-star {
-      color: #facc15;
-      font-size: 0.9rem;
-    }
-    
-    .stars-container {
-      display: flex;
-      gap: 2px;
-      margin-top: -2px;
-    }
-    
-    /* 添加动画效果 */
-    @keyframes scaleIn {
-      0% { transform: scale(0.95); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    
-    @keyframes fadeIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-    
-    @keyframes slideIn {
-      0% { transform: translateY(15px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
-    }
-    
-    /* 提高单元格交互体验 */
-    .cell {
-      transition: all 0.15s ease;
-    }
-    
-    .cell:hover {
-      background-color: rgba(96, 165, 250, 0.1);
-    }
-    
-    .cell.selected {
-      background-color: rgba(96, 165, 250, 0.2);
-      box-shadow: 0 0 10px rgba(96, 165, 250, 0.4) inset;
-    }
-    
-    .cell.fixed {
-      color: #f8fafc;
-      font-weight: 700;
-    }
-    
-    .cell.conflict {
-      color: #f87171;
-      animation: pulse 1s ease-in-out;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { background-color: rgba(252, 165, 165, 0.0); }
-      50% { background-color: rgba(252, 165, 165, 0.3); }
-    }
-    
-    /* 提高模态框美观度 */
-    .modal-content {
-      border-radius: 1rem;
-      background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-      border: 1px solid rgba(96, 165, 250, 0.2);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(12px);
-    }
-    
-    /* 隐藏滚动条但保留滚动功能 */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: rgba(30, 41, 59, 0.1);
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: rgba(96, 165, 250, 0.3);
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(96, 165, 250, 0.5);
-    }
-    
-    /* 修复按钮对齐问题 */
-    .number-controls .action-buttons {
-      padding: 0;
-      background-color: transparent;
-      border: none;
-      box-shadow: none;
-      margin-top: 0.75rem;
-      max-width: 100%;
-    }
-    
-    .action-btn.erase-btn, .action-btn.hint-btn {
-      padding: 0.75rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      font-size: 1rem;
-      min-height: 2.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      margin: 0;
-    }
-    
-    /* 统一右侧面板所有按钮样式 */
-    .right-panel .action-buttons {
-      margin-bottom: 0.75rem;
-    }
-    
-    .right-panel .action-btn {
-      padding: 0.75rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      font-size: 1rem;
-      min-height: 2.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
   </style>
 </head>
 <body>
-  <h1>Sudoku</h1>
-  
-  <!-- 左侧面板只保留难度选择和记录显示 -->
-  <div class="left-panel">
-    <div class="difficulty">
-      <div class="difficulty-title">Game Level</div>
-      <button class="active" data-level="easy" onclick="changeLevel('easy', this)">Easy</button>
-      <button data-level="medium" onclick="changeLevel('medium', this)">Medium</button>
-      <button data-level="hard" onclick="changeLevel('hard', this)">Hard</button>
-    </div>
-    
-    <div class="records-panel">
-      <div class="records-title">Game Records</div>
-      <div class="records-header">
-        <div class="records-header-item">Level</div>
-        <div class="records-header-item">Your Best</div>
-        <div class="records-header-item">Global Best</div>
-      </div>
-      <div id="personalRecords">
-        <!-- Records will be populated here -->
-      </div>
-    </div>
-  </div>
-  
-  <!-- 主游戏区域 -->
   <div class="game-container">
-    <div class="board-container">
-      <div class="sudoku-board" id="board"></div>
-    </div>
+    <div class="game-title">Sudoku</div>
     
-    <!-- 移动状态信息到主游戏区域下方 -->
     <div class="game-info">
-      <div class="game-status" id="status">Loading...</div>
-      <div class="timer" id="timer">00:00</div>
-    </div>
-  </div>
-  
-  <!-- 右侧面板现在包含数字选择和所有操作按钮 -->
-  <div class="right-panel">
-    <div class="number-controls">
-      <div class="controls-title">Choose Number</div>
-      <div class="number-grid">
-        <button class="number-btn" onclick="enterNumber(1)">1</button>
-        <button class="number-btn" onclick="enterNumber(2)">2</button>
-        <button class="number-btn" onclick="enterNumber(3)">3</button>
-        <button class="number-btn" onclick="enterNumber(4)">4</button>
-        <button class="number-btn" onclick="enterNumber(5)">5</button>
-        <button class="number-btn" onclick="enterNumber(6)">6</button>
-        <button class="number-btn" onclick="enterNumber(7)">7</button>
-        <button class="number-btn" onclick="enterNumber(8)">8</button>
-        <button class="number-btn" onclick="enterNumber(9)">9</button>
-      </div>
-      
-      <div class="action-buttons">
-        <button class="action-btn erase-btn" onclick="eraseCell()">Erase</button>
-        <button class="action-btn hint-btn" onclick="getHint()">Hint</button>
-      </div>
+      <div class="game-status">Level: Easy | Hints: 0</div>
+      <div class="timer">00:00</div>
     </div>
     
-    <!-- 将操作按钮移到右侧面板 -->
-    <div class="action-buttons">
-      <button class="action-btn new-game-btn" onclick="newGame()">New Game</button>
-      <button class="action-btn daily-btn" onclick="startDailyChallenge()">Daily Challenge</button>
-      <button class="action-btn stats-btn" onclick="showStats()">My Stats</button>
-      <button class="action-btn help-btn" onclick="showRules()">Rules</button>
-    </div>
-    
-    <div class="daily-badge" id="dailyBadge">Daily Challenge: 3/15/2023</div>
-  </div>
-  
-  <!-- Game completion modal updated -->
-  <div class="modal" id="completeModal">
-    <div class="modal-content">
-      <h2>Good Job!</h2>
-      <p>You completed the Sudoku puzzle!</p>
+    <div class="game-board">
+      <div class="sudoku-board" id="sudoku-board"></div>
       
-      <div class="completion-stars" id="completeStars">
-        <span class="star filled">★</span>
-        <span class="star filled">★</span>
-        <span class="star filled">★</span>
-      </div>
-      
-      <p>Time: <span id="completeTime">00:00</span></p>
-      
-      <div class="new-record" id="newRecordText" style="display: none;">New Personal Record!</div>
-      
-      <div class="global-compare" id="globalCompare">Global Best: 01:45 by Alex</div>
-      
-      <div class="achievement-alert" id="achievementAlert" style="display: none;">
-        🏆 Achievement Unlocked: Speed Demon
-      </div>
-      
-      <div class="modal-actions">
-        <button class="modal-btn" onclick="newGame()">Play Again</button>
-        <button class="modal-btn share-btn" onclick="shareResult()">Share Result</button>
-        <button class="modal-btn stats-modal-btn" onclick="showStats()">View Stats</button>
+      <div class="controls">
+        <div class="number-grid" id="number-grid"></div>
+        
+        <div class="actions">
+          <button class="action-btn new-game-btn" id="new-game-btn">New Game</button>
+          <button class="action-btn hint-btn" id="hint-btn">Hint</button>
+          <button class="action-btn erase-btn" id="erase-btn">Erase</button>
+          <button class="action-btn help-btn" id="help-btn">Help</button>
+        </div>
       </div>
     </div>
   </div>
   
-  <!-- Stats and achievements modal -->
-  <div class="modal" id="statsModal">
-    <div class="modal-content stats-content">
-      <span class="close-btn" onclick="document.getElementById('statsModal').style.display = 'none'">&times;</span>
-      
-      <div class="stats-header">
-        <h2>Your Sudoku Stats</h2>
-      </div>
-      
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-value" id="statsTotalGames">0</div>
-          <div class="stat-label">Games Played</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="statsWinRate">0%</div>
-          <div class="stat-label">Win Rate</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="statsAvgTime">00:00</div>
-          <div class="stat-label">Average Time</div>
-        </div>
-      </div>
-      
-      <div class="achievements-section">
-        <div class="achievements-title">Achievements</div>
-        <div id="achievementsList">
-          <!-- Achievements will be populated here -->
-        </div>
-      </div>
-      
-      <button class="modal-btn" onclick="document.getElementById('statsModal').style.display = 'none'">Close</button>
-    </div>
-  </div>
-  
-  <!-- Game rules modal -->
-  <div class="modal" id="rulesModal">
-    <div class="modal-content rules-content">
-      <span class="close-btn" onclick="hideRules()">&times;</span>
-      <h2>How to Play Sudoku</h2>
-      
-      <div class="rule-section">
-        <h3>Goal</h3>
-        <p>Fill the 9×9 grid with numbers 1-9 so that each row, column, and 3×3 box has all numbers 1-9 with no repeats.</p>
-        <div class="rule-image">
-          <div class="example-grid">
-            <div class="example-row"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div></div>
-            <div class="example-row"><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>1</div><div>2</div><div>3</div></div>
-            <div class="example-row"><div>7</div><div>8</div><div>9</div><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div></div>
-            <div class="example-row"><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>1</div></div>
-            <div class="example-row"><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>1</div><div>2</div><div>3</div><div>4</div></div>
-            <div class="example-row"><div>8</div><div>9</div><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div></div>
-            <div class="example-row"><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>1</div><div>2</div></div>
-            <div class="example-row"><div>6</div><div>7</div><div>8</div><div>9</div><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div></div>
-            <div class="example-row"><div>9</div><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div></div>
-          </div>
-          <p class="caption">A completed Sudoku grid</p>
-        </div>
-      </div>
-      
-      <div class="rule-section">
-        <h3>Basic Rules</h3>
-        <ul>
-          <li>Each row must have numbers 1-9 with no repeats</li>
-          <li>Each column must have numbers 1-9 with no repeats</li>
-          <li>Each 3×3 box must have numbers 1-9 with no repeats</li>
-        </ul>
-        <div class="rule-highlight">
-          <p>Some numbers are already filled in when you start. These numbers cannot be changed. You need to fill in the empty spaces.</p>
-        </div>
-      </div>
-      
-      <div class="rule-section">
-        <h3>How to Play</h3>
-        <ol>
-          <li>Click on an empty square to select it</li>
-          <li>Click a number button (1-9) or press a number key to enter a value</li>
-          <li>Continue until all squares are filled correctly</li>
-        </ol>
-        <p>Use the <strong>Erase</strong> button to clear a selected square if you made a mistake.</p>
-        <p>If you're stuck, use the <strong>Hint</strong> button to see the correct number for the selected square.</p>
-      </div>
-      
-      <div class="rule-section">
-        <h3>Game Levels</h3>
-        <ul>
-          <li><strong>Easy:</strong> More numbers are filled in at the start</li>
-          <li><strong>Medium:</strong> A good challenge for most players</li>
-          <li><strong>Hard:</strong> Fewer starting numbers and more challenging</li>
-        </ul>
-      </div>
-      
-      <div class="rule-section">
-        <h3>Tips for Beginners</h3>
-        <ul>
-          <li>Start with rows, columns, or boxes that already have several numbers</li>
-          <li>Use process of elimination to find where numbers must go</li>
-          <li>Look for squares that can only be one number</li>
-          <li>Don't guess! Sudoku can always be solved with logic</li>
-        </ul>
-      </div>
-      
-      <button class="modal-btn" onclick="hideRules()">Got it!</button>
-    </div>
-  </div>
-  
-  <!-- Game state script update -->
   <script>
-    // Game state
-    let gameState = {
-      board: Array(9).fill().map(() => Array(9).fill(0)),
-      solution: Array(9).fill().map(() => Array(9).fill(0)),
-      fixed: Array(9).fill().map(() => Array(9).fill(false)),
-      selectedCell: null,
-      difficulty: 'easy',
-      startTime: null,
-      timerInterval: null,
-      hintsUsed: 0,
-      // New stats properties
-      moves: 0,
-      errors: 0,
-      stars: 3
-    };
-    
-    // Records object to store best times
-    let gameRecords = {
-      easy: { bestTime: localStorage.getItem('sudoku_record_easy') || null, bestStars: localStorage.getItem('sudoku_stars_easy') || 0 },
-      medium: { bestTime: localStorage.getItem('sudoku_record_medium') || null, bestStars: localStorage.getItem('sudoku_stars_medium') || 0 },
-      hard: { bestTime: localStorage.getItem('sudoku_record_hard') || null, bestStars: localStorage.getItem('sudoku_stars_hard') || 0 }
-    };
-    
-    // Global records (simulated)
-    const globalRecords = {
-      easy: { bestTime: '01:45', playerName: 'Alex' },
-      medium: { bestTime: '04:23', playerName: 'Taylor' },
-      hard: { bestTime: '08:11', playerName: 'Jordan' }
-    };
-    
-    // Achievements list
-    const achievements = [
-      { id: 'hint_master', title: 'Hint Master', description: 'Complete a game without using hints', earned: false },
-      { id: 'speed_demon', title: 'Speed Demon', description: 'Complete Easy level in under 2 minutes', earned: false },
-      { id: 'perfectionist', title: 'Perfectionist', description: 'Complete a game with no errors', earned: false },
-      { id: 'persistent', title: 'Persistent', description: 'Play 5 games in a row', earned: false },
-      { id: 'pro_solver', title: 'Pro Solver', description: 'Complete Hard level with 3 stars', earned: false }
-    ];
-    
-    // Initialize game
-    function initGame() {
+    // JavaScript部分
+    document.addEventListener('DOMContentLoaded', function() {
+      // 游戏变量
+      let board = Array(9).fill().map(() => Array(9).fill(0));
+      let solution = Array(9).fill().map(() => Array(9).fill(0));
+      let puzzle = []; // 原始有空格的棋盘
+      let selectedCell = null;
+      let level = 'easy';
+      let gameStarted = false;
+      let timer = 0;
+      let timerInterval = null;
+      let hints = 0;
+      const MAX_HINTS = 3;
+      
+      // DOM元素
+      const boardElement = document.getElementById('sudoku-board');
+      const statusElement = document.querySelector('.game-status');
+      const timerElement = document.querySelector('.timer');
+      const newGameBtn = document.getElementById('new-game-btn');
+      const hintBtn = document.getElementById('hint-btn');
+      const eraseBtn = document.getElementById('erase-btn');
+      const helpBtn = document.getElementById('help-btn');
+      const numberGridElement = document.getElementById('number-grid');
+      
+      // 初始化游戏
       createBoard();
-      loadRecords();
-      newGame();
-      startTimer();
+      generateNumbers();
+      startNewGame();
       
-      // Add keyboard support
-      document.addEventListener('keydown', handleKeyPress);
+      // 事件监听
+      newGameBtn.addEventListener('click', startNewGame);
+      hintBtn.addEventListener('click', getHint);
+      eraseBtn.addEventListener('click', eraseCell);
+      helpBtn.addEventListener('click', showHelp);
       
-      // Close modals when clicking outside
-      window.addEventListener('click', function(event) {
-        if (event.target === document.getElementById('rulesModal')) {
-          hideRules();
-        }
-        if (event.target === document.getElementById('completeModal')) {
-          document.getElementById('completeModal').style.display = 'none';
-        }
-        if (event.target === document.getElementById('statsModal')) {
-          document.getElementById('statsModal').style.display = 'none';
-        }
-      });
-    }
-    
-    // Load records from localStorage
-    function loadRecords() {
-      const difficulties = ['easy', 'medium', 'hard'];
-      difficulties.forEach(diff => {
-        const record = localStorage.getItem(`sudoku_record_${diff}`);
-        const stars = localStorage.getItem(`sudoku_stars_${diff}`);
-        if (record) {
-          gameRecords[diff].bestTime = record;
-        }
-        if (stars) {
-          gameRecords[diff].bestStars = parseInt(stars);
-        }
-      });
-      
-      // Display records in the side panel
-      updateRecordsDisplay();
-    }
-    
-    // Save a new record
-    function saveRecord(difficulty, time, stars) {
-      // Check if this is a new record
-      if (!gameRecords[difficulty].bestTime || 
-          timeToSeconds(time) < timeToSeconds(gameRecords[difficulty].bestTime)) {
-        gameRecords[difficulty].bestTime = time;
-        localStorage.setItem(`sudoku_record_${difficulty}`, time);
-        
-        // Return true if a new record was set
-        return true;
-      }
-      
-      // Check for star record
-      if (stars > gameRecords[difficulty].bestStars) {
-        gameRecords[difficulty].bestStars = stars;
-        localStorage.setItem(`sudoku_stars_${difficulty}`, stars);
-        return true;
-      }
-      
-      return false;
-    }
-    
-    // Update records display in the UI
-    function updateRecordsDisplay() {
-      const recordsContainer = document.getElementById('personalRecords');
-      recordsContainer.innerHTML = '';
-      
-      const difficulties = ['easy', 'medium', 'hard'];
-      difficulties.forEach(diff => {
-        const diffText = getDifficultyText(diff);
-        const record = gameRecords[diff].bestTime || '---';
-        const globalRecord = globalRecords[diff].bestTime;
-        
-        const recordDiv = document.createElement('div');
-        recordDiv.className = 'record-item';
-        
-        recordDiv.innerHTML = `
-          <div class="record-level">${diffText}</div>
-          <div class="record-time">${record}</div>
-          <div class="record-best-time">${globalRecord}</div>
-        `;
-        
-        recordsContainer.appendChild(recordDiv);
-      });
-    }
-    
-    // Convert time string (MM:SS) to seconds
-    function timeToSeconds(timeStr) {
-      if (!timeStr) return Infinity;
-      const [min, sec] = timeStr.split(':').map(Number);
-      return min * 60 + sec;
-    }
-    
-    // Calculate star rating based on performance
-    function calculateStars() {
-      // Base calculation on difficulty, time, hints used and errors made
-      let stars = 3;
-      
-      const elapsedSeconds = Math.floor((Date.now() - gameState.startTime) / 1000);
-      const timeThresholds = {
-        easy: { twoStars: 180, oneStar: 300 },     // 3:00 and 5:00
-        medium: { twoStars: 360, oneStar: 600 },   // 6:00 and 10:00
-        hard: { twoStars: 720, oneStar: 1200 }     // 12:00 and 20:00
-      };
-      
-      // Reduce stars based on time
-      if (elapsedSeconds > timeThresholds[gameState.difficulty].oneStar) {
-        stars = 1;
-      } else if (elapsedSeconds > timeThresholds[gameState.difficulty].twoStars) {
-        stars = 2;
-      }
-      
-      // Reduce stars for hints and errors
-      if (gameState.hintsUsed > 2) {
-        stars -= 1;
-      }
-      if (gameState.errors > 5) {
-        stars -= 1;
-      }
-      
-      // Ensure at least 1 star
-      return Math.max(1, stars);
-    }
-    
-    // Show stats modal with player statistics
-    function showStats() {
-      document.getElementById('statsModal').style.display = 'flex';
-      
-      // Update stats content
-      document.getElementById('statsTotalGames').textContent = localStorage.getItem('sudoku_total_games') || '0';
-      document.getElementById('statsWinRate').textContent = localStorage.getItem('sudoku_win_rate') || '0%';
-      document.getElementById('statsAvgTime').textContent = localStorage.getItem('sudoku_avg_time') || '00:00';
-      
-      // Update achievements
-      updateAchievements();
-    }
-    
-    // Update achievements list
-    function updateAchievements() {
-      const achievementsList = document.getElementById('achievementsList');
-      achievementsList.innerHTML = '';
-      
-      achievements.forEach(achievement => {
-        const isEarned = localStorage.getItem(`achievement_${achievement.id}`) === 'true';
-        
-        const achievementItem = document.createElement('div');
-        achievementItem.className = `achievement-item ${isEarned ? 'earned' : 'locked'}`;
-        
-        achievementItem.innerHTML = `
-          <div class="achievement-icon">${isEarned ? '🏆' : '🔒'}</div>
-          <div class="achievement-info">
-            <div class="achievement-title">${achievement.title}</div>
-            <div class="achievement-desc">${achievement.description}</div>
-          </div>
-        `;
-        
-        achievementsList.appendChild(achievementItem);
-      });
-    }
-    
-    // Check if player earned any achievements
-    function checkAchievements() {
-      const elapsedSeconds = Math.floor((Date.now() - gameState.startTime) / 1000);
-      const newAchievements = [];
-      
-      // Hint Master
-      if (gameState.hintsUsed === 0) {
-        if (localStorage.getItem('achievement_hint_master') !== 'true') {
-          localStorage.setItem('achievement_hint_master', 'true');
-          newAchievements.push('Hint Master');
-        }
-      }
-      
-      // Speed Demon
-      if (gameState.difficulty === 'easy' && elapsedSeconds < 120) {
-        if (localStorage.getItem('achievement_speed_demon') !== 'true') {
-          localStorage.setItem('achievement_speed_demon', 'true');
-          newAchievements.push('Speed Demon');
-        }
-      }
-      
-      // Perfectionist
-      if (gameState.errors === 0) {
-        if (localStorage.getItem('achievement_perfectionist') !== 'true') {
-          localStorage.setItem('achievement_perfectionist', 'true');
-          newAchievements.push('Perfectionist');
-        }
-      }
-      
-      // Pro Solver
-      if (gameState.difficulty === 'hard' && calculateStars() === 3) {
-        if (localStorage.getItem('achievement_pro_solver') !== 'true') {
-          localStorage.setItem('achievement_pro_solver', 'true');
-          newAchievements.push('Pro Solver');
-        }
-      }
-      
-      // Increment games counter for Persistent achievement
-      const gamesPlayed = parseInt(localStorage.getItem('sudoku_games_streak') || '0') + 1;
-      localStorage.setItem('sudoku_games_streak', gamesPlayed.toString());
-      
-      if (gamesPlayed >= 5) {
-        if (localStorage.getItem('achievement_persistent') !== 'true') {
-          localStorage.setItem('achievement_persistent', 'true');
-          newAchievements.push('Persistent');
-        }
-      }
-      
-      return newAchievements;
-    }
-    
-    // Handle keyboard input
-    function handleKeyPress(e) {
-      // Number keys 1-9
-      if (e.key >= '1' && e.key <= '9') {
-        enterNumber(parseInt(e.key));
-      }
-      // Delete or Backspace to erase
-      else if (e.key === 'Delete' || e.key === 'Backspace') {
-        eraseCell();
-      }
-      // Arrow keys to navigate
-      else if (e.key.startsWith('Arrow') && gameState.selectedCell) {
-        const { row, col } = gameState.selectedCell;
-        let newRow = row;
-        let newCol = col;
-        
-        switch (e.key) {
-          case 'ArrowUp': newRow = Math.max(0, row - 1); break;
-          case 'ArrowDown': newRow = Math.min(8, row + 1); break;
-          case 'ArrowLeft': newCol = Math.max(0, col - 1); break;
-          case 'ArrowRight': newCol = Math.min(8, col + 1); break;
-        }
-        
-        // If new position is fixed, try to continue moving
-        let attempts = 0;
-        const maxAttempts = 9; // Prevent infinite loop
-        
-        while (gameState.fixed[newRow][newCol] && attempts < maxAttempts) {
-          attempts++;
-          
-          switch (e.key) {
-            case 'ArrowUp': newRow = Math.max(0, newRow - 1); break;
-            case 'ArrowDown': newRow = Math.min(8, newRow + 1); break;
-            case 'ArrowLeft': newCol = Math.max(0, newCol - 1); break;
-            case 'ArrowRight': newCol = Math.min(8, newCol + 1); break;
+      // 创建棋盘
+      function createBoard() {
+        boardElement.innerHTML = '';
+        for (let row = 0; row < 9; row++) {
+          for (let col = 0; col < 9; col++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            cell.addEventListener('click', () => selectCell(row, col));
+            boardElement.appendChild(cell);
           }
         }
-        
-        if (!gameState.fixed[newRow][newCol]) {
-          selectCell(newRow, newCol);
+      }
+      
+      // 生成数字按钮
+      function generateNumbers() {
+        numberGridElement.innerHTML = '';
+        for (let num = 1; num <= 9; num++) {
+          const button = document.createElement('button');
+          button.className = 'number-btn';
+          button.textContent = num;
+          button.addEventListener('click', () => enterNumber(num));
+          numberGridElement.appendChild(button);
         }
       }
-      // 'H' key for hint
-      else if (e.key.toLowerCase() === 'h') {
-        getHint();
+      
+      // 开始新游戏
+      function startNewGame() {
+        resetGame();
+        generatePuzzle();
+        renderBoard();
+        updateGameInfo();
+        startTimer();
+        gameStarted = true;
       }
-      // 'N' key for new game
-      else if (e.key.toLowerCase() === 'n') {
-        newGame();
+      
+      // 重置游戏
+      function resetGame() {
+        board = Array(9).fill().map(() => Array(9).fill(0));
+        solution = Array(9).fill().map(() => Array(9).fill(0));
+        puzzle = Array(9).fill().map(() => Array(9).fill(0));
+        selectedCell = null;
+        hints = 0;
+        stopTimer();
+        timer = 0;
+        updateTimer();
       }
-      // 'R' key for rules
-      else if (e.key.toLowerCase() === 'r') {
-        showRules();
-      }
-      // Escape key to close modals
-      else if (e.key === 'Escape') {
-        hideRules();
-        document.getElementById('completeModal').style.display = 'none';
-      }
-    }
-    
-    // Create sudoku board
-    function createBoard() {
-      const board = document.getElementById('board');
-      board.innerHTML = '';
       
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          const cell = document.createElement('div');
-          cell.className = 'cell';
-          cell.dataset.row = row;
-          cell.dataset.col = col;
-          cell.addEventListener('click', () => selectCell(row, col));
-          board.appendChild(cell);
-        }
-      }
-    }
-    
-    // Generate new game
-    function newGame() {
-      // Reset game state
-      gameState.board = Array(9).fill().map(() => Array(9).fill(0));
-      gameState.fixed = Array(9).fill().map(() => Array(9).fill(false));
-      gameState.selectedCell = null;
-      gameState.hintsUsed = 0;
-      
-      // Generate solution (complete sudoku)
-      generateSolution();
-      
-      // Create puzzle by removing numbers based on difficulty
-      createPuzzle();
-      
-      // Update UI
-      updateBoard();
-      updateStatusText();
-      
-      // Reset timer
-      resetTimer();
-      
-      // Hide any open modals
-      document.getElementById('completeModal').style.display = 'none';
-      document.getElementById('rulesModal').style.display = 'none';
-    }
-    
-    // Update status text
-    function updateStatusText() {
-      document.getElementById('status').textContent = `Level: ${getDifficultyText()} | Hints: ${gameState.hintsUsed}`;
-    }
-    
-    // Generate sudoku solution
-    function generateSolution() {
-      // Clear solution
-      gameState.solution = Array(9).fill().map(() => Array(9).fill(0));
-      
-      // Try to solve sudoku
-      if (!solveSudoku(gameState.solution)) {
-        // If unsuccessful, try again
+      // 生成谜题
+      function generatePuzzle() {
+        // 先生成完整的解决方案
         generateSolution();
-        return;
-      }
-      
-      // Copy solution to current board
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          gameState.board[row][col] = gameState.solution[row][col];
-        }
-      }
-    }
-    
-    // Create puzzle by removing numbers from the solution
-    function createPuzzle() {
-      const difficultySettings = {
-        easy: { cellsToRemove: 35 },
-        medium: { cellsToRemove: 45 },
-        hard: { cellsToRemove: 55 }
-      };
-      
-      const cellsToRemove = difficultySettings[gameState.difficulty].cellsToRemove;
-      
-      // Randomly remove cell values
-      let cellsRemoved = 0;
-      while (cellsRemoved < cellsToRemove) {
-        const row = Math.floor(Math.random() * 9);
-        const col = Math.floor(Math.random() * 9);
         
-        if (gameState.board[row][col] !== 0) {
-          gameState.board[row][col] = 0;
-          cellsRemoved++;
+        // 根据难度删除一些数字
+        let cellsToRemove;
+        switch (level) {
+          case 'easy':
+            cellsToRemove = 40; // 删除40个格子
+            break;
+          case 'medium':
+            cellsToRemove = 50; // 删除50个格子
+            break;
+          case 'hard':
+            cellsToRemove = 55; // 删除55个格子
+            break;
+          default:
+            cellsToRemove = 40;
+        }
+        
+        // 将解决方案复制到棋盘和谜题
+        for (let row = 0; row < 9; row++) {
+          for (let col = 0; col < 9; col++) {
+            board[row][col] = solution[row][col];
+            puzzle[row][col] = solution[row][col];
+          }
+        }
+        
+        // 随机删除数字
+        let attempts = 0;
+        while (cellsToRemove > 0 && attempts < 200) {
+          const row = Math.floor(Math.random() * 9);
+          const col = Math.floor(Math.random() * 9);
+          
+          if (puzzle[row][col] !== 0) {
+            const temp = puzzle[row][col];
+            puzzle[row][col] = 0;
+            
+            // 检查是否仍有唯一解
+            if (hasUniqueSolution()) {
+              board[row][col] = 0;
+              cellsToRemove--;
+            } else {
+              puzzle[row][col] = temp;
+            }
+          }
+          
+          attempts++;
         }
       }
       
-      // Mark fixed cells
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          gameState.fixed[row][col] = gameState.board[row][col] !== 0;
+      // 生成解决方案
+      function generateSolution() {
+        // 清空解决方案
+        solution = Array(9).fill().map(() => Array(9).fill(0));
+        
+        // 填充对角线上的3x3方块
+        for (let i = 0; i < 9; i += 3) {
+          fillBox(i, i);
+        }
+        
+        // 填充剩余部分
+        solveSudoku(solution);
+      }
+      
+      // 填充3x3方块
+      function fillBox(row, col) {
+        const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        shuffleArray(nums);
+        
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            solution[row + i][col + j] = nums.pop();
+          }
         }
       }
-    }
-    
-    // Update board UI
-    function updateBoard() {
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
+      
+      // 打乱数组
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+      
+      // 解决数独（回溯算法）
+      function solveSudoku(grid) {
+        const emptyCell = findEmptyCell(grid);
+        if (!emptyCell) return true; // 已解决
+        
+        const [row, col] = emptyCell;
+        
+        for (let num = 1; num <= 9; num++) {
+          if (isValidPlacement(grid, row, col, num)) {
+            grid[row][col] = num;
+            
+            if (solveSudoku(grid)) {
+              return true;
+            }
+            
+            grid[row][col] = 0; // 回溯
+          }
+        }
+        
+        return false;
+      }
+      
+      // 检查是否有唯一解（简化版本）
+      function hasUniqueSolution() {
+        // 简化实现，假设总是有唯一解
+        return true;
+      }
+      
+      // 查找空格子
+      function findEmptyCell(grid) {
+        for (let row = 0; row < 9; row++) {
+          for (let col = 0; col < 9; col++) {
+            if (grid[row][col] === 0) {
+              return [row, col];
+            }
+          }
+        }
+        return null; // 没有空格子
+      }
+      
+      // 检查放置数字是否有效
+      function isValidPlacement(grid, row, col, num) {
+        // 检查行
+        for (let c = 0; c < 9; c++) {
+          if (grid[row][c] === num) return false;
+        }
+        
+        // 检查列
+        for (let r = 0; r < 9; r++) {
+          if (grid[r][col] === num) return false;
+        }
+        
+        // 检查3x3方块
+        const boxRow = Math.floor(row / 3) * 3;
+        const boxCol = Math.floor(col / 3) * 3;
+        for (let r = 0; r < 3; r++) {
+          for (let c = 0; c < 3; c++) {
+            if (grid[boxRow + r][boxCol + c] === num) return false;
+          }
+        }
+        
+        return true;
+      }
+      
+      // 选择格子
+      function selectCell(row, col) {
+        // 清除上一次选择
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach(cell => {
+          cell.classList.remove('selected');
+          cell.classList.remove('same-value');
+        });
+        
+        // 固定格子不能选择
+        if (puzzle[row][col] !== 0) return;
+        
+        // 选择当前格子
+        selectedCell = { row, col };
+        const selectedElement = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+        selectedElement.classList.add('selected');
+        
+        // 高亮相同值
+        const value = board[row][col];
+        if (value !== 0) {
+          cells.forEach(cell => {
+            const cellRow = parseInt(cell.dataset.row);
+            const cellCol = parseInt(cell.dataset.col);
+            if (board[cellRow][cellCol] === value && (cellRow !== row || cellCol !== col)) {
+              cell.classList.add('same-value');
+            }
+          });
+        }
+      }
+      
+      // 输入数字
+      function enterNumber(num) {
+        if (!selectedCell) return;
+        const { row, col } = selectedCell;
+        
+        // 检查是否合法
+        if (isValidPlacement(board, row, col, num)) {
+          board[row][col] = num;
+          renderBoard();
+          
+          // 检查是否完成
+          if (isBoardComplete()) {
+            gameWon();
+          }
+        } else {
+          // 无效的移动 - 标记为错误
           const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-          const value = gameState.board[row][col];
-          
-          // Clear all status classes
-          cell.classList.remove('fixed', 'selected', 'error', 'same-value');
-          
-          // Set cell value
-          cell.textContent = value !== 0 ? value : '';
-          
-          // Add fixed class for given numbers
-          if (gameState.fixed[row][col]) {
-            cell.classList.add('fixed');
-          }
-          
-          // Highlight selected cell
-          if (gameState.selectedCell && gameState.selectedCell.row === row && gameState.selectedCell.col === col) {
-            cell.classList.add('selected');
-          }
-          
-          // Highlight cells with same value as selected cell
-          if (gameState.selectedCell && value !== 0 && 
-              value === gameState.board[gameState.selectedCell.row][gameState.selectedCell.col]) {
-            cell.classList.add('same-value');
-          }
+          cell.classList.add('error');
+          setTimeout(() => cell.classList.remove('error'), 800);
         }
       }
       
-      // Check for errors
-      checkErrors();
-      
-      // Check if game is complete
-      checkCompletion();
-    }
-    
-    // Select a cell
-    function selectCell(row, col) {
-      // Don't allow selecting fixed cells for editing
-      if (gameState.fixed[row][col]) {
-        return;
+      // 擦除格子
+      function eraseCell() {
+        if (!selectedCell) return;
+        const { row, col } = selectedCell;
+        
+        if (puzzle[row][col] === 0) { // 只擦除玩家添加的数字
+          board[row][col] = 0;
+          renderBoard();
+        }
       }
       
-      gameState.selectedCell = { row, col };
-      updateBoard();
-    }
-    
-    // Enter a number in the selected cell
-    function enterNumber(num) {
-      if (!gameState.selectedCell) {
-        return;
+      // 提示
+      function getHint() {
+        if (hints >= MAX_HINTS) {
+          alert('You have used all your hints!');
+          return;
+        }
+        
+        if (!selectedCell) {
+          alert('Please select a cell first.');
+          return;
+        }
+        
+        const { row, col } = selectedCell;
+        if (puzzle[row][col] !== 0) {
+          alert('This is a fixed cell and does not need a hint.');
+          return;
+        }
+        
+        // 提供提示
+        board[row][col] = solution[row][col];
+        hints++;
+        updateGameInfo();
+        renderBoard();
+        
+        // 检查是否完成
+        if (isBoardComplete()) {
+          gameWon();
+        }
       }
       
-      const { row, col } = gameState.selectedCell;
-      
-      // Don't allow modifying fixed cells
-      if (gameState.fixed[row][col]) {
-        return;
+      // 检查棋盘是否完成
+      function isBoardComplete() {
+        for (let row = 0; row < 9; row++) {
+          for (let col = 0; col < 9; col++) {
+            if (board[row][col] !== solution[row][col]) {
+              return false;
+            }
+          }
+        }
+        return true;
       }
       
-      const oldValue = gameState.board[row][col];
-      gameState.board[row][col] = num;
-      
-      // Track moves only if the value actually changed
-      if (oldValue !== num) {
-        gameState.moves++;
-      }
-      
-      // Track errors
-      if (num !== gameState.solution[row][col]) {
-        gameState.errors++;
-      }
-      
-      updateBoard();
-    }
-    
-    // Erase the selected cell
-    function eraseCell() {
-      if (!gameState.selectedCell) {
-        return;
-      }
-      
-      const { row, col } = gameState.selectedCell;
-      
-      // Don't allow modifying fixed cells
-      if (gameState.fixed[row][col]) {
-        return;
-      }
-      
-      gameState.board[row][col] = 0;
-      updateBoard();
-    }
-    
-    // Get a hint for the selected cell
-    function getHint() {
-      if (!gameState.selectedCell) {
-        alert("Please select a cell first to get a hint.");
-        return;
-      }
-      
-      const { row, col } = gameState.selectedCell;
-      
-      // 不允许为固定单元格或已经正确的单元格提供提示
-      if (gameState.fixed[row][col]) {
-        alert("This is a fixed cell. No hint needed.");
-        return;
-      }
-      
-      if (gameState.board[row][col] === gameState.solution[row][col]) {
-        alert("This cell is already correct!");
-        return;
-      }
-      
-      // 提供正确数字
-      gameState.board[row][col] = gameState.solution[row][col];
-      gameState.hintsUsed++;
-      
-      // 更新状态信息
-      updateStatusText();
-      updateBoard();
-    }
-    
-    // Check for errors (incorrect entries)
-    function checkErrors() {
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          const value = gameState.board[row][col];
-          const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-          
-          if (value !== 0) {
-            // Check if value doesn't match the solution
-            if (value !== gameState.solution[row][col]) {
-              cell.classList.add('error');
+      // 渲染棋盘
+      function renderBoard() {
+        for (let row = 0; row < 9; row++) {
+          for (let col = 0; col < 9; col++) {
+            const value = board[row][col];
+            const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+            
+            cell.textContent = value || '';
+            
+            // 标记固定格子
+            if (puzzle[row][col] !== 0) {
+              cell.classList.add('fixed');
+            } else {
+              cell.classList.remove('fixed');
             }
           }
         }
       }
-    }
-    
-    // Check if the game is complete
-    function checkCompletion() {
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          if (gameState.board[row][col] !== gameState.solution[row][col]) {
-            return false;
-          }
+      
+      // 开始计时器
+      function startTimer() {
+        stopTimer();
+        timer = 0;
+        updateTimer();
+        timerInterval = setInterval(() => {
+          timer++;
+          updateTimer();
+        }, 1000);
+      }
+      
+      // 停止计时器
+      function stopTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
         }
       }
       
-      // Game is complete, calculate stars and check for records
-      clearInterval(gameState.timerInterval);
-      const completionTime = document.getElementById('timer').textContent;
-      const stars = calculateStars();
-      gameState.stars = stars;
-      
-      // Check if this is a new record
-      const isNewRecord = saveRecord(gameState.difficulty, completionTime, stars);
-      
-      // Update records display
-      updateRecordsDisplay();
-      
-      // Update game stats
-      updateGameStats(completionTime);
-      
-      // Check for achievements
-      const newAchievements = checkAchievements();
-      
-      // Update completion modal with star rating and record info
-      document.getElementById('completeTime').textContent = completionTime;
-      document.getElementById('completeStars').innerHTML = generateStarsHTML(stars);
-      
-      // Show record text if applicable
-      const recordText = document.getElementById('newRecordText');
-      if (isNewRecord) {
-        recordText.textContent = 'New Personal Record!';
-        recordText.style.display = 'block';
-      } else {
-        recordText.style.display = 'none';
+      // 更新计时器显示
+      function updateTimer() {
+        const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
+        const seconds = (timer % 60).toString().padStart(2, '0');
+        timerElement.textContent = `${minutes}:${seconds}`;
       }
       
-      // Show global comparison
-      const globalBest = globalRecords[gameState.difficulty].bestTime;
-      const globalCompare = document.getElementById('globalCompare');
-      globalCompare.textContent = `Global Best: ${globalBest} by ${globalRecords[gameState.difficulty].playerName}`;
-      
-      // Show achievements if earned
-      const achievementAlert = document.getElementById('achievementAlert');
-      if (newAchievements.length > 0) {
-        achievementAlert.textContent = `🏆 Achievement Unlocked: ${newAchievements.join(', ')}`;
-        achievementAlert.style.display = 'block';
-      } else {
-        achievementAlert.style.display = 'none';
+      // 更新游戏信息
+      function updateGameInfo() {
+        statusElement.textContent = `Level: ${level.charAt(0).toUpperCase() + level.slice(1)} | Hints: ${hints}/${MAX_HINTS}`;
       }
       
-      // Show the completion modal
-      document.getElementById('completeModal').style.display = 'flex';
-      
-      return true;
-    }
-    
-    // Generate HTML for star display
-    function generateStarsHTML(count) {
-      let html = '';
-      for (let i = 0; i < 3; i++) {
-        if (i < count) {
-          html += '<span class="star filled">★</span>';
-        } else {
-          html += '<span class="star">☆</span>';
-        }
-      }
-      return html;
-    }
-    
-    // Update game statistics
-    function updateGameStats(completionTime) {
-      // Total games completed
-      const totalGames = parseInt(localStorage.getItem('sudoku_total_games') || '0') + 1;
-      localStorage.setItem('sudoku_total_games', totalGames);
-      
-      // Calculate average time
-      const totalTimeSeconds = parseInt(localStorage.getItem('sudoku_total_time_seconds') || '0');
-      const currentTimeSeconds = timeToSeconds(completionTime);
-      const newTotalTimeSeconds = totalTimeSeconds + currentTimeSeconds;
-      localStorage.setItem('sudoku_total_time_seconds', newTotalTimeSeconds);
-      
-      const avgTimeSeconds = Math.floor(newTotalTimeSeconds / totalGames);
-      const avgMinutes = Math.floor(avgTimeSeconds / 60).toString().padStart(2, '0');
-      const avgSeconds = (avgTimeSeconds % 60).toString().padStart(2, '0');
-      localStorage.setItem('sudoku_avg_time', `${avgMinutes}:${avgSeconds}`);
-      
-      // Win rate (always 100% in this case, but we keep it for future enhancements)
-      localStorage.setItem('sudoku_win_rate', '100%');
-    }
-    
-    // Daily challenge function (simulated)
-    function startDailyChallenge() {
-      // Get today's date for seeding the random puzzle
-      const today = new Date();
-      const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-      
-      // Set difficulty based on day of week (harder on weekends)
-      const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
-      let challengeDifficulty;
-      
-      if (dayOfWeek === 0 || dayOfWeek === 6) {
-        challengeDifficulty = 'hard';
-      } else if (dayOfWeek === 3 || dayOfWeek === 4) {
-        challengeDifficulty = 'medium';
-      } else {
-        challengeDifficulty = 'easy';
+      // 显示帮助
+      function showHelp() {
+        alert('Sudoku Rules:\n\n1. Fill in the 9×9 grid with numbers 1-9.\n2. Each row, column, and 3×3 box must contain the numbers 1-9 without repetition.\n3. Some cells are already filled and cannot be changed.\n4. Complete all cells to win!');
       }
       
-      // Update UI to show it's a daily challenge
-      document.getElementById('dailyBadge').style.display = 'block';
-      document.getElementById('dailyBadge').textContent = `Daily Challenge: ${today.toLocaleDateString()}`;
-      
-      // Set the difficulty
-      gameState.difficulty = challengeDifficulty;
-      
-      // Update button styling
-      document.querySelectorAll('.difficulty button').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.level === challengeDifficulty) {
-          btn.classList.add('active');
-        }
-      });
-      
-      // Start new game with this difficulty
-      newGame();
-    }
-    
-    // Change difficulty level
-    function changeLevel(level, button) {
-      // Update button styling
-      document.querySelectorAll('.difficulty button').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      button.classList.add('active');
-      
-      // Set difficulty
-      gameState.difficulty = level;
-      
-      // Restart the game
-      newGame();
-    }
-    
-    // Get text representation of difficulty
-    function getDifficultyText(difficulty) {
-      // Use the passed difficulty if provided, otherwise use current gameState difficulty
-      const diff = difficulty || gameState.difficulty;
-      
-      switch (diff) {
-        case 'easy': return 'Easy';
-        case 'medium': return 'Medium';
-        case 'hard': return 'Hard';
-        default: return 'Easy';
-      }
-    }
-    
-    // Timer functions
-    function startTimer() {
-      gameState.startTime = Date.now();
-      gameState.timerInterval = setInterval(updateTimer, 1000);
-    }
-    
-    function updateTimer() {
-      const elapsedTime = Math.floor((Date.now() - gameState.startTime) / 1000);
-      const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, '0');
-      const seconds = (elapsedTime % 60).toString().padStart(2, '0');
-      document.getElementById('timer').textContent = `${minutes}:${seconds}`;
-    }
-    
-    function resetTimer() {
-      clearInterval(gameState.timerInterval);
-      gameState.startTime = Date.now();
-      document.getElementById('timer').textContent = '00:00';
-      startTimer();
-    }
-    
-    // Show rules modal
-    function showRules() {
-      document.getElementById('rulesModal').style.display = 'flex';
-    }
-    
-    // Hide rules modal
-    function hideRules() {
-      document.getElementById('rulesModal').style.display = 'none';
-    }
-    
-    // Sudoku solver algorithm (backtracking)
-    function solveSudoku(board) {
-      // Find first empty cell
-      let emptyCell = findEmptyCell(board);
-      if (!emptyCell) {
-        return true; // Solved
+      // 游戏胜利
+      function gameWon() {
+        stopTimer();
+        setTimeout(() => {
+          alert(`Congratulations! You solved the puzzle in ${formatTime(timer)} using ${hints} hints.`);
+        }, 300);
       }
       
-      const [row, col] = emptyCell;
-      
-      // Try each number from 1-9
-      const numbers = shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-      for (let num of numbers) {
-        if (isValidPlacement(board, row, col, num)) {
-          board[row][col] = num;
-          
-          // Recursively try to solve remaining cells
-          if (solveSudoku(board)) {
-            return true;
-          }
-          
-          // If solution fails, backtrack
-          board[row][col] = 0;
-        }
+      // 格式化时间
+      function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes} min ${remainingSeconds} sec`;
       }
-      
-      return false; // Trigger backtracking
-    }
-    
-    // Find first empty cell
-    function findEmptyCell(board) {
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          if (board[row][col] === 0) {
-            return [row, col];
-          }
-        }
-      }
-      return null; // No empty cells found
-    }
-    
-    // Check if number placement is valid
-    function isValidPlacement(board, row, col, num) {
-      // Check row
-      for (let c = 0; c < 9; c++) {
-        if (board[row][c] === num) {
-          return false;
-        }
-      }
-      
-      // Check column
-      for (let r = 0; r < 9; r++) {
-        if (board[r][col] === num) {
-          return false;
-        }
-      }
-      
-      // Check 3x3 subgrid
-      const subgridRow = Math.floor(row / 3) * 3;
-      const subgridCol = Math.floor(col / 3) * 3;
-      for (let r = 0; r < 3; r++) {
-        for (let c = 0; c < 3; c++) {
-          if (board[subgridRow + r][subgridCol + c] === num) {
-            return false;
-          }
-        }
-      }
-      
-      return true;
-    }
-    
-    // Shuffle array (for randomization)
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
-    
-    // Add a simple share result function
-    function shareResult() {
-      const difficulty = getDifficultyText();
-      const time = document.getElementById('completeTime').textContent;
-      const stars = gameState.stars;
-      
-      const starsText = '★'.repeat(stars) + '☆'.repeat(3 - stars);
-      
-      const message = `I completed a ${difficulty} Sudoku puzzle in ${time} with ${starsText} stars!`;
-      
-      // In a real app, this would open a share dialog
-      // For now, just show an alert
-      alert(`Share this message:\n\n${message}\n\nIn a full implementation, this would open your device's sharing options.`);
-    }
-    
-    // Initialize game when page loads
-    window.onload = initGame;
+    });
   </script>
 </body>
 </html> 

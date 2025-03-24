@@ -39,14 +39,14 @@ const TiltEffect: React.FC<TiltEffectProps> = ({
   className = "" 
 }) => {
   const tiltRef = useRef<HTMLDivElement>(null);
-  // 获取效果状态
-  const { effectsEnabled } = useEffects();
+  // 使用tiltEffectsEnabled替代effectsEnabled
+  const { tiltEffectsEnabled } = useEffects();
   
   useEffect(() => {
     const tiltElement = tiltRef.current;
     
-    // 只有当effectsEnabled为true且组件已挂载时才应用效果
-    if (tiltElement && effectsEnabled) {
+    // 只有当tiltEffectsEnabled为true且组件已挂载时才应用效果
+    if (tiltElement && tiltEffectsEnabled) {
       // 合并默认选项和用户提供的选项
       const tiltOptions = {
         ...defaultOptions,
@@ -63,7 +63,7 @@ const TiltEffect: React.FC<TiltEffectProps> = ({
         }
       };
     }
-  }, [options, effectsEnabled]);
+  }, [options, tiltEffectsEnabled]);
   
   return (
     <div ref={tiltRef} className={className}>

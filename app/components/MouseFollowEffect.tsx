@@ -36,15 +36,36 @@ const MouseFollowEffect: React.FC<MouseFollowEffectProps> = ({
 }) => {
   const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 });
   const [trailPoints, setTrailPoints] = useState<TrailPoint[]>([]);
-  const [cursorVisible, setCursorVisible] = useState(false);
+  const [cursorVisible, setCursorVisible] = useState(true); // 默认显示
   const requestRef = useRef<number>(0);
   const previousTimeRef = useRef<number>(0);
   
+  // 组件生命周期
+  useEffect(() => {
+    console.log('MouseFollowEffect component mounted');
+    
+    // 确保初始化时效果可见
+    setCursorVisible(true);
+    
+    // 初始化鼠标位置为屏幕中心
+    if (typeof window !== 'undefined') {
+      setMousePosition({
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2
+      });
+    }
+    
+    return () => {
+      console.log('MouseFollowEffect component unmounted');
+    };
+  }, []);
+  
   // 初始化尾迹点
   useEffect(() => {
+    console.log('Initializing trail points');
     const initialPoints: TrailPoint[] = Array(trailLength).fill(null).map((_, i) => ({
-      x: 0,
-      y: 0,
+      x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0,
+      y: typeof window !== 'undefined' ? window.innerHeight / 2 : 0,
       size: maxSize - ((maxSize - minSize) / trailLength) * i,
       opacity: opacity - (opacity * 0.7 * (i / trailLength)),
       color: getColorWithOpacity(color, opacity - (opacity * 0.7 * (i / trailLength)))
@@ -93,12 +114,17 @@ const MouseFollowEffect: React.FC<MouseFollowEffectProps> = ({
   
   // 启动动画循环
   useEffect(() => {
+    console.log('Starting animation loop');
     requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
+    return () => {
+      console.log('Cleaning up animation loop');
+      cancelAnimationFrame(requestRef.current);
+    };
   }, [mousePosition]);
   
   // 处理鼠标事件
   useEffect(() => {
+    console.log('Setting up mouse event listeners');
     // 节流函数，避免过于频繁的更新
     let lastUpdate = 0;
     const throttleTime = 5; // 毫秒
@@ -126,6 +152,15 @@ const MouseFollowEffect: React.FC<MouseFollowEffectProps> = ({
     window.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseleave', handleMouseLeave);
     document.addEventListener('mouseenter', handleMouseEnter);
+    
+    // 手动触发一次鼠标移动，确保初始位置更新
+    if (typeof window !== 'undefined') {
+      // 设置为屏幕中心
+      setMousePosition({
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2
+      });
+    }
     
     // 清理事件监听器
     return () => {
@@ -156,14 +191,18 @@ const MouseFollowEffect: React.FC<MouseFollowEffectProps> = ({
   };
   
   // 如果尾迹点未初始化，不渲染任何内容
-  if (!trailPoints.length) return null;
+  if (!trailPoints.length) {
+    console.log('No trail points yet, not rendering');
+    return null;
+  }
   
+  console.log('Rendering trail points:', trailPoints.length);
   return (
     <>
       {trailPoints.map((point, index) => (
         <div 
           key={index}
-          className="pointer-events-none fixed z-50"
+          className="pointer-events-none fixed z-[9999]"
           style={{
             left: `${point.x}px`,
             top: `${point.y}px`,
@@ -176,6 +215,8 @@ const MouseFollowEffect: React.FC<MouseFollowEffectProps> = ({
             mixBlendMode: 'screen',
             filter: `blur(${blur * (index === 0 ? 0.8 : 1 + index * 0.2)}px)`,
             transition: 'opacity 0.3s ease',
+            position: 'fixed', // 确保使用fixed定位
+            willChange: 'transform, left, top', // 优化性能
           }}
         />
       ))}

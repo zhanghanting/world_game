@@ -72,7 +72,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} bg-gray-900 text-white`}>
         <Providers>
-          {/* 客户端渲染的特效组件 */}
+          {/* 鼠标跟随特效 - 确保这个组件在最外层、最高优先级位置加载 */}
           <ClientEffects />
           
           <Navbar />
