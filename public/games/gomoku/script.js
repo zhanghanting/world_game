@@ -3,7 +3,7 @@ const config = {
   boardSize: 15,      // Default 15x15 board
   winCondition: 5,    // Need 5 in a row to win
   theme: 'classic',
-  soundEnabled: true,
+  soundEnabled: false,  // 默认关闭音效
   highlightLastMove: true
 };
 
@@ -127,6 +127,46 @@ function createBoard() {
         cell.classList.add('marker');
       }
       
+      // 添加触摸反馈效果
+      cell.addEventListener('touchstart', function(e) {
+        // 防止页面缩放和滚动
+        e.preventDefault();
+        
+        // 添加视觉反馈
+        this.classList.add('touch-active');
+        
+        // 显示触摸指示器
+        showTouchIndicator(this, e.touches[0]);
+      }, { passive: false });
+      
+      cell.addEventListener('touchend', function(e) {
+        // 移除触摸反馈
+        this.classList.remove('touch-active');
+        
+        // 隐藏触摸指示器
+        hideTouchIndicator();
+        
+        // 执行下棋操作
+        const row = parseInt(this.dataset.row);
+        const col = parseInt(this.dataset.col);
+        handleCellClick(row, col);
+      });
+      
+      cell.addEventListener('touchmove', function(e) {
+        // 如果触摸移出了当前元素，取消触摸状态
+        const touch = e.touches[0];
+        const elementAtTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+        
+        if (elementAtTouch !== this) {
+          this.classList.remove('touch-active');
+          hideTouchIndicator();
+        } else {
+          // 更新触摸指示器位置
+          updateTouchIndicator(touch);
+        }
+      });
+      
+      // 保留原有的点击事件
       cell.addEventListener('click', () => handleCellClick(row, col));
       
       boardElement.appendChild(cell);
@@ -148,14 +188,71 @@ function isMarkerPosition(row, col) {
   return false;
 }
 
+// 显示触摸指示器
+function showTouchIndicator(cell, touch) {
+  // 创建或获取触摸指示器
+  let indicator = document.getElementById('touch-indicator');
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'touch-indicator';
+    indicator.className = 'touch-indicator';
+    document.body.appendChild(indicator);
+  }
+  
+  // 设置指示器位置和样式
+  const rect = cell.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  
+  indicator.style.display = 'block';
+  indicator.style.left = `${centerX}px`;
+  indicator.style.top = `${centerY}px`;
+  
+  // 设置指示器颜色为当前玩家颜色
+  indicator.style.backgroundColor = gameState.currentPlayer === 'black' ? '#000' : '#fff';
+  indicator.style.border = gameState.currentPlayer === 'black' ? '2px solid #444' : '2px solid #ccc';
+  
+  // 添加动画
+  indicator.style.transform = 'scale(0.8)';
+  setTimeout(() => {
+    indicator.style.transform = 'scale(1)';
+  }, 50);
+}
+
+// 更新触摸指示器位置
+function updateTouchIndicator(touch) {
+  const indicator = document.getElementById('touch-indicator');
+  if (indicator) {
+    // 使指示器跟随触摸点，但保持在触摸点上方一些距离
+    indicator.style.left = `${touch.clientX}px`;
+    indicator.style.top = `${touch.clientY - 30}px`;
+  }
+}
+
+// 隐藏触摸指示器
+function hideTouchIndicator() {
+  const indicator = document.getElementById('touch-indicator');
+  if (indicator) {
+    indicator.style.display = 'none';
+  }
+}
+
 // Handle cell click event
 function handleCellClick(row, col) {
+  // 添加触觉反馈（如果设备支持）
+  if (navigator.vibrate) {
+    navigator.vibrate(15);
+  }
+  
   // Ignore clicks if game is over or AI is thinking
   if (gameState.gameOver || gameState.aiThinking) return;
   
   // Check if the cell is already occupied
   if (gameState.board[row][col] !== null) {
     playSound('invalidMove');
+    if (navigator.vibrate) {
+      navigator.vibrate([30, 50, 30]); // 错误的三段振动
+    }
     return;
   }
   
@@ -166,11 +263,36 @@ function handleCellClick(row, col) {
   if (gameState.gameMode === 'ai' && !gameState.gameOver) {
     gameState.aiThinking = true;
     
+    // 显示AI思考的视觉提示
+    showAiThinkingIndicator();
+    
     // Slight delay to make it seem like the AI is "thinking"
     setTimeout(() => {
       makeAiMove();
       gameState.aiThinking = false;
+      hideAiThinkingIndicator();
     }, 500);
+  }
+}
+
+// 显示AI思考中的指示器
+function showAiThinkingIndicator() {
+  let indicator = document.getElementById('ai-thinking-indicator');
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'ai-thinking-indicator';
+    indicator.className = 'ai-thinking-indicator';
+    indicator.innerHTML = '<span>AI思考中</span><div class="dot-pulse"></div>';
+    document.querySelector('.board-container').appendChild(indicator);
+  }
+  indicator.style.display = 'flex';
+}
+
+// 隐藏AI思考中的指示器
+function hideAiThinkingIndicator() {
+  const indicator = document.getElementById('ai-thinking-indicator');
+  if (indicator) {
+    indicator.style.display = 'none';
   }
 }
 

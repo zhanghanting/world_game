@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>贪吃蛇游戏</title>
   <style>
     body, html {
@@ -37,10 +37,34 @@
       gap: 2rem;
       margin-bottom: 1rem;
       font-size: 1.25rem;
+      align-items: center;
     }
     
     .score {
       color: #10b981;
+    }
+    
+    .difficulty-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: bold;
+    }
+    
+    .easy {
+      background-color: #10b981;
+      color: #fff;
+    }
+    
+    .medium {
+      background-color: #f59e0b;
+      color: #fff;
+    }
+    
+    .hard {
+      background-color: #ef4444;
+      color: #fff;
     }
     
     button {
@@ -52,13 +76,38 @@
       font-size: 1rem;
       cursor: pointer;
       transition: background-color 0.3s;
+      margin: 0.5rem;
     }
     
     button:hover {
       background-color: #2563eb;
     }
+    
+    .btn-easy {
+      background-color: #10b981;
+    }
+    
+    .btn-easy:hover {
+      background-color: #059669;
+    }
+    
+    .btn-medium {
+      background-color: #f59e0b;
+    }
+    
+    .btn-medium:hover {
+      background-color: #d97706;
+    }
+    
+    .btn-hard {
+      background-color: #ef4444;
+    }
+    
+    .btn-hard:hover {
+      background-color: #dc2626;
+    }
 
-    #gameOver {
+    #gameOver, #difficultySelect {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -75,27 +124,211 @@
       color: #ef4444;
       margin-bottom: 1rem;
     }
+    
+    #difficultySelect h2 {
+      color: #3b82f6;
+      margin-bottom: 1.5rem;
+    }
+    
+    .difficulty-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .pause-btn {
+      background-color: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .pause-btn:hover {
+      background-color: #4f46e5;
+    }
+    
+    #pauseScreen {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 2rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      display: none;
+      z-index: 100;
+    }
+    
+    #pauseScreen h2 {
+      color: #6366f1;
+      margin-bottom: 1rem;
+    }
+    
+    /* 移动设备优化 */
+    @media (max-width: 640px) {
+      canvas {
+        width: 90vw;
+        height: 90vw;
+      }
+      
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      
+      .control-btn {
+        width: 60px;
+        height: 60px;
+        background-color: rgba(59, 130, 246, 0.3);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        user-select: none;
+        color: white;
+      }
+      
+      .control-btn:active {
+        background-color: rgba(59, 130, 246, 0.6);
+      }
+    }
+
+    #game-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      text-align: center;
+    }
+
+    .effect-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: bold;
+      margin-left: 0.5rem;
+      animation: pulse 2s infinite;
+    }
+
+    .speed-up {
+      background-color: #3b82f6;
+      color: white;
+    }
+
+    .speed-down {
+      background-color: #8b5cf6;
+      color: white;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
   </style>
 </head>
 <body>
   <h1>贪吃蛇游戏</h1>
   <div class="info">
     <div>得分: <span id="score" class="score">0</span></div>
+    <div>难度: <span id="difficulty-display" class="difficulty-badge medium">中等</span></div>
+    <button id="pauseButton" class="pause-btn">暂停</button>
   </div>
-  <canvas width="400" height="400" id="game"></canvas>
+  <canvas width="480" height="480" id="game"></canvas>
   <button id="startButton">开始游戏</button>
+  
+  <div id="difficultySelect">
+    <h2>选择难度</h2>
+    <div class="difficulty-buttons">
+      <button class="btn-easy" data-difficulty="easy">简单</button>
+      <button class="btn-medium" data-difficulty="medium">中等</button>
+      <button class="btn-hard" data-difficulty="hard">困难</button>
+    </div>
+  </div>
   
   <div id="gameOver">
     <h2>游戏结束!</h2>
     <p>你的得分: <span id="finalScore">0</span></p>
     <button id="restartButton">再玩一次</button>
+    <button id="changeDifficultyButton">更改难度</button>
   </div>
+  
+  <!-- 移动设备控制器 -->
+  <div class="controls" id="touchControls" style="display: none;">
+    <div class="control-btn" id="upButton">↑</div>
+    <div style="display: flex; gap: 1rem;">
+      <div class="control-btn" id="leftButton">←</div>
+      <div class="control-btn" id="rightButton">→</div>
+    </div>
+    <div class="control-btn" id="downButton">↓</div>
+  </div>
+  
+  <!-- 游戏暂停覆盖层 -->
+  <div id="pauseScreen">
+    <h2>游戏暂停</h2>
+    <p>按空格键或点击下方按钮继续</p>
+    <button id="resumeButton">继续游戏</button>
+  </div>
+  
+  <div id="game-notification"></div>
   
   <script>
     var canvas = document.getElementById('game');
     var context = canvas.getContext('2d');
     var grid = 16;
     var count = 0;
+    
+    // 游戏配置
+    var gameConfig = {
+      difficulty: 'medium',  // 默认中等难度
+      speed: 4,              // 默认速度
+      scoreMultiplier: 1,    // 得分倍数
+      obstacles: [],         // 障碍物
+      originalSpeed: 4,      // 记录原始速度，用于特殊效果后恢复
+      speedEffectActive: false, // 是否有速度效果激活
+      speedEffectTimer: null // 速度效果的计时器
+    };
+    
+    // 不同难度的配置
+    var difficultySettings = {
+      easy: {
+        speed: 10,            // 速度较慢(数值越大越慢)
+        scoreMultiplier: 1,   // 基础得分
+        obstaclesCount: 0     // 无障碍物
+      },
+      medium: {
+        speed: 7,             // 中等速度
+        scoreMultiplier: 2,   // 2倍得分
+        obstaclesCount: 5     // 5个障碍物
+      },
+      hard: {
+        speed: 4,             // 高速
+        scoreMultiplier: 3,   // 3倍得分
+        obstaclesCount: 10    // 10个障碍物
+      }
+    };
     
     var snake = {
       x: 160,
@@ -108,17 +341,218 @@
     
     var apple = {
       x: 320,
-      y: 320
+      y: 320,
+      type: 'normal' // 默认为普通苹果，其他类型: 'golden', 'blue', 'green'
     };
     
     var score = 0;
     var gameStarted = false;
     var gameEnded = false;
+    var gamePaused = false;
     
     function getRandomInt(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
     }
     
+    // 设置游戏难度
+    function setDifficulty(difficulty) {
+      gameConfig.difficulty = difficulty;
+      gameConfig.speed = difficultySettings[difficulty].speed;
+      gameConfig.scoreMultiplier = difficultySettings[difficulty].scoreMultiplier;
+      
+      // 显示当前难度
+      var difficultyDisplay = document.getElementById('difficulty-display');
+      difficultyDisplay.textContent = difficulty === 'easy' ? '简单' : 
+                                    difficulty === 'medium' ? '中等' : '困难';
+      
+      // 更新难度标记的类名
+      difficultyDisplay.className = 'difficulty-badge ' + difficulty;
+      
+      createObstacles(difficultySettings[difficulty].obstaclesCount);
+    }
+    
+    // 创建障碍物
+    function createObstacles(count) {
+      gameConfig.obstacles = [];
+      
+      for (var i = 0; i < count; i++) {
+        var obstacleX, obstacleY;
+        var validPosition = false;
+        
+        // 确保障碍物不会生成在蛇或苹果的位置
+        while (!validPosition) {
+          obstacleX = getRandomInt(0, 30) * grid; // 更新为适应更大画布
+          obstacleY = getRandomInt(0, 30) * grid; // 更新为适应更大画布
+          
+          // 检查是否与蛇重叠
+          var overlapSnake = false;
+          for (var j = 0; j < snake.cells.length; j++) {
+            if (snake.cells[j].x === obstacleX && snake.cells[j].y === obstacleY) {
+              overlapSnake = true;
+              break;
+            }
+          }
+          
+          // 检查是否与苹果重叠
+          var overlapApple = (obstacleX === apple.x && obstacleY === apple.y);
+          
+          // 检查是否与其他障碍物重叠
+          var overlapObstacle = false;
+          for (var k = 0; k < gameConfig.obstacles.length; k++) {
+            if (gameConfig.obstacles[k].x === obstacleX && gameConfig.obstacles[k].y === obstacleY) {
+              overlapObstacle = true;
+              break;
+            }
+          }
+          
+          validPosition = !overlapSnake && !overlapApple && !overlapObstacle;
+        }
+        
+        gameConfig.obstacles.push({ x: obstacleX, y: obstacleY });
+      }
+    }
+    
+    // 特殊效果状态显示
+    function updateEffectDisplay() {
+      // 移除所有之前的效果显示
+      const oldEffects = document.querySelectorAll('.effect-badge');
+      oldEffects.forEach(effect => effect.remove());
+      
+      // 显示当前活跃的效果
+      if (gameConfig.speedEffectActive) {
+        const effectContainer = document.querySelector('.info');
+        const effectBadge = document.createElement('div');
+        effectBadge.className = 'effect-badge speed-effect';
+        
+        // 判断是加速还是减速
+        if (gameConfig.speed < gameConfig.originalSpeed) {
+          effectBadge.textContent = '加速中';
+          effectBadge.classList.add('speed-up');
+        } else {
+          effectBadge.textContent = '减速中';
+          effectBadge.classList.add('speed-down');
+        }
+        
+        effectContainer.appendChild(effectBadge);
+      }
+    }
+
+    // 生成苹果并根据概率决定类型
+    function generateApple() {
+      // 概率分配 - 普通:金:蓝:绿 = 70:10:10:10
+      const random = Math.random() * 100;
+      
+      if (random < 70) {
+        apple.type = 'normal';
+      } else if (random < 80) {
+        apple.type = 'golden';
+      } else if (random < 90) {
+        apple.type = 'blue';
+      } else {
+        apple.type = 'green';
+      }
+      
+      // 重新定位苹果位置
+      repositionApple();
+    }
+    
+    // 处理特殊苹果效果
+    function handleSpecialAppleEffect() {
+      switch(apple.type) {
+        case 'golden':
+          // 金苹果：立即获得额外得分（当前得分加倍）
+          const extraScore = score;
+          score += extraScore;
+          document.getElementById('score').textContent = score;
+          
+          // 显示获得额外得分的提示
+          showNotification(`金苹果! +${extraScore}分`, '#f59e0b');
+          break;
+          
+        case 'blue':
+          // 蓝苹果：随机加速或减速10秒
+          // 清除之前的速度效果计时器
+          if (gameConfig.speedEffectTimer) {
+            clearTimeout(gameConfig.speedEffectTimer);
+          }
+          
+          // 保存原始速度（如果没有之前的速度效果）
+          if (!gameConfig.speedEffectActive) {
+            gameConfig.originalSpeed = gameConfig.speed;
+          }
+          
+          // 随机决定是加速还是减速
+          if (Math.random() > 0.5) {
+            // 加速 - 速度值减小
+            gameConfig.speed = Math.max(2, Math.floor(gameConfig.originalSpeed * 0.6));
+            showNotification('蓝苹果! 加速10秒', '#3b82f6');
+          } else {
+            // 减速 - 速度值增大
+            gameConfig.speed = Math.floor(gameConfig.originalSpeed * 1.5);
+            showNotification('蓝苹果! 减速10秒', '#3b82f6');
+          }
+          
+          gameConfig.speedEffectActive = true;
+          updateEffectDisplay();
+          
+          // 10秒后恢复正常速度
+          gameConfig.speedEffectTimer = setTimeout(() => {
+            gameConfig.speed = gameConfig.originalSpeed;
+            gameConfig.speedEffectActive = false;
+            updateEffectDisplay();
+            showNotification('速度恢复正常', '#64748b');
+          }, 10000);
+          break;
+          
+        case 'green':
+          // 绿苹果：随机清除30%的障碍物
+          if (gameConfig.obstacles.length > 0) {
+            // 计算要移除的障碍物数量
+            const removeCount = Math.max(1, Math.floor(gameConfig.obstacles.length * 0.3));
+            
+            // 随机选择要移除的障碍物
+            for (let i = 0; i < removeCount; i++) {
+              if (gameConfig.obstacles.length === 0) break;
+              
+              const randomIndex = Math.floor(Math.random() * gameConfig.obstacles.length);
+              gameConfig.obstacles.splice(randomIndex, 1);
+            }
+            
+            showNotification(`绿苹果! 清除了${removeCount}个障碍`, '#10b981');
+          } else {
+            showNotification('绿苹果! 没有障碍可清除', '#10b981');
+          }
+          break;
+      }
+      
+      // 生成下一个苹果
+      generateApple();
+    }
+    
+    // 显示通知
+    function showNotification(message, color) {
+      // 创建或获取通知元素
+      let notification = document.getElementById('game-notification');
+      if (!notification) {
+        notification = document.createElement('div');
+        notification.id = 'game-notification';
+        document.body.appendChild(notification);
+      }
+      
+      // 设置通知内容和样式
+      notification.textContent = message;
+      notification.style.backgroundColor = color;
+      notification.style.opacity = '1';
+      notification.style.transform = 'translateY(0)';
+      
+      // 3秒后隐藏通知
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(-20px)';
+      }, 3000);
+    }
+    
+    // 重置游戏
     function resetGame() {
       snake.x = 160;
       snake.y = 160;
@@ -127,72 +561,153 @@
       snake.cells = [];
       snake.maxCells = 4;
       
-      apple.x = getRandomInt(0, 25) * grid;
-      apple.y = getRandomInt(0, 25) * grid;
+      // 清除所有特殊效果
+      if (gameConfig.speedEffectTimer) {
+        clearTimeout(gameConfig.speedEffectTimer);
+      }
+      gameConfig.speed = difficultySettings[gameConfig.difficulty].speed;
+      gameConfig.originalSpeed = gameConfig.speed;
+      gameConfig.speedEffectActive = false;
+      
+      // 重置苹果位置和类型
+      generateApple();
+      
+      // 创建障碍物
+      createObstacles(difficultySettings[gameConfig.difficulty].obstaclesCount);
       
       score = 0;
       document.getElementById('score').textContent = score;
       gameEnded = false;
       document.getElementById('gameOver').style.display = 'none';
+      
+      // 更新效果显示
+      updateEffectDisplay();
+    }
+    
+    // 重新定位苹果，确保不会出现在蛇或障碍物上
+    function repositionApple() {
+      var validPosition = false;
+      
+      while (!validPosition) {
+        apple.x = getRandomInt(0, 30) * grid; // 更新为适应更大画布
+        apple.y = getRandomInt(0, 30) * grid; // 更新为适应更大画布
+        
+        // 检查是否与蛇重叠
+        var overlapSnake = false;
+        for (var i = 0; i < snake.cells.length; i++) {
+          if (snake.cells[i].x === apple.x && snake.cells[i].y === apple.y) {
+            overlapSnake = true;
+            break;
+          }
+        }
+        
+        // 检查是否与障碍物重叠
+        var overlapObstacle = false;
+        for (var j = 0; j < gameConfig.obstacles.length; j++) {
+          if (gameConfig.obstacles[j].x === apple.x && gameConfig.obstacles[j].y === apple.y) {
+            overlapObstacle = true;
+            break;
+          }
+        }
+        
+        validPosition = !overlapSnake && !overlapObstacle;
+      }
     }
     
     function loop() {
       requestAnimationFrame(loop);
       
-      if (!gameStarted || gameEnded) {
+      if (!gameStarted || gameEnded || gamePaused) {
         return;
       }
       
-      if (++count < 4) {
+      // 根据难度调整速度
+      if (++count < gameConfig.speed) {
         return;
       }
       
       count = 0;
       context.clearRect(0, 0, canvas.width, canvas.height);
       
+      // 移动蛇
       snake.x += snake.dx;
       snake.y += snake.dy;
       
-      if (snake.x < 0) {
-        gameOver();
-        return;
-      }
-      else if (snake.x >= canvas.width) {
-        gameOver();
-        return;
-      }
-      
-      if (snake.y < 0) {
-        gameOver();
-        return;
-      }
-      else if (snake.y >= canvas.height) {
+      // 检查墙壁碰撞
+      if (snake.x < 0 || snake.x >= canvas.width || snake.y < 0 || snake.y >= canvas.height) {
         gameOver();
         return;
       }
       
+      // 更新蛇身体
       snake.cells.unshift({x: snake.x, y: snake.y});
       
       if (snake.cells.length > snake.maxCells) {
         snake.cells.pop();
       }
       
-      context.fillStyle = '#f59e0b';
+      // 绘制苹果 - 根据类型使用不同颜色
+      switch(apple.type) {
+        case 'normal':
+          context.fillStyle = '#f59e0b'; // 橙色 - 普通苹果
+          break;
+        case 'golden':
+          context.fillStyle = '#fcd34d'; // 金色 - 金苹果
+          // 添加发光效果
+          context.shadowColor = '#f59e0b';
+          context.shadowBlur = 10;
+          break;
+        case 'blue':
+          context.fillStyle = '#3b82f6'; // 蓝色 - 蓝苹果
+          break;
+        case 'green':
+          context.fillStyle = '#10b981'; // 绿色 - 绿苹果
+          break;
+      }
+      
       context.fillRect(apple.x, apple.y, grid-1, grid-1);
       
+      // 重置阴影效果
+      context.shadowColor = 'transparent';
+      context.shadowBlur = 0;
+      
+      // 绘制障碍物
+      context.fillStyle = '#9333ea';  // 紫色障碍物
+      gameConfig.obstacles.forEach(function(obstacle) {
+        context.fillRect(obstacle.x, obstacle.y, grid-1, grid-1);
+      });
+      
+      // 绘制蛇
       context.fillStyle = '#10b981';
       snake.cells.forEach(function(cell, index) {
         context.fillRect(cell.x, cell.y, grid-1, grid-1);  
         
+        // 检查苹果碰撞
         if (cell.x === apple.x && cell.y === apple.y) {
           snake.maxCells++;
-          score++;
-          document.getElementById('score').textContent = score;
           
-          apple.x = getRandomInt(0, 25) * grid;
-          apple.y = getRandomInt(0, 25) * grid;
+          // 根据难度和苹果类型增加得分
+          if (apple.type === 'normal') {
+            score += 1 * gameConfig.scoreMultiplier;
+            document.getElementById('score').textContent = score;
+          } else {
+            // 特殊苹果得分在各自的处理函数中计算
+            handleSpecialAppleEffect();
+          }
+          
+          // 重新定位苹果
+          generateApple();
         }
         
+        // 检查障碍物碰撞
+        for (var i = 0; i < gameConfig.obstacles.length; i++) {
+          if (cell.x === gameConfig.obstacles[i].x && cell.y === gameConfig.obstacles[i].y) {
+            gameOver();
+            return;
+          }
+        }
+        
+        // 检查蛇身体碰撞
         for (var i = index + 1; i < snake.cells.length; i++) {
           if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
             gameOver();
@@ -208,33 +723,128 @@
       document.getElementById('gameOver').style.display = 'block';
     }
     
+    // 键盘控制
     document.addEventListener('keydown', function(e) {
       if (!gameStarted) {
         return;
       }
       
+      // ESC键 或 空格键暂停/继续游戏
+      if (e.which === 27 || e.which === 32) { // ESC=27, 空格=32
+        togglePause();
+        return;
+      }
+      
+      // 如果游戏已暂停，除了ESC和空格键外不响应其他按键
+      if (gamePaused) {
+        return;
+      }
+      
+      // 左箭头
       if (e.which === 37 && snake.dx === 0) {
         snake.dx = -grid;
         snake.dy = 0;
       }
+      // 上箭头
       else if (e.which === 38 && snake.dy === 0) {
         snake.dy = -grid;
         snake.dx = 0;
       }
+      // 右箭头
       else if (e.which === 39 && snake.dx === 0) {
         snake.dx = grid;
         snake.dy = 0;
       }
+      // 下箭头
       else if (e.which === 40 && snake.dy === 0) {
         snake.dy = grid;
         snake.dx = 0;
       }
     });
     
+    // 检测是否是移动设备
+    function isMobileDevice() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    
+    // 初始化触摸控制 - 使用手势替代按钮
+    function initTouchControls() {
+      if (isMobileDevice()) {
+        // 隐藏之前的按钮控制
+        document.getElementById('touchControls').style.display = 'none';
+        
+        // 添加触摸事件监听
+        var touchStartX = 0;
+        var touchStartY = 0;
+        var touchEndX = 0;
+        var touchEndY = 0;
+        
+        canvas.addEventListener('touchstart', function(e) {
+          e.preventDefault();
+          // 存储触摸起始位置
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+        }, { passive: false });
+        
+        canvas.addEventListener('touchend', function(e) {
+          e.preventDefault();
+          
+          // 如果游戏已暂停或结束，不处理手势
+          if (gamePaused || gameEnded || !gameStarted) return;
+          
+          // 存储触摸结束位置
+          touchEndX = e.changedTouches[0].clientX;
+          touchEndY = e.changedTouches[0].clientY;
+          
+          // 计算水平和垂直滑动距离
+          var deltaX = touchEndX - touchStartX;
+          var deltaY = touchEndY - touchStartY;
+          
+          // 确定主要滑动方向(水平或垂直)
+          if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            // 水平滑动
+            if (deltaX > 30 && snake.dx === 0) { // 向右滑动，阈值为30像素
+              snake.dx = grid;
+              snake.dy = 0;
+            } else if (deltaX < -30 && snake.dx === 0) { // 向左滑动
+              snake.dx = -grid;
+              snake.dy = 0;
+            }
+          } else {
+            // 垂直滑动
+            if (deltaY > 30 && snake.dy === 0) { // 向下滑动
+              snake.dy = grid;
+              snake.dx = 0;
+            } else if (deltaY < -30 && snake.dy === 0) { // 向上滑动
+              snake.dy = -grid;
+              snake.dx = 0;
+            }
+          }
+        }, { passive: false });
+        
+        // 防止页面滚动
+        canvas.addEventListener('touchmove', function(e) {
+          e.preventDefault();
+        }, { passive: false });
+      }
+    }
+    
+    // 事件监听器
     document.getElementById('startButton').addEventListener('click', function() {
-      gameStarted = true;
-      resetGame();
+      document.getElementById('difficultySelect').style.display = 'block';
       this.style.display = 'none';
+    });
+    
+    // 难度选择按钮
+    document.querySelectorAll('#difficultySelect button').forEach(function(button) {
+      button.addEventListener('click', function() {
+        var difficulty = this.getAttribute('data-difficulty');
+        setDifficulty(difficulty);
+        document.getElementById('difficultySelect').style.display = 'none';
+        gameStarted = true;
+        resetGame();
+        initTouchControls();
+      });
     });
     
     document.getElementById('restartButton').addEventListener('click', function() {
@@ -242,7 +852,44 @@
       resetGame();
     });
     
+    document.getElementById('changeDifficultyButton').addEventListener('click', function() {
+      document.getElementById('gameOver').style.display = 'none';
+      document.getElementById('difficultySelect').style.display = 'block';
+    });
+    
+    // 暂停按钮事件
+    document.getElementById('pauseButton').addEventListener('click', togglePause);
+    
+    // 继续游戏按钮事件
+    document.getElementById('resumeButton').addEventListener('click', resumeGame);
+    
+    // 暂停游戏函数
+    function pauseGame() {
+      if (gameStarted && !gameEnded) {
+        gamePaused = true;
+        document.getElementById('pauseScreen').style.display = 'block';
+        document.getElementById('pauseButton').textContent = '继续';
+      }
+    }
+    
+    // 继续游戏函数
+    function resumeGame() {
+      gamePaused = false;
+      document.getElementById('pauseScreen').style.display = 'none';
+      document.getElementById('pauseButton').textContent = '暂停';
+    }
+    
+    // 切换暂停状态函数
+    function togglePause() {
+      if (gamePaused) {
+        resumeGame();
+      } else {
+        pauseGame();
+      }
+    }
+    
     // 初始化游戏
+    setDifficulty('medium');  // 默认中等难度
     resetGame();
     requestAnimationFrame(loop);
   </script>
