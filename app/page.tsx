@@ -63,15 +63,17 @@ const featuredGames = [
 
 const popularGames = [
   {
-    id: 'klotski',
-    name: 'Klotski',
-    title: 'Sliding Block Puzzle',
-    description: 'Klotski is an ancient sliding block puzzle. Move the blocks around to help the large red block escape through the exit.',
-    image: '/images/klotski.svg',
-    coverImage: '/images/klotski.svg',
-    categories: ['puzzle', 'strategy'],
+    id: 'gomoku',
+    name: 'Gomoku',
+    title: 'Gomoku (Five in a Row)',
+    description: 'Connect five stones in a row (horizontally, vertically, or diagonally) to win in this classic strategy board game.',
+    image: '/images/gomoku.svg',
+    coverImage: '/images/gomoku.svg',
+    categories: ['strategy', 'board', '2player'],
     difficulty: 'medium',
-    embedUrl: '/games/klotski/index.html',
+    rating: 4.7,
+    category: 'Strategy',
+    embedUrl: '/games/gomoku/index.html',
     canEmbed: true,
     isImplemented: true
   },

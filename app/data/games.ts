@@ -65,6 +65,70 @@ export const categories: Category[] = [
 
 // Game data
 export const games: Game[] = [
+  // Gomoku game
+  {
+    id: 'gomoku',
+    name: 'Gomoku',
+    title: 'Gomoku (Five in a Row)',
+    description: 'Connect five stones in a row (horizontally, vertically, or diagonally) to win in this classic strategy board game with AI opponents.',
+    image: '/images/gomoku.svg',
+    coverImage: '/images/gomoku.svg',
+    categories: ['strategy', 'board', '2player'],
+    difficulty: 'medium',
+    isFeatured: false,
+    isNew: true,
+    isTrending: true,
+    popularity: 93,
+    embedUrl: '/games/gomoku/index.html',
+    canEmbed: true,
+    isImplemented: true,
+    rating: 4.7,
+    howToPlay: [
+      'Take turns placing stones on the board',
+      'Black plays first, followed by White',
+      'First player to connect five stones in a row wins',
+      'Rows can be horizontal, vertical, or diagonal'
+    ],
+    tips: [
+      'Try to create multiple threats simultaneously',
+      'Watch for your opponent\'s potential winning moves',
+      'Control the center of the board when possible',
+      'Use the hint feature if you get stuck'
+    ]
+  },
+  // Chinese Chess (Xiangqi) game
+  {
+    id: 'xiangqi',
+    name: 'Chinese Chess',
+    title: 'Chinese Chess (Xiangqi)',
+    description: 'Play the ancient game of Chinese Chess (Xiangqi) against the AI or another player. Capture the enemy general to win.',
+    image: '/images/xiangqi.svg',
+    coverImage: '/images/xiangqi.svg',
+    categories: ['strategy', 'board', '2player'],
+    difficulty: 'medium',
+    isFeatured: false,
+    isNew: true,
+    isTrending: true,
+    popularity: 92,
+    embedUrl: '/games/xiangqi/index.html',
+    canEmbed: true,
+    isImplemented: true,
+    rating: 4.8,
+    howToPlay: [
+      'Move pieces on the board according to their movement rules',
+      'Red moves first, followed by Black',
+      'Capture the opponent\'s general to win',
+      'Generals cannot face each other directly',
+      'Generals must stay within the palace'
+    ],
+    tips: [
+      'Control the center file (central vertical line)',
+      'Develop your cannons and chariots early',
+      'Protect your general with elephants and advisors',
+      'Watch for cannon shots across the board',
+      'Use horses to develop a strong attack'
+    ]
+  },
   // Basketball games
   {
     id: '22',

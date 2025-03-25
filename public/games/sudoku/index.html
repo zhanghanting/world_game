@@ -22,15 +22,12 @@
       color: #f8fafc;
     }
     
-    /* 主容器 */
-    .game-container {
+    /* 主容器布局 */
+    body {
       display: flex;
       flex-direction: column;
-      width: 100%;
       height: 100vh;
       padding: 8px;
-      justify-content: flex-start;
-      align-items: center;
     }
     
     /* 游戏标题 */
@@ -39,9 +36,38 @@
       font-size: 1.5rem;
       font-weight: 700;
       text-align: center;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       text-transform: uppercase;
       letter-spacing: 2px;
+    }
+    
+    /* 主游戏区域 */
+    .main-container {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      gap: 12px;
+      overflow: hidden;
+    }
+    
+    /* 侧边栏 */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      width: 180px;
+      background-color: rgba(30, 41, 59, 0.4);
+      border-radius: 8px;
+      padding: 12px;
+      gap: 16px;
+    }
+    
+    /* 游戏区域 */
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      max-width: 480px;
+      margin: 0 auto;
     }
     
     /* 游戏信息 */
@@ -50,7 +76,6 @@
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      max-width: 480px;
       background-color: rgba(30, 41, 59, 0.4);
       padding: 8px 12px;
       border-radius: 8px;
@@ -75,7 +100,6 @@
       flex-direction: column;
       flex: 1;
       width: 100%;
-      max-width: 480px;
       overflow: auto;
     }
     
@@ -210,28 +234,130 @@
     .help-btn {
       background-color: #c2410c;
     }
+    
+    /* 难度选择区域样式 */
+    .difficulty-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .section-title {
+      color: #60a5fa;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .difficulty-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .difficulty-btn {
+      background-color: #334155;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .difficulty-btn:hover {
+      background-color: #475569;
+    }
+    
+    .difficulty-btn.active {
+      background-color: #3b82f6;
+      font-weight: 600;
+    }
+    
+    /* 成绩记录区域样式 */
+    .records-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .records-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+    }
+    
+    .records-table th {
+      text-align: left;
+      padding: 4px;
+      border-bottom: 1px solid #475569;
+      color: #94a3b8;
+    }
+    
+    .records-table td {
+      padding: 4px;
+    }
+    
+    .record-highlight {
+      color: #60a5fa;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
-  <div class="game-container">
-    <div class="game-title">Sudoku</div>
-    
-    <div class="game-info">
-      <div class="game-status">Level: Easy | Hints: 0</div>
-      <div class="timer">00:00</div>
+  <div class="game-title">Sudoku</div>
+  
+  <div class="main-container">
+    <!-- 侧边栏 - 难度和记录 -->
+    <div class="sidebar">
+      <div class="difficulty-section">
+        <div class="section-title">Difficulty Level</div>
+        <div class="difficulty-buttons">
+          <button class="difficulty-btn active" data-level="easy">Easy</button>
+          <button class="difficulty-btn" data-level="medium">Medium</button>
+          <button class="difficulty-btn" data-level="hard">Hard</button>
+          <button class="difficulty-btn" data-level="expert">Expert</button>
+        </div>
+      </div>
+      
+      <div class="records-section">
+        <div class="section-title">Best Records</div>
+        <table class="records-table">
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>Personal</th>
+              <th>Global</th>
+            </tr>
+          </thead>
+          <tbody id="records-body">
+            <!-- 记录将通过JS填充 -->
+          </tbody>
+        </table>
+      </div>
     </div>
     
-    <div class="game-board">
-      <div class="sudoku-board" id="sudoku-board"></div>
+    <!-- 主游戏区域 -->
+    <div class="game-container">
+      <div class="game-info">
+        <div class="game-status" id="game-status">Level: Easy | Hints: 0/3</div>
+        <div class="timer" id="timer">00:00</div>
+      </div>
       
-      <div class="controls">
-        <div class="number-grid" id="number-grid"></div>
+      <div class="game-board">
+        <div class="sudoku-board" id="sudoku-board"></div>
         
-        <div class="actions">
-          <button class="action-btn new-game-btn" id="new-game-btn">New Game</button>
-          <button class="action-btn hint-btn" id="hint-btn">Hint</button>
-          <button class="action-btn erase-btn" id="erase-btn">Erase</button>
-          <button class="action-btn help-btn" id="help-btn">Help</button>
+        <div class="controls">
+          <div class="number-grid" id="number-grid"></div>
+          
+          <div class="actions">
+            <button class="action-btn new-game-btn" id="new-game-btn">New Game</button>
+            <button class="action-btn hint-btn" id="hint-btn">Hint</button>
+            <button class="action-btn erase-btn" id="erase-btn">Erase</button>
+            <button class="action-btn help-btn" id="help-btn">Help</button>
+          </div>
         </div>
       </div>
     </div>
@@ -252,19 +378,33 @@
       let hints = 0;
       const MAX_HINTS = 3;
       
+      // 新增: 记录变量
+      let records = {
+        easy: { personal: Infinity, global: 82 },     // 全球记录预设值
+        medium: { personal: Infinity, global: 187 },
+        hard: { personal: Infinity, global: 356 },
+        expert: { personal: Infinity, global: 592 }
+      };
+      
+      // 尝试从本地存储加载记录
+      loadRecords();
+      
       // DOM元素
       const boardElement = document.getElementById('sudoku-board');
-      const statusElement = document.querySelector('.game-status');
-      const timerElement = document.querySelector('.timer');
+      const statusElement = document.getElementById('game-status');
+      const timerElement = document.getElementById('timer');
       const newGameBtn = document.getElementById('new-game-btn');
       const hintBtn = document.getElementById('hint-btn');
       const eraseBtn = document.getElementById('erase-btn');
       const helpBtn = document.getElementById('help-btn');
       const numberGridElement = document.getElementById('number-grid');
+      const recordsBody = document.getElementById('records-body');
+      const difficultyBtns = document.querySelectorAll('.difficulty-btn');
       
       // 初始化游戏
       createBoard();
       generateNumbers();
+      updateRecordsDisplay();
       startNewGame();
       
       // 事件监听
@@ -272,6 +412,19 @@
       hintBtn.addEventListener('click', getHint);
       eraseBtn.addEventListener('click', eraseCell);
       helpBtn.addEventListener('click', showHelp);
+      
+      // 新增: 难度按钮事件监听
+      difficultyBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          // 更新当前难度
+          difficultyBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          level = this.dataset.level;
+          
+          // 开始新游戏
+          startNewGame();
+        });
+      });
       
       // 创建棋盘
       function createBoard() {
@@ -338,6 +491,9 @@
             break;
           case 'hard':
             cellsToRemove = 55; // 删除55个格子
+            break;
+          case 'expert':
+            cellsToRemove = 60; // 删除60个格子
             break;
           default:
             cellsToRemove = 40;
@@ -625,7 +781,13 @@
       
       // 更新游戏信息
       function updateGameInfo() {
-        statusElement.textContent = `Level: ${level.charAt(0).toUpperCase() + level.slice(1)} | Hints: ${hints}/${MAX_HINTS}`;
+        const levelNames = {
+          'easy': 'Easy',
+          'medium': 'Medium',
+          'hard': 'Hard',
+          'expert': 'Expert'
+        };
+        statusElement.textContent = `Level: ${levelNames[level]} | Hints: ${hints}/${MAX_HINTS}`;
       }
       
       // 显示帮助
@@ -636,8 +798,21 @@
       // 游戏胜利
       function gameWon() {
         stopTimer();
+        
+        // 检查是否是新记录
+        let isNewRecord = false;
+        if (timer < records[level].personal) {
+          records[level].personal = timer;
+          isNewRecord = true;
+          saveRecords();
+          updateRecordsDisplay();
+        }
+        
         setTimeout(() => {
-          alert(`Congratulations! You solved the puzzle in ${formatTime(timer)} using ${hints} hints.`);
+          const message = isNewRecord 
+            ? `Congratulations! New personal record!\nTime: ${formatTime(timer)}\nHints used: ${hints}/${MAX_HINTS}`
+            : `Congratulations! You solved the puzzle!\nTime: ${formatTime(timer)}\nHints used: ${hints}/${MAX_HINTS}`;
+          alert(message);
         }, 300);
       }
       
@@ -645,7 +820,71 @@
       function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
-        return `${minutes} min ${remainingSeconds} sec`;
+        return `${minutes} min ${remainingSeconds.toString().padStart(2, '0')} sec`;
+      }
+      
+      // 新增: 保存记录到本地存储
+      function saveRecords() {
+        localStorage.setItem('sudokuRecords', JSON.stringify(records));
+      }
+      
+      // 新增: 从本地存储加载记录
+      function loadRecords() {
+        const savedRecords = localStorage.getItem('sudokuRecords');
+        if (savedRecords) {
+          const parsedRecords = JSON.parse(savedRecords);
+          // 合并保存的记录与默认记录
+          records = {
+            ...records,
+            ...parsedRecords
+          };
+        }
+      }
+      
+      // 新增: 更新记录显示
+      function updateRecordsDisplay() {
+        recordsBody.innerHTML = '';
+        
+        const levelNames = {
+          'easy': 'Easy',
+          'medium': 'Medium',
+          'hard': 'Hard',
+          'expert': 'Expert'
+        };
+        
+        for (const [key, value] of Object.entries(records)) {
+          const row = document.createElement('tr');
+          
+          const levelCell = document.createElement('td');
+          levelCell.textContent = levelNames[key];
+          
+          const personalCell = document.createElement('td');
+          if (value.personal === Infinity) {
+            personalCell.textContent = '-';
+          } else {
+            personalCell.textContent = formatTimeShort(value.personal);
+            if (level === key) {
+              personalCell.classList.add('record-highlight');
+            }
+          }
+          
+          const globalCell = document.createElement('td');
+          globalCell.textContent = formatTimeShort(value.global);
+          
+          row.appendChild(levelCell);
+          row.appendChild(personalCell);
+          row.appendChild(globalCell);
+          
+          recordsBody.appendChild(row);
+        }
+      }
+      
+      // 新增: 简短格式的时间显示 (仅用于记录表)
+      function formatTimeShort(seconds) {
+        if (seconds === Infinity) return '-';
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
       }
     });
   </script>

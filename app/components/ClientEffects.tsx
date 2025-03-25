@@ -15,6 +15,11 @@ const EffectsToggle = dynamic(
   { ssr: false }
 );
 
+const ParticleBackground = dynamic(
+  () => import('./ParticleBackground'),
+  { ssr: false }
+);
+
 export default function ClientEffects() {
   // 强制确保组件重新渲染一次
   const [forceRender, setForceRender] = useState(false);
@@ -33,6 +38,7 @@ export default function ClientEffects() {
     <>
       <EffectsToggleWithContext key={`toggle-${forceRender}`} />
       <MouseFollowWithContext key={`mouse-${forceRender}`} />
+      <ParticleBackgroundWithContext key={`particle-${forceRender}`} />
     </>
   );
 }
@@ -55,6 +61,22 @@ const MouseFollowWithContext = () => {
   return (
     <ClientOnly>
       <MouseFollowEffectWrapper forceShow={forceShow} />
+    </ClientOnly>
+  );
+};
+
+const ParticleBackgroundWithContext = () => {
+  // 不再强制每隔几秒重新渲染，正常使用
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  // 使用ClientOnly包装，确保只在客户端渲染
+  return (
+    <ClientOnly>
+      <ParticleBackgroundWrapper />
     </ClientOnly>
   );
 };
@@ -119,6 +141,41 @@ const MouseFollowEffectWrapper = ({ forceShow = false }: MouseFollowEffectWrappe
         opacity={0.75}
       />
     </div>
+  );
+};
+
+interface ParticleBackgroundWrapperProps {
+  forceShow?: boolean;
+}
+
+const ParticleBackgroundWrapper = ({ forceShow = false }: ParticleBackgroundWrapperProps) => {
+  const { particleEffectsEnabled, effectsEnabled } = useEffects();
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+    console.log('ParticleBackground wrapper mounted:', { particleEffectsEnabled, effectsEnabled });
+  }, [particleEffectsEnabled, effectsEnabled, forceShow]);
+
+  // 如果粒子效果被禁用并且没有强制显示，或者组件未挂载，不渲染任何内容
+  if ((!particleEffectsEnabled && !forceShow) || !mounted) {
+    console.log('ParticleBackground not rendering', { particleEffectsEnabled, forceShow, mounted });
+    return null;
+  }
+  
+  console.log('Rendering ParticleBackground', { particleEffectsEnabled });
+  
+  return (
+    <ParticleBackground 
+      count={150}           // 增加粒子数量
+      minSize={1.5}
+      maxSize={3}
+      minSpeed={0.1}
+      maxSpeed={0.3}
+      colors={['#6366f1', '#3b82f6', '#4f46e5', '#8b5cf6']} 
+      baseOpacity={0.5}     // 增加不透明度
+      debug={false}
+    />
   );
 };
 
